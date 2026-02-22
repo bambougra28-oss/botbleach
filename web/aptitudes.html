@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infernum Aeterna &mdash; Syst&egrave;me d'Aptitudes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0A0A0F;
+  --bg-content: #111118;
+  --bg-card: #18181F;
+  --text-main: #F5F5F5;
+  --text-muted: #A0A0B0;
+  --or-ancien: #C9A84C;
+  --blanc-seireitei: #E8E8F0;
+  --pourpre: #6B1FA8;
+  --gris-sable: #8A8A7A;
+  --bleu-abyssal: #1A3A6B;
+  --or-pale: #D4AF37;
+  --gris-acier: #7B7D8A;
+  --rouge-chaine: #8B0000;
+  --accent: var(--or-ancien);
+  --faction-color: var(--or-ancien);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Noto Serif JP', 'Georgia', serif;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────── */
+.site-header {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+  background: linear-gradient(180deg, #0D0D14 0%, var(--bg-deep) 100%);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+}
+.site-header .kanji-title {
+  font-size: 3rem; font-weight: 900; color: var(--or-ancien);
+  letter-spacing: 0.3em; text-shadow: 0 0 30px rgba(201, 168, 76, 0.3);
+}
+.site-header .subtitle {
+  font-size: 1.1rem; color: var(--text-muted); margin-top: 0.3rem; letter-spacing: 0.15em;
+}
+.site-header .sub-subtitle {
+  font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem; opacity: 0.6;
+}
+.nav-link {
+  display: inline-block; margin-top: 0.8rem; font-size: 0.8rem;
+  color: var(--or-ancien); text-decoration: none; opacity: 0.6; transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 1; }
+
+/* ── TAB BAR ────────────────────────── */
+.tab-bar {
+  position: sticky; top: 0; z-index: 100; background: var(--bg-deep);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; overflow-x: auto; scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,0.3) transparent;
+}
+.tab-bar::-webkit-scrollbar { height: 4px; }
+.tab-bar::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+.tab-btn {
+  flex: 0 0 auto; padding: 0.9rem 1.4rem; background: none; border: none;
+  color: var(--text-muted); font-family: 'Noto Serif JP', serif; font-size: 0.9rem;
+  cursor: pointer; white-space: nowrap; position: relative; transition: color 0.3s;
+}
+.tab-btn:hover { color: var(--text-main); }
+.tab-btn.active { color: var(--text-main); font-weight: 700; }
+.tab-btn::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; background: transparent; transition: background 0.3s;
+}
+.tab-btn.active::after { background: var(--accent); }
+.tab-btn .tab-kanji { display: block; font-size: 0.75rem; opacity: 0.5; margin-bottom: 0.15rem; }
+
+/* ── CONTENT ────────────────────────── */
+.content-wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.tab-content { display: none; animation: fadeIn 0.4s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── TYPOGRAPHY ─────────────────────── */
+.section-kanji {
+  font-size: 2.5rem; font-weight: 900; opacity: 0.12; letter-spacing: 0.2em; margin-bottom: -0.5rem;
+}
+h2 {
+  font-size: 1.5rem; font-weight: 700; margin: 2.5rem 0 1rem;
+  padding-left: 1rem; border-left: 4px solid var(--accent); line-height: 1.4;
+}
+h3 { font-size: 1.15rem; font-weight: 700; margin: 2rem 0 0.8rem; color: var(--accent); }
+p { margin-bottom: 1.2rem; text-align: justify; hyphens: auto; }
+blockquote {
+  margin: 1.5rem 0; padding: 1rem 1.5rem; border-left: 3px solid var(--accent);
+  background: rgba(255,255,255,0.02); font-style: italic; color: var(--text-muted);
+}
+.section-sep { text-align: center; margin: 3rem 0; color: var(--accent); opacity: 0.3; letter-spacing: 1em; font-size: 0.8rem; }
+
+/* ── HERO BANNER ────────────────────── */
+.faction-hero {
+  text-align: center; padding: 2.5rem 1rem 2rem; margin-bottom: 2rem;
+  position: relative; overflow: hidden; border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+}
+.faction-hero .hero-kanji {
+  font-size: 6rem; font-weight: 900; opacity: 0.08; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%); letter-spacing: 0.3em; pointer-events: none;
+}
+.faction-hero .hero-title { font-size: 1.6rem; font-weight: 700; position: relative; z-index: 1; }
+.faction-hero .hero-sub {
+  font-size: 0.95rem; color: var(--text-muted); font-style: italic; margin-top: 0.5rem; position: relative; z-index: 1;
+}
+
+/* ── SUB-NAV (Voie pills) ──────────── */
+.voie-nav {
+  display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 2.5rem; padding: 0 0.5rem;
+}
+.voie-pill {
+  padding: 0.5rem 1.2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12);
+  background: transparent; color: var(--text-muted); font-family: 'Noto Serif JP', serif;
+  font-size: 0.85rem; cursor: pointer; transition: all 0.3s;
+}
+.voie-pill:hover { border-color: var(--faction-color); color: var(--text-main); }
+.voie-pill.active {
+  background: var(--faction-color); color: var(--bg-deep); border-color: var(--faction-color); font-weight: 700;
+}
+
+/* ── VOIE SECTION ───────────────────── */
+.voie-section { display: none; animation: fadeIn 0.35s ease; }
+.voie-section.active { display: block; }
+.voie-description {
+  font-size: 1.05rem; color: var(--text-muted); font-style: italic;
+  margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ── SKILL TREE ─────────────────────── */
+.skill-tree {
+  position: relative; width: 100%; max-width: 500px; margin: 0 auto 2.5rem; height: 320px;
+}
+.skill-tree svg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+}
+.skill-tree svg path { stroke-width: 2; fill: none; opacity: 0.4; }
+.tree-node {
+  position: absolute; width: 56px; height: 56px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 2px solid rgba(255,255,255,0.15); background: var(--bg-card);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; cursor: default;
+}
+.tree-node:hover { transform: scale(1.12); }
+.tree-node .node-kanji { font-size: 1.1rem; font-weight: 700; line-height: 1; }
+.tree-node .node-label {
+  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+  font-size: 0.65rem; white-space: nowrap; color: var(--text-muted); text-align: center;
+}
+.tree-node[data-palier="1"] { border-color: var(--gris-acier); }
+.tree-node[data-palier="2"] { border-color: var(--faction-color); }
+.tree-node[data-palier="2"] .node-kanji { color: var(--faction-color); }
+.tree-node[data-palier="3"] {
+  width: 64px; height: 64px; border-color: var(--or-ancien);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.2);
+  animation: p3glow 3s ease-in-out infinite;
+}
+.tree-node[data-palier="3"] .node-kanji { color: var(--or-ancien); font-size: 1.3rem; }
+@keyframes p3glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(201, 168, 76, 0.15); }
+  50% { box-shadow: 0 0 25px rgba(201, 168, 76, 0.35); }
+}
+
+/* ── APTITUDE CARDS ─────────────────── */
+.apt-cards { display: flex; flex-direction: column; gap: 1.2rem; }
+.apt-card {
+  background: var(--bg-card); border-left: 3px solid var(--gris-acier);
+  border-radius: 0 6px 6px 0; padding: 1.3rem 1.5rem; transition: border-color 0.3s;
+}
+.apt-card[data-palier="2"] { border-left-color: var(--faction-color); }
+.apt-card[data-palier="3"] {
+  border-left-color: var(--or-ancien); border: 1px solid rgba(201,168,76,0.25);
+  border-left: 3px solid var(--or-ancien); box-shadow: 0 0 20px rgba(201,168,76,0.08);
+}
+.apt-card-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.7rem; flex-wrap: wrap; }
+.apt-badge {
+  font-size: 0.75rem; padding: 0.15rem 0.6rem; border-radius: 10px;
+  background: rgba(255,255,255,0.06); color: var(--text-muted); white-space: nowrap;
+}
+.apt-card[data-palier="3"] .apt-badge { background: rgba(201,168,76,0.15); color: var(--or-ancien); }
+.apt-card-title { font-size: 1.1rem; font-weight: 700; }
+.apt-card-kanji { font-size: 0.9rem; opacity: 0.5; }
+.apt-card-desc { color: var(--text-muted); font-size: 0.92rem; line-height: 1.7; margin-bottom: 0; }
+.apt-card-condition {
+  margin-top: 0.6rem; font-size: 0.82rem; color: var(--or-ancien); font-style: italic; opacity: 0.8;
+}
+.apt-card-prereqs {
+  margin-top: 0.4rem; font-size: 0.78rem; color: var(--text-muted); opacity: 0.7;
+}
+
+/* ── RANK TABLE ─────────────────────── */
+.rank-table {
+  width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.88rem;
+}
+.rank-table th {
+  text-align: left; padding: 0.6rem 0.8rem; border-bottom: 2px solid var(--accent);
+  color: var(--accent); font-weight: 700;
+}
+.rank-table td { padding: 0.5rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.rank-table tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+
+/* ── GOLD BOX (Transcendance) ───────── */
+.gold-box {
+  border: 1px solid rgba(201,168,76,0.25); border-radius: 8px;
+  padding: 1.5rem; margin: 2rem 0; background: rgba(201,168,76,0.03);
+}
+.gold-box h3 { color: var(--or-ancien); margin-top: 0; }
+
+/* ── FOOTER ─────────────────────────── */
+.site-footer {
+  text-align: center; padding: 2rem 1rem; color: var(--text-muted);
+  font-size: 0.8rem; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* ── RESPONSIVE ─────────────────────── */
+@media (max-width: 768px) {
+  .site-header .kanji-title { font-size: 2rem; letter-spacing: 0.15em; }
+  .tab-btn { padding: 0.7rem 1rem; font-size: 0.8rem; }
+  .tab-btn .tab-kanji { font-size: 0.65rem; }
+  .content-wrap { padding: 1.5rem 1rem 3rem; }
+  h2 { font-size: 1.25rem; }
+  .section-kanji { font-size: 1.8rem; }
+  .faction-hero .hero-kanji { font-size: 4rem; }
+  .faction-hero .hero-title { font-size: 1.3rem; }
+  .skill-tree { height: 280px; max-width: 340px; }
+  .tree-node { width: 46px; height: 46px; }
+  .tree-node .node-kanji { font-size: 0.95rem; }
+  .tree-node[data-palier="3"] { width: 54px; height: 54px; }
+  .tree-node .node-label { font-size: 0.58rem; bottom: -18px; }
+  .voie-pill { padding: 0.4rem 0.9rem; font-size: 0.78rem; }
+  .apt-card { padding: 1rem 1.2rem; }
+}
+@media (max-width: 480px) {
+  .skill-tree { height: 250px; max-width: 300px; }
+  .tree-node { width: 40px; height: 40px; }
+  .tree-node .node-kanji { font-size: 0.85rem; }
+  .tree-node[data-palier="3"] { width: 48px; height: 48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="kanji-title">霊力之道</div>
+  <div class="subtitle">INFERNUM AETERNA</div>
+  <div class="sub-subtitle">Syst&egrave;me d'Aptitudes Reiryoku &mdash; Les Voies des Quatre Factions</div>
+  <a href="index.html" class="nav-link">&larr; Chroniques des Quatre Races</a>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="systeme" data-color="#C9A84C">
+    <span class="tab-kanji">道</span>Syst&egrave;me
+  </button>
+  <button class="tab-btn" data-tab="shinigami" data-color="#E8E8F0">
+    <span class="tab-kanji">死神</span>Shinigami
+  </button>
+  <button class="tab-btn" data-tab="togabito" data-color="#6B1FA8">
+    <span class="tab-kanji">咎人</span>Togabito
+  </button>
+  <button class="tab-btn" data-tab="arrancar" data-color="#8A8A7A">
+    <span class="tab-kanji">破面</span>Arrancar
+  </button>
+  <button class="tab-btn" data-tab="quincy" data-color="#1A3A6B">
+    <span class="tab-kanji">滅却師</span>Quincy
+  </button>
+</nav>
+
+<!-- CONTENT -->
+<main class="content-wrap">
+
+<!-- SYSTEME TAB -->
+<section class="tab-content active" id="systeme">
+  <div class="section-kanji">霊力</div>
+  <h2>Le Reiryoku (霊力)</h2>
+
+  <p>Dans les mondes spirituels, la puissance n'est pas une abstraction &mdash; c'est une substance. Le Reiryoku, l'&eacute;nergie spirituelle brute qui coule dans chaque &acirc;me, est la monnaie fondamentale de l'existence. Chaque &ecirc;tre qui foule Soul Society, le Hueco Mundo, ou les profondeurs de l'Enfer poss&egrave;de un r&eacute;servoir de Reiryoku dont la taille d&eacute;termine ce qu'il peut accomplir &mdash; et ce qu'il ne pourra jamais atteindre.</p>
+
+  <p>Le syst&egrave;me d'aptitudes traduit cette r&eacute;alit&eacute; en m&eacute;canique de jeu. Chaque personnage dispose d'un <strong>budget de Reiryoku</strong> d&eacute;termin&eacute; par son rang au sein de sa faction. Ce budget est la limite absolue &mdash; il repr&eacute;sente le volume total d'&eacute;nergie spirituelle que le corps et l'&acirc;me peuvent canaliser sans se d&eacute;sint&eacute;grer.</p>
+
+  <blockquote>&laquo;&nbsp;La puissance spirituelle n'est pas infinie. M&ecirc;me les &ecirc;tres les plus formidables connaissent leurs limites &mdash; la diff&eacute;rence est qu'ils savent exactement o&ugrave; elles se trouvent.&nbsp;&raquo;</blockquote>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Les Trois Paliers</h2>
+
+  <h3>Palier 1 &mdash; &Eacute;veil (◈)</h3>
+  <p>Le premier contact. L'&acirc;me d&eacute;couvre une capacit&eacute; qui dormait en elle depuis toujours, comme un muscle qu'on n'avait jamais appris &agrave; contracter. Le co&ucirc;t est modeste &mdash; <strong>1 point de Reiryoku</strong> &mdash; et il n'y a aucune condition pr&eacute;alable. Les aptitudes d'&Eacute;veil sont accessibles &agrave; quiconque a la volont&eacute; de chercher. Elles forment le socle sur lequel tout le reste repose.</p>
+
+  <h3>Palier 2 &mdash; Ma&icirc;trise (◆)</h3>
+  <p>L'approfondissement. Le praticien ne se contente plus de toucher la surface &mdash; il plonge. Les aptitudes de Ma&icirc;trise co&ucirc;tent <strong>2 points de Reiryoku</strong> et exigent d'avoir d&eacute;j&agrave; &eacute;veill&eacute; au moins une aptitude fondamentale dans la m&ecirc;me Voie. Chacune poss&egrave;de &eacute;galement des pr&eacute;requis sp&eacute;cifiques &mdash; un chemin trac&eacute; par la logique de la progression spirituelle.</p>
+
+  <h3>Palier 3 &mdash; Transcendance (✦)</h3>
+  <div class="gold-box">
+    <h3>La Transcendance</h3>
+    <p>Le sommet. L'aboutissement d'une Voie enti&egrave;re, r&eacute;serv&eacute; &agrave; ceux qui ont consacr&eacute; une part consid&eacute;rable de leur &ecirc;tre &agrave; une discipline. Les aptitudes de Transcendance co&ucirc;tent <strong>3 points de Reiryoku</strong>, exigent la ma&icirc;trise des deux aptitudes de Palier 2 de la Voie, et ne sont accessibles qu'aux rangs les plus &eacute;lev&eacute;s de chaque faction.</p>
+    <p>De plus, chaque Transcendance impose une <strong>condition RP</strong> &mdash; un moment narratif valid&eacute; par le staff qui prouve que le personnage a v&eacute;ritablement gagn&eacute; cette puissance. On n'achète pas la Transcendance &mdash; on la m&eacute;rite.</p>
+  </div>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Les Voies (道)</h2>
+
+  <p>Chaque faction dispose de <strong>quatre Voies</strong> &mdash; quatre disciplines fondamentales qui d&eacute;finissent les possibilit&eacute;s martiales et spirituelles de ses membres. Un Shinigami ne se bat pas comme un Togabito, qui ne se bat pas comme un Arrancar, qui ne se bat pas comme un Quincy. Chaque race a forg&eacute; ses propres chemins vers la puissance, h&eacute;rit&eacute;s de son histoire, de sa nature, et de ses souffrances.</p>
+
+  <p>Chaque Voie contient <strong>cinq aptitudes</strong> r&eacute;parties en trois paliers&nbsp;: deux &Eacute;veils, deux Ma&icirc;trises, une Transcendance. L'arbre forme un sch&eacute;ma naturel &mdash; les fondations s'&eacute;largissent, les sp&eacute;cialisations convergent, et le sommet couronne l'ensemble.</p>
+
+  <p>Un personnage n'est pas oblig&eacute; de se consacrer &agrave; une seule Voie. Le budget de Reiryoku peut &ecirc;tre r&eacute;parti librement entre les quatre Voies de sa faction, offrant un choix strat&eacute;gique entre sp&eacute;cialisation profonde et polyvalence &eacute;tendue.</p>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Progression &amp; Budget</h2>
+
+  <p>Le budget de Reiryoku cro&icirc;t avec le rang. Un novice dispose de peu &mdash; juste assez pour toucher les fondamentaux. Un v&eacute;t&eacute;ran au sommet de sa hi&eacute;rarchie commande un arsenal complet de techniques avanc&eacute;es. Voici la r&eacute;partition par faction&nbsp;:</p>
+
+  <table class="rank-table">
+    <thead>
+      <tr><th>Shinigami</th><th>霊力</th><th>Togabito</th><th>霊力</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Gakusei</td><td>3</td><td>Zainin</td><td>3</td></tr>
+      <tr><td>Shinigami</td><td>6</td><td>Togabito</td><td>8</td></tr>
+      <tr><td>Yonseki</td><td>10</td><td>Tan-Togabito</td><td>14</td></tr>
+      <tr><td>Sanseki</td><td>14</td><td>K&omacr;-Togabito</td><td>20</td></tr>
+      <tr><td>Fukutaich&omacr;</td><td>18</td><td>Goku&omacr;</td><td>24</td></tr>
+      <tr><td>Taich&omacr;</td><td>22</td><td></td><td></td></tr>
+      <tr><td>S&omacr;taich&omacr;</td><td>24</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <table class="rank-table">
+    <thead>
+      <tr><th>Arrancar</th><th>霊力</th><th>Quincy</th><th>霊力</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Hor&omacr;</td><td>3</td><td>Minarai</td><td>3</td></tr>
+      <tr><td>Gillian</td><td>5</td><td>Quincy</td><td>7</td></tr>
+      <tr><td>Adjuchas</td><td>8</td><td>Jagdarmee</td><td>12</td></tr>
+      <tr><td>Vasto Lorde</td><td>11</td><td>Sternritter</td><td>18</td></tr>
+      <tr><td>N&uacute;meros</td><td>14</td><td>Schutzstaffel</td><td>22</td></tr>
+      <tr><td>Fracci&oacute;n</td><td>17</td><td>Seitei</td><td>24</td></tr>
+      <tr><td>Privaron Espada</td><td>20</td><td></td><td></td></tr>
+      <tr><td>Espada</td><td>22</td><td></td><td></td></tr>
+      <tr><td>Rey</td><td>24</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Acc&egrave;s &agrave; la Transcendance</h2>
+
+  <p>Les aptitudes de Palier 3 ne sont pas seulement co&ucirc;teuses &mdash; elles sont verrouill&eacute;es derri&egrave;re un seuil de rang. Seuls les combattants les plus aguerris de chaque faction y acc&egrave;dent&nbsp;:</p>
+
+  <ul style="list-style:none;padding:0;margin:1rem 0 1.5rem;">
+    <li style="padding:0.3rem 0 0.3rem 1rem;border-left:2px solid #E8E8F0;margin-bottom:0.3rem;"><strong>Shinigami</strong>&nbsp;: &agrave; partir de Fukutaich&omacr;</li>
+    <li style="padding:0.3rem 0 0.3rem 1rem;border-left:2px solid #6B1FA8;margin-bottom:0.3rem;"><strong>Togabito</strong>&nbsp;: &agrave; partir de K&omacr;-Togabito</li>
+    <li style="padding:0.3rem 0 0.3rem 1rem;border-left:2px solid #8A8A7A;margin-bottom:0.3rem;"><strong>Arrancar</strong>&nbsp;: &agrave; partir de Privaron Espada</li>
+    <li style="padding:0.3rem 0 0.3rem 1rem;border-left:2px solid #1A3A6B;margin-bottom:0.3rem;"><strong>Quincy</strong>&nbsp;: &agrave; partir de Sternritter</li>
+  </ul>
+
+  <p>Chaque Transcendance requiert &eacute;galement une <strong>condition RP</strong> unique &mdash; un arc narratif, un combat d&eacute;cisif, une &eacute;preuve int&eacute;rieure valid&eacute;e par le staff. Ce n'est pas une formalit&eacute;&nbsp;: c'est la preuve que le personnage a v&eacute;cu ce que la technique exige.</p>
+</section>
+
+<!-- FACTION TABS (rendered by JS) -->
+<section class="tab-content" id="shinigami"></section>
+<section class="tab-content" id="togabito"></section>
+<section class="tab-content" id="arrancar"></section>
+<section class="tab-content" id="quincy"></section>
+
+</main>
+
+<footer class="site-footer">
+  &mdash; Infernum Aeterna &middot; Jigoku no Sekai &mdash;
+</footer>
+
+<script>
+var FACTIONS = {
+shinigami: { nom:"Shinigami", kanji:"\u6B7B\u795E", couleur:"#E8E8F0", accroche:"Les gardiens du cycle \u2014 quatre disciplines forg\u00e9es dans le silence de l\u2019acad\u00e9mie et le fracas des champs de bataille.", voies:[
+{id:"zanjutsu",nom:"Zanjutsu",kanji:"\u659C\u8853",sousTitre:"L\u2019Art du Sabre",desc:"La lame n\u2019est pas une arme \u2014 c\u2019est un miroir. Chaque coup port\u00e9 r\u00e9v\u00e8le autant le porteur que la cible. Le Zanjutsu est la voie la plus ancienne des Shinigami, celle qui exige de regarder l\u2019esprit de son Zanpakut\u014d dans les yeux et d\u2019accepter ce qu\u2019il montre.",apt:[
+{nom:"Jinzen",kanji:"\u5203\u7985",p:1,c:1,desc:"Assis en silence, la lame pos\u00e9e sur les genoux, le Shinigami ferme les yeux et plonge dans l\u2019espace int\u00e9rieur o\u00f9 r\u00e9side l\u2019esprit du Zanpakut\u014d. La m\u00e9ditation peut durer des heures, des jours. La plupart n\u2019entendent rien. Ceux qui reviennent avec un nom sur les l\u00e8vres ne sont plus jamais les m\u00eames."},
+{nom:"Kend\u014d",kanji:"\u5263\u9053",p:1,c:1,desc:"Avant de communier avec l\u2019esprit, il faut ma\u00eetriser la chair. Le Kend\u014d enseigne la posture, la coupe, le rythme \u2014 les fondements sur lesquels toute technique repose. Une lame mal tenue ne tranchera jamais rien, peu importe la puissance spirituelle qu\u2019on y injecte."},
+{nom:"Shikai",kanji:"\u59CB\u89E3",p:2,c:2,desc:"Le Zanpakut\u014d r\u00e9pond enfin \u00e0 l\u2019appel. La commande de lib\u00e9ration est prononc\u00e9e \u2014 un mot, une phrase, un ordre qui r\u00e9sonne dans les deux mondes \u00e0 la fois. La lame change de forme, r\u00e9v\u00e9lant une fraction de sa v\u00e9ritable nature. Ce n\u2019est pas un pouvoir accord\u00e9 \u2014 c\u2019est un pacte scell\u00e9 entre deux volont\u00e9s.",cond:"Sc\u00e8ne RP de m\u00e9ditation Jinzen valid\u00e9e par le staff.",prereqNom:"Jinzen"},
+{nom:"Isshin",kanji:"\u4E00\u5FC3",p:2,c:2,desc:"L\u2019unit\u00e9 parfaite entre le corps et la lame. Le Shinigami ne manie plus son Zanpakut\u014d \u2014 il le prolonge. Chaque mouvement du bras s\u2019ach\u00e8ve naturellement dans l\u2019acier, sans d\u00e9calage, sans h\u00e9sitation. Les t\u00e9moins d\u00e9crivent un combattant qui semble danser avec son ombre.",prereqNom:"Kend\u014d"},
+{nom:"Bankai",kanji:"\u534D\u89E3",p:3,c:3,desc:"La lib\u00e9ration finale. Le Zanpakut\u014d se mat\u00e9rialise dans sa forme absolue \u2014 une manifestation de puissance si consid\u00e9rable que l\u2019air autour du porteur se distord. Ma\u00eetriser le Bankai requiert des ann\u00e9es d\u2019entra\u00eenement et un lien avec l\u2019esprit de la lame qui transcende la simple communion. Ceux qui y parviennent sont compt\u00e9s sur les doigts d\u2019une main \u00e0 chaque g\u00e9n\u00e9ration.",cond:"Arc RP complet de mat\u00e9rialisation et combat contre l\u2019esprit du Zanpakut\u014d.",prereqNom:"Shikai + Isshin"}
+]},
+{id:"kido",nom:"Kid\u014d",kanji:"\u9B3C\u9053",sousTitre:"Les Arts D\u00e9moniaques",desc:"Les incantations ne sont pas des formules \u2014 ce sont des cl\u00e9s. Chaque mot prononc\u00e9 ouvre une porte dans le tissu de la r\u00e9alit\u00e9 spirituelle, et le Kid\u014d est l\u2019art de choisir laquelle. Destruction, entrave, gu\u00e9rison \u2014 trois chemins, une seule discipline.",apt:[
+{nom:"Had\u014d Kiso",kanji:"\u7834\u9053\u57FA\u790E",p:1,c:1,desc:"Les sorts de destruction de base \u2014 Shakkah\u014d, Byakurai, S\u014dkatsui. Chacun s\u2019apprend dans l\u2019ordre, incantation compl\u00e8te obligatoire. La puissance est modeste, mais la pr\u00e9cision est ce qui s\u00e9pare un apprenti d\u2019un cadavre."},
+{nom:"Bakud\u014d Kiso",kanji:"\u7E1B\u9053\u57FA\u790E",p:1,c:1,desc:"Les sorts d\u2019entrave fondamentaux \u2014 Sai, Hainawa, Sekienton. L\u00e0 o\u00f9 le Had\u014d d\u00e9truit, le Bakud\u014d contraint. Immobiliser un adversaire sans le tuer est souvent plus difficile que de le r\u00e9duire en cendres."},
+{nom:"Eish\u014dhaki",kanji:"\u8A60\u5531\u7834\u68C4",p:2,c:2,desc:"L\u2019incantation est abandonn\u00e9e. Le sort est lanc\u00e9 par la seule volont\u00e9, sans un mot \u2014 un luxe r\u00e9serv\u00e9 \u00e0 ceux dont la ma\u00eetrise du Reishi est suffisamment enracin\u00e9e pour se passer de b\u00e9quilles verbales. La puissance diminue, mais la vitesse d\u2019ex\u00e9cution devient terrifiante.",prereqNom:"Had\u014d Kiso"},
+{nom:"Kaid\u014d",kanji:"\u56DE\u9053",p:2,c:2,desc:"L\u2019art de gu\u00e9rir par le Reishi. Le pratiquant pose ses mains sur la blessure et canalise son \u00e9nergie spirituelle pour reconstituer les tissus endommag\u00e9s. Cela demande une compr\u00e9hension intime de l\u2019anatomie spirituelle \u2014 savoir o\u00f9 chaque fibre de Reishi doit aller pour que le corps se souvienne de ce qu\u2019il \u00e9tait.",prereqNom:"Bakud\u014d Kiso"},
+{nom:"Nij\u016b Eish\u014d",kanji:"\u4E8C\u91CD\u8A60\u5531",p:3,c:3,desc:"Deux incantations entrelac\u00e9es, deux sorts lanc\u00e9s simultan\u00e9ment \u2014 un Had\u014d et un Bakud\u014d tiss\u00e9s dans le m\u00eame souffle. La concentration requise est inhumaine. Le moindre d\u00e9s\u00e9quilibre entre les deux flux de Reishi provoque un retour de flamme capable de d\u00e9vorer les bras du lanceur.",cond:"D\u00e9monstration RP de ma\u00eetrise avanc\u00e9e du Kid\u014d valid\u00e9e.",prereqNom:"Eish\u014dhaki + Kaid\u014d"}
+]},
+{id:"hoho",nom:"Hoh\u014d",kanji:"\u6B69\u6CD5",sousTitre:"L\u2019Art du D\u00e9placement",desc:"La vitesse n\u2019est pas un attribut \u2014 c\u2019est une philosophie. Le Hoh\u014d enseigne que la distance entre deux points n\u2019est qu\u2019une suggestion, et que celui qui ma\u00eetrise le pas peut r\u00e9\u00e9crire la g\u00e9ographie du champ de bataille.",apt:[
+{nom:"Shunpo",kanji:"\u77AC\u6B69",p:1,c:1,desc:"Le Pas \u00c9clair. Le corps dispara\u00eet d\u2019un point et r\u00e9appara\u00eet \u00e0 un autre en un battement de cil. Ce n\u2019est pas de la t\u00e9l\u00e9portation \u2014 c\u2019est un d\u00e9placement si rapide que l\u2019\u0153il ne peut suivre. La base de toute mobilit\u00e9 avanc\u00e9e chez les Shinigami."},
+{nom:"Senka",kanji:"\u9583\u82B1",p:1,c:1,desc:"L\u2019\u00c9clair Floral. Un mouvement qui combine le Shunpo avec une frappe chirurgicale dans le dos de l\u2019adversaire, visant les points de liaison du Saketsu et du Hakusui. Quand l\u2019ex\u00e9cution est parfaite, la cible ne sait pas qu\u2019elle a \u00e9t\u00e9 touch\u00e9e."},
+{nom:"Utsusemi",kanji:"\u7A7A\u8749",p:2,c:2,desc:"La Mue de la Cigale. Au moment pr\u00e9cis de l\u2019impact, le corps s\u2019efface en laissant derri\u00e8re lui un leurre \u2014 une image r\u00e9manente si convaincante que l\u2019adversaire ne r\u00e9alise sa m\u00e9prise qu\u2019apr\u00e8s avoir frapp\u00e9 dans le vide. Un art de survie qui exige un timing irr\u00e9prochable.",prereqNom:"Shunpo"},
+{nom:"Bunshin S\u014dk\u014d",kanji:"\u5206\u8EAB\u88C5\u7532",p:2,c:2,desc:"Des images r\u00e9manentes persistantes, chacune assez dense en Reishi pour tromper m\u00eame un Pesquisa. Le praticien se multiplie aux yeux de l\u2019ennemi, brouillant toute tentative de localisation. Les clones se dissipent au contact mais le doute qu\u2019ils s\u00e8ment est bien r\u00e9el.",prereqNom:"Senka"},
+{nom:"Ky\u014dka Shunpo",kanji:"\u97FF\u82B1\u6975",p:3,c:3,desc:"Le Shunpo pouss\u00e9 au-del\u00e0 de ses limites th\u00e9oriques. Le praticien ne se d\u00e9place plus \u2014 il existe simultan\u00e9ment en plusieurs points de l\u2019espace pendant une fraction de seconde, comme si la r\u00e9alit\u00e9 h\u00e9sitait sur sa position. La vitesse cesse d\u2019\u00eatre une question physique et devient une distorsion spirituelle pure.",cond:"Arc RP d\u00e9montrant une ma\u00eetrise absolue du Hoh\u014d.",prereqNom:"Utsusemi + Bunshin S\u014dk\u014d"}
+]},
+{id:"hakuda",nom:"Hakuda",kanji:"\u767D\u6253",sousTitre:"L\u2019Art du Combat \u00e0 Mains Nues",desc:"Quand la lame est bris\u00e9e, quand le Kid\u014d est \u00e9puis\u00e9, quand le Shunpo ne suffit plus \u00e0 fuir \u2014 il reste le corps. Le Hakuda est la discipline de ceux qui ont compris que la plus ancienne arme est aussi la plus fiable.",apt:[
+{nom:"Bukei",kanji:"\u6B66\u5F62",p:1,c:1,desc:"Les formes martiales de base \u2014 postures, encha\u00eenements, blocages. Le fondement de toute technique de corps \u00e0 corps. Chaque mouvement est \u00e9conome, pr\u00e9cis, r\u00e9p\u00e9t\u00e9 des milliers de fois jusqu\u2019\u00e0 devenir instinct."},
+{nom:"Tekken",kanji:"\u9244\u62F3",p:1,c:1,desc:"Le Poing de Fer. La concentration du Reishi dans les articulations transforme un coup de poing ordinaire en impact d\u00e9vastateur. L\u2019os ne casse pas \u2014 il transmet l\u2019\u00e9nergie spirituelle comme un conducteur."},
+{nom:"Ikkotsu",kanji:"\u4E00\u9AA8",p:2,c:2,desc:"Un seul os. Un seul coup. La totalit\u00e9 du Reishi du praticien converge dans le poing au moment de l\u2019impact. Le r\u00e9sultat n\u2019est pas une frappe \u2014 c\u2019est une d\u00e9tonation localis\u00e9e qui pulv\u00e9rise tout ce qu\u2019elle touche.",prereqNom:"Tekken"},
+{nom:"Kazaguruma",kanji:"\u98A8\u8ECA",p:2,c:2,desc:"Le Moulin \u00e0 Vent. Le corps entier devient l\u2019arme \u2014 une rotation a\u00e9rienne qui transforme les jambes en faux. Le praticien s\u2019\u00e9l\u00e8ve, tourne et frappe dans un mouvement fluide couvrant trois cent soixante degr\u00e9s. Impossible \u00e0 bloquer sans reculer.",prereqNom:"Bukei"},
+{nom:"S\u014dkotsu",kanji:"\u53CC\u9AA8",p:3,c:3,desc:"Deux os. Les deux poings frappent simultan\u00e9ment avec une puissance qui fait trembler l\u2019air lui-m\u00eame. Le S\u014dkotsu n\u2019est pas simplement un Ikkotsu doubl\u00e9 \u2014 c\u2019est une technique qui exige une synchronisation parfaite des deux flux de Reishi, un exploit que m\u00eame les ma\u00eetres mettent des d\u00e9cennies \u00e0 accomplir. L\u2019impact est terminal.",cond:"Victoire RP en combat rapproch\u00e9 contre un adversaire de rang \u00e9gal ou sup\u00e9rieur.",prereqNom:"Ikkotsu + Kazaguruma"}
+]}
+]},
+togabito: { nom:"Togabito", kanji:"\u54CE\u4EBA", couleur:"#6B1FA8", accroche:"Les damn\u00e9s de l\u2019Enfer \u2014 quatre souffrances transmut\u00e9es en puissance par ceux qui refusent de dispara\u00eetre.", voies:[
+{id:"jigokusari",nom:"Jigokusari",kanji:"\u5730\u7344\u9396",sousTitre:"Les Cha\u00eenes de l\u2019Enfer",desc:"Les cha\u00eenes ne sont pas une punition \u2014 elles sont une extension de l\u2019Enfer lui-m\u00eame, une excroissance de sa volont\u00e9 qui s\u2019enroule autour des \u00e2mes damn\u00e9es. Ceux qui cessent de les combattre d\u00e9couvrent qu\u2019elles peuvent servir.",apt:[
+{nom:"Kusari S\u014dj\u016b",kanji:"\u9396\u64CD",p:1,c:1,desc:"Manipuler les cha\u00eenes plut\u00f4t que les subir. Le Togabito apprend \u00e0 diriger les maillons comme des appendices suppl\u00e9mentaires \u2014 lents d\u2019abord, maladroits, mais r\u00e9pondant \u00e0 la volont\u00e9 plut\u00f4t qu\u2019\u00e0 la douleur. Le premier pas vers la ma\u00eetrise est d\u2019accepter que ces cha\u00eenes sont d\u00e9sormais une partie de soi."},
+{nom:"Kusari Tate",kanji:"\u9396\u76FE",p:1,c:1,desc:"Les cha\u00eenes se tissent devant le corps en un bouclier improvis\u00e9. Le m\u00e9tal infernal absorbe les impacts avec une efficacit\u00e9 que l\u2019acier des Trois Mondes ne peut \u00e9galer \u2014 chaque maillon est satur\u00e9 du Reishi corrompu de l\u2019Enfer."},
+{nom:"Kusari Sha",kanji:"\u9396\u5C04",p:2,c:2,desc:"Les cha\u00eenes se d\u00e9tachent du corps et fusent vers la cible \u00e0 une vitesse qui d\u00e9fie la physique spirituelle. Le Togabito projette ses maillons comme des lances, chaque impact marqu\u00e9 par un \u00e9cho de la souffrance qu\u2019ils portent. Les cha\u00eenes reviennent toujours.",prereqNom:"Kusari S\u014dj\u016b"},
+{nom:"Kusari R\u014d",kanji:"\u9396\u7262",p:2,c:2,desc:"Une prison de cha\u00eenes se referme autour de l\u2019adversaire. Les maillons s\u2019entrem\u00ealent, se resserrent, et chaque tentative de fuite ne fait que les rendre plus \u00e9troits. La cage n\u2019est pas seulement physique \u2014 le Reishi infernal \u00e9rode lentement la volont\u00e9.",prereqNom:"Kusari Tate"},
+{nom:"Rensa Shin\u2019i",kanji:"\u9023\u9396\u795E\u610F",p:3,c:3,desc:"Les cha\u00eenes cessent d\u2019\u00eatre des outils \u2014 elles deviennent une volont\u00e9. Le Togabito ne les contr\u00f4le plus consciemment : elles anticipent, r\u00e9agissent, frappent et d\u00e9fendent comme une intelligence autonome. L\u2019Enfer lui-m\u00eame semble ob\u00e9ir. Les Kushan\u0101da se d\u00e9tournent sur son passage.",cond:"Survie \u00e0 un affrontement avec un Kushan\u0101da ou \u00e9preuve des Strates profondes.",prereqNom:"Kusari Sha + Kusari R\u014d"}
+]},
+{id:"goka",nom:"G\u014dka",kanji:"\u696D\u706B",sousTitre:"Le Feu Karmique",desc:"Le feu de l\u2019Enfer n\u2019est pas une flamme \u2014 c\u2019est un jugement. Il br\u00fble ce qui m\u00e9rite de br\u00fbler et ignore le reste. Ceux qui apprennent \u00e0 le canaliser ne deviennent pas des pyromanciens \u2014 ils deviennent des bourreaux.",apt:[
+{nom:"Gokuen",kanji:"\u7344\u708E",p:1,c:1,desc:"La Flamme de la Prison. Le Togabito apprend \u00e0 concentrer le Reishi infernal en une flamme noire bord\u00e9e de violet qui consume tout ce qu\u2019elle touche. Ce feu ne s\u2019\u00e9teint pas avec l\u2019eau \u2014 il s\u2019\u00e9teint quand il a fini de juger."},
+{nom:"Sh\u014dnetsu Kaku",kanji:"\u7126\u71B1\u6BBB",p:1,c:1,desc:"La Carapace Ardente. Le corps du Togabito \u00e9met une chaleur intense qui repousse les attaques physiques. Quiconque le touche \u00e0 mains nues se br\u00fble \u2014 non pas la chair, mais le Reishi lui-m\u00eame."},
+{nom:"G\u014dka H\u014d",kanji:"\u696D\u706B\u7832",p:2,c:2,desc:"Le Canon Karmique. Une d\u00e9charge concentr\u00e9e de flamme infernale projet\u00e9e en un rayon d\u00e9vastateur. Le Togabito compresse la chaleur entre ses paumes et la lib\u00e8re d\u2019un coup \u2014 l\u2019impact \u00e9vapore la mati\u00e8re spirituelle sur plusieurs m\u00e8tres.",prereqNom:"Gokuen"},
+{nom:"Sh\u014dkyaku Ya",kanji:"\u713C\u5374\u91CE",p:2,c:2,desc:"La Plaine Calcin\u00e9e. Le Togabito rel\u00e2che son contr\u00f4le et le feu karmique se r\u00e9pand autour de lui en cercle, d\u00e9vorant tout dans un rayon de plusieurs dizaines de m\u00e8tres. Le sol se vitrifie, l\u2019air cr\u00e9pite. Un acte de destruction indiscriminée.",prereqNom:"Sh\u014dnetsu Kaku"},
+{nom:"Rengoku Enran",kanji:"\u7149\u7344\u708E\u5D50",p:3,c:3,desc:"La Temp\u00eate du Purgatoire. Le Togabito ne projette plus le feu \u2014 il le devient. Son corps se dissout temporairement en une temp\u00eate de flammes karmiques qui d\u00e9vore tout dans un p\u00e9rim\u00e8tre impossible \u00e0 fuir. Ceux qui survivent d\u00e9crivent un mur de feu noir qui semblait vivant, qui semblait choisir.",cond:"Arc RP de communion avec les flammes de la Strate Sulfura.",prereqNom:"G\u014dka H\u014d + Sh\u014dkyaku Ya"}
+]},
+{id:"saisei",nom:"Saisei",kanji:"\u518D\u751F",sousTitre:"La R\u00e9g\u00e9n\u00e9ration Maudite",desc:"En Enfer, la mort n\u2019est pas une fin \u2014 c\u2019est un recommencement. Les Togabito meurent et renaissent, encore et encore. Certains ont appris \u00e0 canaliser ce cycle comme une arme.",apt:[
+{nom:"Jigoku Saisei",kanji:"\u5730\u7344\u518D\u751F",p:1,c:1,desc:"La r\u00e9g\u00e9n\u00e9ration acc\u00e9l\u00e9r\u00e9e, nourrie par le Reishi infernal. Les blessures se referment en quelques minutes. Ce n\u2019est pas de la gu\u00e9rison \u2014 c\u2019est l\u2019Enfer qui refuse de laisser partir son prisonnier. La chair repousse, marqu\u00e9e de veines sombres."},
+{nom:"Tsumi no Kioku",kanji:"\u7F6A\u306E\u8A18\u61B6",p:1,c:1,desc:"La M\u00e9moire du P\u00e9ch\u00e9. Chaque mort subie en Enfer laisse une empreinte, et le Togabito apprend \u00e0 lire ces empreintes \u2014 les siennes comme celles des autres. La douleur devient information, la souffrance pass\u00e9e devient connaissance."},
+{nom:"Junkan Ky\u014dka",kanji:"\u5FAA\u74B0\u5F37\u5316",p:2,c:2,desc:"Le Cycle Renforc\u00e9. La r\u00e9g\u00e9n\u00e9ration ne se contente plus de refermer les plaies \u2014 elle am\u00e9liore. Chaque blessure gu\u00e9rie laisse le corps plus r\u00e9sistant qu\u2019avant. Les os deviennent plus denses, la chair plus dure. Le Togabito qui a surv\u00e9cu \u00e0 mille morts porte mille armures invisibles.",prereqNom:"Jigoku Saisei"},
+{nom:"Ts\u016bkaku D\u014dka",kanji:"\u75DB\u899A\u540C\u5316",p:2,c:2,desc:"L\u2019Assimilation de la Douleur. Le Togabito ne ressent plus la souffrance comme un obstacle \u2014 il l\u2019assimile comme carburant. Chaque blessure re\u00e7ue accro\u00eet sa puissance au lieu de la diminuer. Un ennemi qui croit l\u2019affaiblir ne fait que nourrir la b\u00eate.",prereqNom:"Tsumi no Kioku"},
+{nom:"Fushi no Kusari",kanji:"\u4E0D\u6B7B\u9396",p:3,c:3,desc:"L\u2019Immortalit\u00e9 Encha\u00een\u00e9e. Le corps du Togabito cesse d\u2019\u00eatre un corps au sens conventionnel \u2014 il devient un n\u0153ud dans le tissu m\u00eame de l\u2019Enfer, un point fixe que la destruction ne peut effacer. Tranch\u00e9, il se reforme. Br\u00fbl\u00e9, il rena\u00eet des cendres. La seule limite est la volont\u00e9.",cond:"Mort et r\u00e9surrection RP en Enfer valid\u00e9e par le staff.",prereqNom:"Junkan Ky\u014dka + Ts\u016bkaku D\u014dka"}
+]},
+{id:"rinki",nom:"Rinki",kanji:"\u71D0\u6C17",sousTitre:"L\u2019Aura Phosphorescente",desc:"Le Jigoku no Rinki \u2014 les sph\u00e8res noires qui suintent des murs de l\u2019Enfer \u2014 est un poison pour la plupart des \u00eatres spirituels. Mais les Togabito les plus anciens ont appris \u00e0 l\u2019absorber, \u00e0 le fa\u00e7onner, \u00e0 le retourner.",apt:[
+{nom:"Rinki Kanchi",kanji:"\u71D0\u6C17\u611F\u77E5",p:1,c:1,desc:"Perception du Rinki. Le Togabito d\u00e9veloppe un sixi\u00e8me sens capable de d\u00e9tecter les concentrations de Reishi infernal dans son environnement \u2014 pr\u00e9sences cach\u00e9es, pi\u00e8ges spirituels, fissures dimensionnelles. L\u2019Enfer parle \u00e0 ceux qui savent \u00e9couter."},
+{nom:"Rinki Gaiheki",kanji:"\u71D0\u6C17\u5916\u58C1",p:1,c:1,desc:"Le Mur Phosphorescent. Une barri\u00e8re de Rinki enveloppe le corps du Togabito, repoussant les attaques spirituelles de faible intensit\u00e9. Le bouclier \u00e9met une lueur sombre qui fait reculer instinctivement les \u00eatres non corrompus."},
+{nom:"Rinki H\u014dsha",kanji:"\u71D0\u6C17\u653E\u5C04",p:2,c:2,desc:"La Radiation Phosphorescente. Le Togabito projette le Rinki en ondes concentriques qui corrompent le Reishi ambiant. Les sorts de Kid\u014d s\u2019effilochent, les techniques spirituelles perdent en coh\u00e9sion. Un champ d\u2019interf\u00e9rence que seuls les esprits les plus puissants peuvent traverser.",prereqNom:"Rinki Kanchi"},
+{nom:"Rinki Osen",kanji:"\u71D0\u6C17\u6C5A\u67D3",p:2,c:2,desc:"La Contamination. Le Togabito injecte du Rinki directement dans le corps de sa cible \u2014 par contact, par blessure ouverte, ou par simple proximit\u00e9 prolong\u00e9e. Le Reishi de la victime se corrompt lentement, fragmentant sa concentration.",prereqNom:"Rinki Gaiheki"},
+{nom:"Jigoku Kaih\u014d",kanji:"\u5730\u7344\u89E3\u653E",p:3,c:3,desc:"Le Togabito cesse de r\u00e9sister \u00e0 l\u2019Enfer. Il l\u2019invite. Le Jigoku no Rinki ne s\u2019infiltre plus \u00e0 travers ses d\u00e9fenses \u2014 il est ses d\u00e9fenses. La chair se reconfigure selon une logique qui n\u2019appartient ni aux vivants ni aux morts. Les Kushan\u0101da, pour la premi\u00e8re fois, reculent.",cond:"Arc RP de confrontation avec les Strates profondes de l\u2019Enfer.",prereqNom:"Rinki H\u014dsha + Rinki Osen"}
+]}
+]},
+arrancar: { nom:"Arrancar", kanji:"\u7834\u9762", couleur:"#8A8A7A", accroche:"Les masques bris\u00e9s \u2014 quatre instincts primitifs raffin\u00e9s en armes par ceux qui ont arrach\u00e9 leur propre visage.", voies:[
+{id:"cero",nom:"Cero",kanji:"\u865A\u9583",sousTitre:"L\u2019\u00c9clair du Vide",desc:"Le Cero est la voix du Hollow \u2014 un cri de puissance concentr\u00e9 en lumi\u00e8re destructrice. Chaque Arrancar le porte en lui depuis sa premi\u00e8re faim. L\u2019apprendre n\u2019est pas une question de technique mais de contr\u00f4le : canaliser la rage sans se consumer.",apt:[
+{nom:"Cero",kanji:"\u865A\u9583",p:1,c:1,desc:"Le rayon de destruction fondamental. Une d\u00e9charge de Reishi concentr\u00e9 tir\u00e9e depuis la paume, la bouche ou le bout des doigts. La couleur varie selon l\u2019individu \u2014 rouge sang, violet profond, blanc \u00e9clatant. Chaque Cero porte l\u2019empreinte de l\u2019\u00e2me qui le projette."},
+{nom:"Bala",kanji:"\u865A\u5F3E",p:1,c:1,desc:"La Balle du Vide. Un projectile de Reishi comprim\u00e9 tir\u00e9 \u00e0 vingt fois la vitesse d\u2019un Cero standard, au prix d\u2019une puissance r\u00e9duite d\u2019un tiers. Ce que le Bala perd en d\u00e9vastation, il le gagne en cadence \u2014 une pluie de tirs que m\u00eame le Shunpo peine \u00e0 esquiver."},
+{nom:"Gran Rey Cero",kanji:"\u738B\u865A\u306E\u9583\u5149",p:2,c:2,desc:"L\u2019\u00c9clair Royal du Vide. Le Cero est m\u00eal\u00e9 au sang de l\u2019Arrancar \u2014 litt\u00e9ralement. L\u2019utilisateur entaille sa propre chair et m\u00e9lange son essence au rayon. Le r\u00e9sultat est une spirale de destruction dont la puissance distord l\u2019espace lui-m\u00eame.",prereqNom:"Cero"},
+{nom:"Cero Oscuras",kanji:"\u9ED2\u865A\u9583",p:2,c:2,desc:"Le Cero des T\u00e9n\u00e8bres. Un faisceau noir qui absorbe la lumi\u00e8re autour de lui avant de frapper. Sa puissance est telle que m\u00eame les barri\u00e8res de Kid\u014d de haut niveau vacillent \u00e0 son contact.",prereqNom:"Bala"},
+{nom:"Cero Metralleta",kanji:"\u7121\u9650\u865A\u9583",p:3,c:3,desc:"La Mitrailleuse du Vide. Des centaines de Cero tir\u00e9s simultan\u00e9ment, chacun aussi puissant qu\u2019un tir individuel. Le ciel se remplit de lumi\u00e8re destructrice et le sol se transforme en crat\u00e8re. Seuls les Arrancar dont les r\u00e9serves fr\u00f4lent l\u2019infini peuvent soutenir ce barrage.",cond:"D\u00e9monstration de puissance Cero valid\u00e9e en combat RP.",prereqNom:"Gran Rey Cero + Cero Oscuras"}
+]},
+{id:"hierro",nom:"Hierro",kanji:"\u92FC\u76AE",sousTitre:"La Peau d\u2019Acier",desc:"La peau d\u2019un Arrancar n\u2019est pas de la peau \u2014 c\u2019est du Reishi condens\u00e9 jusqu\u2019\u00e0 la densit\u00e9 du m\u00e9tal. Le Hierro est l\u2019instinct de survie cristallis\u00e9, la preuve qu\u2019un Hollow a surv\u00e9cu assez longtemps pour que son corps devienne une armure.",apt:[
+{nom:"Hierro",kanji:"\u92FC\u76AE",p:1,c:1,desc:"La Peau d\u2019Acier. Le Reishi se condense autour du corps en une couche invisible qui repousse les attaques de faible intensit\u00e9. Les lames ordinaires glissent sur la peau sans laisser de marque. Ce n\u2019est pas une technique activ\u00e9e \u2014 c\u2019est un \u00e9tat permanent."},
+{nom:"Pesquisa",kanji:"\u63A2\u67FB\u56DE\u8DEF",p:1,c:1,desc:"Le Circuit de D\u00e9tection. Un sonar spirituel qui cartographie les sources de Reishi dans un large p\u00e9rim\u00e8tre. L\u2019Arrancar ferme les yeux et per\u00e7oit chaque pr\u00e9sence comme une pulsation distincte \u2014 puissance, distance, intention."},
+{nom:"Hierro Ky\u014dka",kanji:"\u92FC\u76AE\u5F37\u5316",p:2,c:2,desc:"Le Hierro Renforc\u00e9. La concentration de Reishi dans la peau atteint un seuil o\u00f9 m\u00eame les lames de Capitaine laissent \u00e0 peine une \u00e9raflure. L\u2019Arrancar peut concentrer davantage la protection sur une zone sp\u00e9cifique.",prereqNom:"Hierro"},
+{nom:"Negaci\u00f3n",kanji:"\u5426\u5B9A",p:2,c:2,desc:"Le Champ de N\u00e9gation. Un pilier de lumi\u00e8re jaune enveloppe l\u2019Arrancar ou un alli\u00e9, cr\u00e9ant un espace inviolable que rien ne peut p\u00e9n\u00e9trer ni quitter. Un pouvoir de protection absolue \u2014 le prix \u00e9tant l\u2019immobilit\u00e9 totale pendant sa dur\u00e9e.",prereqNom:"Pesquisa"},
+{nom:"K\u014dsoku Saisei",kanji:"\u9AD8\u901F\u518D\u751F",p:3,c:3,desc:"La R\u00e9g\u00e9n\u00e9ration Ultra-Rapide. La capacit\u00e9 que la plupart des Arrancar sacrifient en arrachant leur masque \u2014 retrouv\u00e9e, ma\u00eetris\u00e9e, transcend\u00e9e. Les membres sectionn\u00e9s repoussent en secondes. Le co\u00fbt est un app\u00e9tit de Reishi d\u00e9vorant.",cond:"Arc RP de reconnexion avec l\u2019instinct Hollow originel.",prereqNom:"Hierro Ky\u014dka + Negaci\u00f3n"}
+]},
+{id:"sonido",nom:"Son\u00eddo",kanji:"\u97FF\u8EE2",sousTitre:"Le Pas R\u00e9sonnant",desc:"L\u00e0 o\u00f9 le Shunpo des Shinigami est silence et pr\u00e9cision, le Son\u00eddo est tonnerre et instinct. L\u2019Arrancar ne calcule pas sa trajectoire \u2014 il la ressent. Le son qui accompagne chaque d\u00e9placement est le battement de c\u0153ur d\u2019un pr\u00e9dateur.",apt:[
+{nom:"Son\u00eddo",kanji:"\u97FF\u8EE2",p:1,c:1,desc:"Le Pas R\u00e9sonnant. L\u2019\u00e9quivalent Arrancar du Shunpo \u2014 un d\u00e9placement instantan\u00e9 accompagn\u00e9 d\u2019un bruit sourd caract\u00e9ristique. Moins gracieux que le Shunpo mais tout aussi efficace, et certains affirment qu\u2019il est plus rapide en ligne droite."},
+{nom:"Garganta",kanji:"\u9ED2\u8154",p:1,c:1,desc:"La Gorge Noire. L\u2019Arrancar d\u00e9chire le tissu de la r\u00e9alit\u00e9 pour ouvrir un passage entre les mondes. Le corridor est un n\u00e9ant absolu o\u00f9 le voyageur doit cr\u00e9er son propre chemin en solidifiant le Reishi sous ses pieds."},
+{nom:"Gemelos Son\u00eddo",kanji:"\u53CC\u5150\u97FF\u8EE2",p:2,c:2,desc:"Le Son\u00eddo Jumeau. La vitesse atteint un seuil o\u00f9 l\u2019Arrancar laisse derri\u00e8re lui non pas une image r\u00e9manente mais un v\u00e9ritable clone \u2014 une copie de Reishi assez solide pour frapper, bloquer, distraire.",prereqNom:"Son\u00eddo"},
+{nom:"Gonzui",kanji:"\u9B42\u5438",p:2,c:2,desc:"L\u2019Aspiration des \u00c2mes. L\u2019Arrancar ouvre la bouche et inhale \u2014 non pas de l\u2019air, mais le Reishi ambiant, les \u00e2mes faibles, les r\u00e9sidus spirituels. Un acte de pr\u00e9dation pure qui restaure les r\u00e9serves d\u2019\u00e9nergie.",prereqNom:"Garganta"},
+{nom:"Gran Ca\u00edda",kanji:"\u5927\u843D\u4E0B",p:3,c:3,desc:"La Grande Chute. L\u2019Arrancar concentre la totalit\u00e9 de son Reishi dans une descente verticale d\u2019une vitesse et d\u2019une puissance apocalyptiques. Le point d\u2019impact g\u00e9n\u00e8re une onde de choc qui ravage tout dans un rayon consid\u00e9rable. C\u2019est la gravit\u00e9 elle-m\u00eame weaponis\u00e9e.",cond:"Arc RP de transcendance de ses limites physiques.",prereqNom:"Gemelos Son\u00eddo + Gonzui"}
+]},
+{id:"resurreccion",nom:"Resurrecci\u00f3n",kanji:"\u5E30\u5203",sousTitre:"Le Retour de la Lame",desc:"Le Zanpakut\u014d d\u2019un Arrancar n\u2019est pas un compagnon \u2014 c\u2019est un sceau. Il contient la puissance Hollow originelle, comprim\u00e9e et domestiqu\u00e9e. La Resurrecci\u00f3n brise ce sceau. Ce qui en sort n\u2019est pas un monstre \u2014 c\u2019est la v\u00e9rit\u00e9.",apt:[
+{nom:"F\u016bin J\u014dtai",kanji:"\u5C01\u5370\u72B6\u614B",p:1,c:1,desc:"L\u2019\u00c9tat Scell\u00e9. L\u2019Arrancar apprend \u00e0 maintenir consciemment le sceau de son Zanpakut\u014d, canalisant un filet de puissance Hollow sans le briser. Griffes plus dures, sens aiguisés, instinct de pr\u00e9dateur affin\u00e9."},
+{nom:"Instinto",kanji:"\u672C\u80FD",p:1,c:1,desc:"L\u2019Instinct. Le souvenir du Hollow affleure \u00e0 la surface \u2014 juste assez pour r\u00e9agir. Les r\u00e9flexes deviennent surhumains, le corps esquive avant que l\u2019esprit ne per\u00e7oive le danger. C\u2019est la m\u00e9moire du pr\u00e9dateur sous la forme humanis\u00e9e."},
+{nom:"Resurrecci\u00f3n",kanji:"\u5E30\u5203",p:2,c:2,desc:"La commande est prononc\u00e9e. Le Zanpakut\u014d se dissout, se fond dans la chair de l\u2019Arrancar. Le masque se compl\u00e8te partiellement. Le trou dans la poitrine pulse. Ce qui \u00e9merge n\u2019est pas un monstre \u2014 c\u2019est ce que le Hollow \u00e9tait depuis toujours.",cond:"Sc\u00e8ne RP de lib\u00e9ration \u00e9motionnelle intense.",prereqNom:"F\u016bin J\u014dtai"},
+{nom:"Tokusei",kanji:"\u5E30\u5203\u7279\u6027",p:2,c:2,desc:"La Propri\u00e9t\u00e9 Unique. Chaque Resurrecci\u00f3n poss\u00e8de un aspect qui lui est propre \u2014 poison, vitesse, duret\u00e9, illusion. La forme lib\u00e9r\u00e9e r\u00e9v\u00e8le l\u2019essence de la b\u00eate, et cette essence est toujours terrifiante.",prereqNom:"Instinto"},
+{nom:"Segunda Etapa",kanji:"\u5203\u5E30\u4E8C\u6BB5",p:3,c:3,desc:"La Seconde Phase. Au-del\u00e0 de la Resurrecci\u00f3n, un stade que nul ne croyait possible \u2014 une lib\u00e9ration de la lib\u00e9ration. Le masque dispara\u00eet. Le trou se referme. L\u2019Arrancar transcende la fronti\u00e8re entre Hollow et Shinigami et devient quelque chose d\u2019enti\u00e8rement nouveau.",cond:"Arc RP de transcendance int\u00e9rieure valid\u00e9 par le staff.",prereqNom:"Resurrecci\u00f3n + Tokusei"}
+]}
+]},
+quincy: { nom:"Quincy", kanji:"\u6EC5\u5374\u5E2B", couleur:"#1A3A6B", accroche:"Les h\u00e9ritiers de lumi\u00e8re \u2014 quatre h\u00e9ritages sacr\u00e9s transmis par le sang et la foi depuis des mill\u00e9naires.", voies:[
+{id:"reishi_sosa",nom:"Reishi S\u014dsa",kanji:"\u970A\u5B50\u64CD\u4F5C",sousTitre:"La Manipulation des Particules",desc:"L\u00e0 o\u00f9 les Shinigami canalisent leur propre Reishi et les Hollow le d\u00e9vorent, les Quincy le commandent. Ils absorbent les particules spirituelles de l\u2019environnement et les reconfigurent selon leur volont\u00e9 \u2014 un art qui fait d\u2019eux les architectes du champ de bataille.",apt:[
+{nom:"Reishi Sh\u016bsh\u016b",kanji:"\u970A\u5B50\u53CE\u96C6",p:1,c:1,desc:"La Collecte du Reishi. Le Quincy apprend \u00e0 tirer les particules spirituelles de l\u2019air, du sol, de la mati\u00e8re environnante. Dans un monde satur\u00e9 de Reishi comme Soul Society, cette capacit\u00e9 transforme le territoire ennemi en arsenal personnel."},
+{nom:"Heilig Pfeil",kanji:"\u795E\u8056\u6EC5\u77E2",p:1,c:1,desc:"La Fl\u00e8che Sacr\u00e9e. Le Reishi collect\u00e9 est comprim\u00e9 en un projectile de lumi\u00e8re bleue tir\u00e9 depuis l\u2019arc spirituel du Quincy. Pr\u00e9cise, rapide, et surtout \u2014 destructrice pour les Hollow d\u2019une mani\u00e8re que les Zanpakut\u014d ne peuvent imiter."},
+{nom:"Reishi Bus\u014d",kanji:"\u970A\u5B50\u6B66\u88C5",p:2,c:2,desc:"L\u2019Armement de Reishi. Au-del\u00e0 de l\u2019arc, le Quincy fa\u00e7onne le Reishi en armes de toute forme \u2014 \u00e9p\u00e9es, boucliers, plateformes, pi\u00e8ges. L\u2019imagination est la seule limite, tant que la concentration tient.",prereqNom:"Reishi Sh\u016bsh\u016b"},
+{nom:"Gint\u014d",kanji:"\u9280\u7B52",p:2,c:2,desc:"Les Tubes d\u2019Argent. De petits conteneurs emplis de Reishi liqu\u00e9fi\u00e9, utilis\u00e9s comme catalyseurs pour des techniques pr\u00e9par\u00e9es \u00e0 l\u2019avance \u2014 pi\u00e8ges, explosions, barri\u00e8res. Le Gint\u014d est l\u2019art de la pr\u00e9paration.",prereqNom:"Heilig Pfeil"},
+{nom:"Rans\u014dtengai",kanji:"\u4E71\u88C5\u5929\u5080",p:3,c:3,desc:"La Marionnette C\u00e9leste D\u00e9sordonn\u00e9e. Des fils de Reishi invisibles s\u2019attachent aux membres du Quincy et les animent ind\u00e9pendamment du corps \u2014 m\u00eame paralys\u00e9, m\u00eame les os bris\u00e9s, le combattant continue de se mouvoir. Une technique n\u00e9e du refus absolu de tomber.",cond:"Arc RP de d\u00e9passement physique face \u00e0 une adversit\u00e9 \u00e9crasante.",prereqNom:"Reishi Bus\u014d + Gint\u014d"}
+]},
+{id:"blut",nom:"Blut",kanji:"\u8840\u88C5",sousTitre:"La Fortification du Sang",desc:"Le Reishi coule dans les veines des Quincy comme un second sang. Le Blut est l\u2019art de canaliser ce flux pour renforcer le corps \u2014 en d\u00e9fense ou en attaque, jamais les deux en m\u00eame temps.",apt:[
+{nom:"Blut Vene",kanji:"\u9759\u8840\u88C5",p:1,c:1,desc:"La Veine Statique. Le Reishi se concentre dans les vaisseaux pour durcir le corps de l\u2019int\u00e9rieur. La peau se marque de motifs lumineux \u2014 des veines bleues qui trahissent le flux de puissance. Le r\u00e9sultat est une r\u00e9sistance qui rivalise avec le Hierro."},
+{nom:"Blut Arterie",kanji:"\u52D5\u8840\u88C5",p:1,c:1,desc:"L\u2019Art\u00e8re Dynamique. Le flux de Reishi inverse sa priorit\u00e9 \u2014 au lieu de prot\u00e9ger, il amplifie. Les coups port\u00e9s gagnent une puissance disproportionn\u00e9e. Le prix : une vuln\u00e9rabilit\u00e9 totale pendant l\u2019activation."},
+{nom:"Blut Anhaben",kanji:"\u8840\u88C5\u5916\u6BBB",p:2,c:2,desc:"La Coque de Sang. Le Blut Vene s\u2019\u00e9tend au-del\u00e0 du corps et enveloppe le Quincy dans une bulle de protection qui consume tout ce qu\u2019elle touche \u2014 v\u00eatements, sol, adversaire trop proche. Une d\u00e9fense absolue dont le co\u00fbt est la destruction de tout ce qui n\u2019est pas le prot\u00e9g\u00e9.",prereqNom:"Blut Vene"},
+{nom:"Blut Wechsel",kanji:"\u8840\u88C5\u8EE2\u63DB",p:2,c:2,desc:"La Conversion du Sang. La transition entre Vene et Arterie devient instantan\u00e9e \u2014 un battement de c\u0153ur suffit. Ce qui \u00e9tait un choix douloureux devient un outil tactique, un rythme de combat unique aux Quincy d\u2019\u00e9lite.",prereqNom:"Blut Arterie"},
+{nom:"Blut Vereint",kanji:"\u8840\u88C5\u7D71\u4E00",p:3,c:3,desc:"Le Sang Unifi\u00e9. L\u2019impossible devient r\u00e9alit\u00e9 \u2014 Vene et Arterie coexistent dans le m\u00eame flux. Le Quincy frappe avec une puissance maximale tout en maintenant une d\u00e9fense imp\u00e9n\u00e9trable. Ceux qui l\u2019atteignent cessent d\u2019\u00eatre des combattants \u2014 ils deviennent des forces de la nature.",cond:"Arc RP de ma\u00eetrise absolue du Blut valid\u00e9.",prereqNom:"Blut Anhaben + Blut Wechsel"}
+]},
+{id:"hirenkyaku",nom:"Hirenkyaku",kanji:"\u98DB\u5EC9\u811A",sousTitre:"Le Pas du Dieu du Vent",desc:"Les Quincy ne marchent pas \u2014 ils glissent sur des courants de Reishi qu\u2019ils cr\u00e9ent sous leurs pieds. Le Hirenkyaku est la mobilit\u00e9 \u00e9lev\u00e9e au rang d\u2019art.",apt:[
+{nom:"Hirenkyaku",kanji:"\u98DB\u5EC9\u811A",p:1,c:1,desc:"Le d\u00e9placement \u00e0 haute vitesse des Quincy. Le praticien cr\u00e9e une plateforme de Reishi sous ses pieds et surfe dessus. Moins explosif que le Shunpo en acc\u00e9l\u00e9ration, mais plus fluide en mouvement continu \u2014 le Quincy trace un arc."},
+{nom:"Schatten",kanji:"\u5F71",p:1,c:1,desc:"L\u2019Ombre. Le Quincy se dissout dans les ombres environnantes et r\u00e9appara\u00eet \u00e0 un autre point d\u2019ombre dans un rayon limit\u00e9. Ce n\u2019est pas un d\u00e9placement \u2014 c\u2019est une transition par le Schatten Bereich, le Domaine des Ombres."},
+{nom:"Kirchenlied",kanji:"\u8056\u5531",p:2,c:2,desc:"Le Chant de l\u2019\u00c9glise. Une technique de d\u00e9placement offensif \u2014 le Quincy trace un pentacle de Reishi au sol puis s\u2019en sert comme tremplin pour une attaque a\u00e9rienne d\u00e9vastatrice. Le pentacle explose apr\u00e8s utilisation.",prereqNom:"Hirenkyaku"},
+{nom:"Sprenger",kanji:"\u7206\u6563",p:2,c:2,desc:"L\u2019Explosion. Cinq Seele Schneider plant\u00e9s au sol forment un pentacle qui, aliment\u00e9 par un Gint\u014d, g\u00e9n\u00e8re une explosion de Reishi concentr\u00e9. La zone pi\u00e9g\u00e9e devient un enfer de lumi\u00e8re bleue. Lent \u00e0 pr\u00e9parer, impossible \u00e0 survivre.",prereqNom:"Schatten"},
+{nom:"Licht Regen",kanji:"\u5149\u306E\u96E8",p:3,c:3,desc:"La Pluie de Lumi\u00e8re. Le ciel se remplit de milliers de fl\u00e8ches de Reishi qui s\u2019abattent simultan\u00e9ment. Chaque projectile est guid\u00e9 par la volont\u00e9 du tireur. L\u2019effet visuel est un d\u00e9luge de lumi\u00e8re bleue si dense qu\u2019il transforme la nuit en jour. Il n\u2019y a nulle part o\u00f9 se cacher.",cond:"Ma\u00eetrise RP d\u00e9montr\u00e9e du tir en volume valid\u00e9e.",prereqNom:"Kirchenlied + Sprenger"}
+]},
+{id:"seikei",nom:"Seikei",kanji:"\u8056\u4F53",sousTitre:"Le Corps Sacr\u00e9",desc:"Le corps du Quincy est un temple \u2014 un r\u00e9ceptacle forg\u00e9 par des g\u00e9n\u00e9rations d\u2019h\u00e9ritage spirituel. Le Seikei exploite ce potentiel jusqu\u2019\u00e0 ses limites absolues.",apt:[
+{nom:"Quincy Kreuz",kanji:"\u6EC5\u5374\u5341\u5B57",p:1,c:1,desc:"La Croix de la Destruction. L\u2019artefact fondamental de tout Quincy \u2014 le m\u00e9dium \u00e0 travers lequel le Reishi est canalis\u00e9 pour former l\u2019arc spirituel. Sa forme varie selon le lignage : pendentif, bracelet, gant. Perdre sa Croix, c\u2019est perdre une partie de soi."},
+{nom:"Seele Schneider",kanji:"\u9B42\u5207",p:1,c:1,desc:"Le Trancheur d\u2019\u00c2mes. La seule arme de m\u00eal\u00e9e des Quincy \u2014 une lame de Reishi vibrant \u00e0 une fr\u00e9quence si \u00e9lev\u00e9e qu\u2019elle ne coupe pas la mati\u00e8re mais rel\u00e2che les liens entre les particules spirituelles. Ce qu\u2019elle touche se d\u00e9sagr\u00e8ge."},
+{nom:"Vollst\u00e4ndig",kanji:"\u5B8C\u8056\u4F53",p:2,c:2,desc:"Le Corps Sacr\u00e9 Complet. Des ailes de lumi\u00e8re jaillissent du dos du Quincy, un halo se forme au-dessus de sa t\u00eate. Le Reishi environnant afflue comme attir\u00e9 par un aimant divin. Le Quincy transcende les limites humaines \u2014 il est, pendant un bref instant, ce que les anciens auraient appel\u00e9 un ange.",cond:"\u00c9preuve RP d\u00e9montrant la foi et la d\u00e9termination du Quincy.",prereqNom:"Quincy Kreuz"},
+{nom:"Sklaverei",kanji:"\u8056\u96B7",p:2,c:2,desc:"L\u2019Esclavage Sacr\u00e9. Le Quincy arrache le Reishi des structures environnantes \u2014 b\u00e2timents, arbres, sol \u2014 et l\u2019absorbe de force. Les constructions s\u2019effritent, le terrain se d\u00e9sagr\u00e8ge. Dans un monde fait de Reishi, cette capacit\u00e9 est la terreur incarn\u00e9e.",prereqNom:"Seele Schneider"},
+{nom:"Schrift",kanji:"\u8056\u6587\u5B57",p:3,c:3,desc:"La Lettre Sacr\u00e9e. Une capacit\u00e9 unique grav\u00e9e dans l\u2019\u00e2me du Quincy \u2014 non pas apprise mais r\u00e9v\u00e9l\u00e9e, comme si elle avait toujours \u00e9t\u00e9 l\u00e0. Chaque Schrift est diff\u00e9rent, chacun est absolu dans son domaine. La lettre d\u00e9finit le porteur autant que le porteur d\u00e9finit la lettre. On ne choisit pas son Schrift \u2014 on le d\u00e9couvre.",cond:"Arc RP de r\u00e9v\u00e9lation de la Lettre Sacr\u00e9e valid\u00e9 par le staff.",prereqNom:"Vollst\u00e4ndig + Sklaverei"}
+]}
+]}
+};
+var PALIER_EMOJI = {1:"\u25C8", 2:"\u25C6", 3:"\u2726"};
+var PALIER_NOM = {1:"\u00c9veil", 2:"Ma\u00eetrise", 3:"Transcendance"};
+
+// ── Build faction tabs HTML ──
+Object.keys(FACTIONS).forEach(function(fk) {
+  var f = FACTIONS[fk];
+  var el = document.getElementById(fk);
+  if (!el) return;
+  var html = '<div class="faction-hero" style="border:1px solid ' + f.couleur + '22">';
+  html += '<div class="hero-kanji" style="color:' + f.couleur + '">' + f.kanji + '</div>';
+  html += '<div class="hero-title" style="color:' + f.couleur + '">' + f.nom + '</div>';
+  html += '<div class="hero-sub">' + f.accroche + '</div></div>';
+  html += '<nav class="voie-nav" data-faction="' + fk + '">';
+  f.voies.forEach(function(v, i) {
+    html += '<button class="voie-pill' + (i===0?' active':'') + '" data-voie="' + v.id + '" style="--fc:' + f.couleur + '">' + v.kanji + ' ' + v.nom + '</button>';
+  });
+  html += '</nav>';
+  f.voies.forEach(function(v, i) {
+    html += '<div class="voie-section' + (i===0?' active':'') + '" id="voie-' + v.id + '">';
+    html += '<p class="voie-description">' + v.desc + '</p>';
+    html += renderTree(v, f.couleur);
+    html += '<div class="apt-cards">';
+    v.apt.forEach(function(a) { html += renderCard(a, f.couleur); });
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+});
+
+function renderTree(voie, color) {
+  var a = voie.apt;
+  // positions: P1 left, P1 right, P2 left, P2 right, P3 center
+  var pos = [
+    {x:25, y:12}, {x:75, y:12},   // P1
+    {x:20, y:45}, {x:80, y:45},   // P2
+    {x:50, y:80}                   // P3
+  ];
+  var r = 28; // node radius approx
+  var h = '<div class="skill-tree"><svg viewBox="0 0 500 320" preserveAspectRatio="xMidYMid meet">';
+  // Lines: P1a->P2a, P1b->P2b, P2a->P3, P2b->P3
+  var lines = [[0,2],[1,3],[2,4],[3,4]];
+  lines.forEach(function(l) {
+    var x1 = pos[l[0]].x * 5, y1 = pos[l[0]].y * 3.2;
+    var x2 = pos[l[1]].x * 5, y2 = pos[l[1]].y * 3.2;
+    var cy1 = y1 + (y2 - y1) * 0.4;
+    var cy2 = y1 + (y2 - y1) * 0.6;
+    h += '<path d="M' + x1 + ',' + y1 + ' C' + x1 + ',' + cy1 + ' ' + x2 + ',' + cy2 + ' ' + x2 + ',' + y2 + '" stroke="' + color + '"/>';
+  });
+  h += '</svg>';
+  a.forEach(function(apt, i) {
+    var p = pos[i];
+    var sz = apt.p === 3 ? 64 : 56;
+    var half = sz / 2;
+    h += '<div class="tree-node" data-palier="' + apt.p + '" style="left:' + p.x + '%;top:' + p.y + '%;transform:translate(-50%,-50%)">';
+    h += '<span class="node-kanji">' + apt.kanji + '</span>';
+    h += '<span class="node-label">' + apt.nom + '</span>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function renderCard(a, color) {
+  var h = '<div class="apt-card" data-palier="' + a.p + '">';
+  h += '<div class="apt-card-header">';
+  h += '<span class="apt-badge">' + PALIER_EMOJI[a.p] + ' ' + PALIER_NOM[a.p] + ' \u2014 ' + a.c + ' \u970A\u529B</span>';
+  h += '<span class="apt-card-title">' + a.nom + '</span>';
+  h += '<span class="apt-card-kanji">' + a.kanji + '</span>';
+  h += '</div>';
+  h += '<p class="apt-card-desc">' + a.desc + '</p>';
+  if (a.prereqNom) {
+    h += '<div class="apt-card-prereqs">Pr\u00e9requis : ' + a.prereqNom + '</div>';
+  }
+  if (a.cond) {
+    h += '<div class="apt-card-condition">\u26A0 ' + a.cond + '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+// ── Tab switching ──
+var tabBar = document.getElementById('tabBar');
+var tabs = tabBar.querySelectorAll('.tab-btn');
+var contents = document.querySelectorAll('.tab-content');
+
+function activate(tabId) {
+  var btn = tabBar.querySelector('[data-tab="' + tabId + '"]');
+  if (!btn) return;
+  var color = btn.dataset.color;
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  contents.forEach(function(c) { c.classList.remove('active'); });
+  var target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+  document.documentElement.style.setProperty('--accent', color);
+  if (FACTIONS[tabId]) {
+    document.documentElement.style.setProperty('--faction-color', FACTIONS[tabId].couleur);
+  }
+  btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+tabs.forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var tabId = this.dataset.tab;
+    activate(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+// ── Voie sub-nav switching ──
+document.addEventListener('click', function(e) {
+  var pill = e.target.closest('.voie-pill');
+  if (!pill) return;
+  var nav = pill.closest('.voie-nav');
+  var factionId = nav.dataset.faction;
+  var voieId = pill.dataset.voie;
+  nav.querySelectorAll('.voie-pill').forEach(function(p) { p.classList.remove('active'); });
+  pill.classList.add('active');
+  var section = pill.closest('.tab-content');
+  section.querySelectorAll('.voie-section').forEach(function(s) { s.classList.remove('active'); });
+  var target = document.getElementById('voie-' + voieId);
+  if (target) target.classList.add('active');
+  history.replaceState(null, '', '#' + factionId + '/' + voieId);
+});
+
+// ── Active pill style ──
+var styleEl = document.createElement('style');
+styleEl.textContent = '.voie-pill.active { background: var(--faction-color) !important; color: var(--bg-deep) !important; border-color: var(--faction-color) !important; }';
+document.head.appendChild(styleEl);
+
+// ── Deep linking ──
+function handleHash() {
+  var hash = window.location.hash.replace('#', '');
+  if (!hash) return;
+  var parts = hash.split('/');
+  var tabId = parts[0];
+  if (document.getElementById(tabId)) {
+    activate(tabId);
+    if (parts[1]) {
+      setTimeout(function() {
+        var pill = document.querySelector('[data-faction="' + tabId + '"] [data-voie="' + parts[1] + '"]');
+        if (pill) pill.click();
+      }, 100);
+    }
+  }
+}
+handleHash();
+window.addEventListener('hashchange', handleHash);
+</script>
+</body>
+</html>

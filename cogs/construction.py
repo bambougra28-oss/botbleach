@@ -644,14 +644,51 @@ async def _peupler_channels_lore(guild: discord.Guild):
         except Exception as e:
             print(f"[Lore Setup] {getattr(channel, 'name', '?')} : {e}")
 
-    # ── 1. infernum-aeterna — 5 embeds lore fondateur ────────────────────────
+    # ── 0. Lien web lore ──────────────────────────────────────────────────────
+    from cogs.lore import LORE_WEB_URL, _ajouter_lien_web
+
+    # ── 1. infernum-aeterna — embed lien web + 5 embeds lore fondateur ──────
     ch = find_ch("infernum-aeterna")
+
+    # Embed d'accueil avec lien vers le lore complet
+    e_web = discord.Embed(
+        title="⛩️ Chroniques des Quatre Races",
+        description=(
+            "Bienvenue dans les chroniques d'**Infernum Aeterna**.\n\n"
+            "Les résumés ci-dessous présentent les fondations de notre lore. "
+            "Le texte intégral — quinze mille mots, quatre chroniques, chaque "
+            "mot pesé — est accessible sur notre page dédiée."
+        ),
+        color=COULEURS["or_ancien"]
+    )
+    e_web.add_field(
+        name="📜 Lore intégral",
+        value=f"**[Ouvrir les Chroniques des Quatre Races]({LORE_WEB_URL})**",
+        inline=False
+    )
+    e_web.add_field(
+        name="Accès direct par faction",
+        value=(
+            f"[序章 Prologue]({LORE_WEB_URL}#prologue) · "
+            f"[死神 Shinigami]({LORE_WEB_URL}#shinigami) · "
+            f"[咎人 Togabito]({LORE_WEB_URL}#togabito)\n"
+            f"[破面 Arrancar]({LORE_WEB_URL}#arrancar) · "
+            f"[滅却師 Quincy]({LORE_WEB_URL}#quincy) · "
+            f"[零番隊 Division Zéro]({LORE_WEB_URL}#division-zero)\n"
+            f"[創造 Guide de Création]({LORE_WEB_URL}#creation)"
+        ),
+        inline=False
+    )
+    e_web.set_footer(text="⸻ Infernum Aeterna · Chroniques ⸻")
+    await poster(ch, e_web)
+
     for cle in ["origine", "fissure", "reio", "division_zero", "konso_reisai"]:
         data = LORE_DATA[cle]
         e = discord.Embed(title=data["titre"], description=data["description"], color=data["couleur"])
         for nom_champ, valeur_champ in data.get("fields", []):
             e.add_field(name=nom_champ, value=valeur_champ, inline=False)
         e.set_footer(text="⸻ Infernum Aeterna · Chroniques ⸻")
+        _ajouter_lien_web(e, data.get("web_fragment", ""))
         await poster(ch, e)
 
     # ── 2. les-quatre-factions — 4 embeds ────────────────────────────────────
@@ -662,6 +699,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         for nom_section, texte_section in fiche["sections"]:
             e.add_field(name=nom_section, value=texte_section, inline=False)
         e.set_footer(text="⸻ Infernum Aeterna · Factions ⸻")
+        _ajouter_lien_web(e, fiche.get("web_fragment", ""))
         await poster(ch, e)
 
     # ── 3. geographie-des-mondes — 2 embeds ──────────────────────────────────
@@ -674,6 +712,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
             inline=False
         )
     e.set_footer(text="⸻ Infernum Aeterna · Géographie ⸻")
+    _ajouter_lien_web(e, "togabito")
     await poster(ch, e)
 
     e2 = discord.Embed(

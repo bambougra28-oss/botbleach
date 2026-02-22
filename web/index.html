@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infernum Aeterna — Chroniques des Quatre Races</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0A0A0F;
+  --bg-content: #111118;
+  --bg-card: #18181F;
+  --text-main: #F5F5F5;
+  --text-muted: #A0A0B0;
+  --or-ancien: #C9A84C;
+  --blanc-seireitei: #E8E8F0;
+  --pourpre: #6B1FA8;
+  --gris-sable: #8A8A7A;
+  --bleu-abyssal: #1A3A6B;
+  --or-pale: #D4AF37;
+  --gris-acier: #7B7D8A;
+  --rouge-chaine: #8B0000;
+  --accent: var(--or-ancien);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Noto Serif JP', 'Georgia', serif;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────── */
+.site-header {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+  background: linear-gradient(180deg, #0D0D14 0%, var(--bg-deep) 100%);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+}
+.site-header .kanji-title {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--or-ancien);
+  letter-spacing: 0.3em;
+  text-shadow: 0 0 30px rgba(201, 168, 76, 0.3);
+}
+.site-header .subtitle {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  letter-spacing: 0.15em;
+}
+.site-header .sub-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+  opacity: 0.6;
+}
+
+/* ── TAB BAR ────────────────────────────────── */
+.tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-deep);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,0.3) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-bar::-webkit-scrollbar { height: 4px; }
+.tab-bar::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+
+.tab-btn {
+  flex: 0 0 auto;
+  padding: 0.9rem 1.4rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.3s;
+}
+.tab-btn:hover { color: var(--text-main); }
+.tab-btn.active { color: var(--text-main); font-weight: 700; }
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: transparent;
+  transition: background 0.3s;
+}
+.tab-btn.active::after { background: var(--accent); }
+
+.tab-btn .tab-kanji {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin-bottom: 0.15rem;
+}
+
+/* ── CONTENT ────────────────────────────────── */
+.content-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.tab-content.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── TYPOGRAPHY ─────────────────────────────── */
+.section-kanji {
+  font-size: 2.5rem;
+  font-weight: 900;
+  opacity: 0.12;
+  letter-spacing: 0.2em;
+  margin-bottom: -0.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 2.5rem 0 1rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--accent);
+  line-height: 1.4;
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 2rem 0 0.8rem;
+  color: var(--accent);
+}
+
+p {
+  margin-bottom: 1.2rem;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.chronicle-intro {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ── BLOCKQUOTE ─────────────────────────────── */
+blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(255,255,255,0.02);
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ── SEPARATOR ──────────────────────────────── */
+.section-sep {
+  text-align: center;
+  margin: 3rem 0;
+  color: var(--accent);
+  opacity: 0.3;
+  letter-spacing: 1em;
+  font-size: 0.8rem;
+}
+
+/* ── GUIDE LISTS ────────────────────────────── */
+.guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 1.5rem;
+}
+.guide-list li {
+  padding: 0.4rem 0 0.4rem 1.2rem;
+  position: relative;
+  color: var(--text-muted);
+}
+.guide-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ── FACTION CARDS (Guide de Création) ──────── */
+.faction-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+.faction-card h3 {
+  margin-top: 0;
+}
+
+/* ── TENSION BLOCK ──────────────────────────── */
+.tension-block {
+  background: rgba(201, 168, 76, 0.04);
+  border: 1px solid rgba(201,168,76,0.12);
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.tension-block strong {
+  color: var(--accent);
+}
+
+/* ── FOOTER ─────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  opacity: 0.5;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+  .site-header .kanji-title { font-size: 2rem; letter-spacing: 0.15em; }
+  .site-header .subtitle { font-size: 0.95rem; }
+  .tab-btn { padding: 0.7rem 1rem; font-size: 0.8rem; }
+  .tab-btn .tab-kanji { font-size: 0.65rem; }
+  .content-wrap { padding: 1.5rem 1rem 3rem; }
+  h2 { font-size: 1.25rem; }
+  .section-kanji { font-size: 1.8rem; }
+  .faction-card { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="kanji-title">地獄永劫</div>
+  <div class="subtitle">INFERNUM AETERNA</div>
+  <div class="sub-subtitle">Chroniques des Quatre Races &mdash; Document de lore fondateur</div>
+</header>
+
+<!-- ═══ TAB BAR ═══ -->
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="prologue" data-color="#C9A84C">
+    <span class="tab-kanji">序章</span>Prologue
+  </button>
+  <button class="tab-btn" data-tab="shinigami" data-color="#E8E8F0">
+    <span class="tab-kanji">死神</span>Shinigami
+  </button>
+  <button class="tab-btn" data-tab="togabito" data-color="#6B1FA8">
+    <span class="tab-kanji">咎人</span>Togabito
+  </button>
+  <button class="tab-btn" data-tab="arrancar" data-color="#8A8A7A">
+    <span class="tab-kanji">破面</span>Arrancar
+  </button>
+  <button class="tab-btn" data-tab="quincy" data-color="#1A3A6B">
+    <span class="tab-kanji">滅却師</span>Quincy
+  </button>
+  <button class="tab-btn" data-tab="division-zero" data-color="#D4AF37">
+    <span class="tab-kanji">零番隊</span>Division Z&eacute;ro
+  </button>
+  <button class="tab-btn" data-tab="creation" data-color="#7B7D8A">
+    <span class="tab-kanji">創造</span>Cr&eacute;ation
+  </button>
+</nav>
+
+<!-- ═══ CONTENT ═══ -->
+<main class="content-wrap">
+
+<!-- ── PROLOGUE ──────────────────────────────── -->
+<section class="tab-content active" id="prologue">
+  <div class="section-kanji">原初の海</div>
+  <h2>La Mer Primordiale</h2>
+
+  <p>Avant que le monde soit ce qu'il est, il n'y avait pas de monde. Il y avait autre chose &mdash; quelque chose que les rares &ecirc;tres capables d'en parler appellent la Mer Primordiale, Gensho no Umi. Pas un oc&eacute;an d'eau, mais un &eacute;tat&nbsp;: une existence indivise dans laquelle le vivant et le mort n'&eacute;taient pas distincts, dans laquelle chaque &acirc;me existait sans na&icirc;tre et disparaissait sans mourir. Un monde sans la peur de la mort, parce que la mort n'avait pas encore de sens.</p>
+
+  <p>Ce monde &eacute;tait silencieux. Mais il n'&eacute;tait pas en paix.</p>
+
+  <p>Une obscurit&eacute; le rongea de l'int&eacute;rieur &mdash; une faim sans nom, une corruption qui d&eacute;vorait les &acirc;mes les unes apr&egrave;s les autres sans qu'il y ait de recours, sans qu'il y ait de gardien pour y mettre fin. Personne ne sait exactement ce qu'&eacute;tait cette obscurit&eacute;. Personne n'a de mot pour elle. Ce qu'on sait, c'est qu'elle existait avant tout le reste, avant les r&egrave;gles, avant l'&eacute;quilibre, avant le cycle de la vie et de la mort. Et qu'un &ecirc;tre en &eacute;mergea pour lui faire face.</p>
+
+  <p>Cet &ecirc;tre n'avait pas encore de nom. Il n'avait pas encore de titre. Il avait simplement une puissance qui d&eacute;passait tout ce que la Mer Primordiale avait jamais produit, et une volont&eacute; de prot&eacute;ger ce qui existait encore. Il chassa l'obscurit&eacute;. Il d&eacute;vora les &acirc;mes corrompues qui mena&ccedil;aient le monde. Et pendant un temps, l'&eacute;quilibre sembla possible.</p>
+
+  <p>Mais annihiler des &acirc;mes &mdash; m&ecirc;me corrompues &mdash; d&eacute;stabilisait la Mer Primordiale d'une autre fa&ccedil;on. Cet &ecirc;tre &eacute;tait &agrave; la fois Quincy et Shinigami et simple personne portant d'innombrables capacit&eacute;s &mdash; le symbole de l'espoir qui gouvernait tout dans le monde chaotique. C'est l'&ecirc;tre qui serait plus tard nomm&eacute; Re&imacr;o &mdash; le Roi des &Acirc;mes.</p>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Le P&eacute;ch&eacute; Originel</h2>
+
+  <p>Cinq &ecirc;tres l'observ&egrave;rent. Cinq &ecirc;tres puissants, bien en dessous de lui mais suffisamment capables pour comprendre ce qu'ils voyaient. Ils &eacute;taient les anc&ecirc;tres des cinq Grandes Maisons Nobles &mdash; les Tsunayashiro, les Kuchiki, les Shih&omacr;in, les Shiba, et une cinqui&egrave;me maison dont le nom s'est effac&eacute; de presque toutes les archives. Chacun d'eux avait ses raisons propres.</p>
+
+  <p>L'anc&ecirc;tre Tsunayashiro craignait que cette puissance colossale ne soit un jour retourn&eacute;e contre eux. L'anc&ecirc;tre de la maison inconnue estimait qu'il fallait un monde servant de couvercle sur le gouffre qu'on appellerait plus tard l'Enfer. L'anc&ecirc;tre Kuchiki croyait qu'un nouvel ordre &eacute;tait n&eacute;cessaire pour solidifier le monde. L'anc&ecirc;tre Shih&omacr;in pensait qu'il fallait une circulation plus large pour faire avancer le monde stagnant. Et l'anc&ecirc;tre Shiba voulait explorer la voie de la purification des &acirc;mes corrompues plut&ocirc;t que leur destruction &mdash; car elles aussi avaient un c&oelig;ur.</p>
+
+  <p>Cinq raisons diff&eacute;rentes, une seule d&eacute;cision.</p>
+
+  <p>Ils captur&egrave;rent le Re&imacr;o. Ils l'immobilis&egrave;rent &agrave; l'aide d'une &eacute;p&eacute;e c&eacute;r&eacute;monielle, lui arrach&egrave;rent les bras, les jambes, les organes, le c&oelig;ur, le scell&egrave;rent dans un cristal pour l'&eacute;ternit&eacute;. Et le Re&imacr;o, tout au long de ce supplice, ne r&eacute;sista pas. Il avait vu ce qui allait arriver. Il avait peut-&ecirc;tre m&ecirc;me choisi de laisser faire &mdash; comprenant que sa mutilation &eacute;tait le prix de la cr&eacute;ation d'un monde capable de durer.</p>
+
+  <p>Utilisant sa puissance comme la cl&eacute; de vo&ucirc;te de toute chose, les cinq anc&ecirc;tres cr&eacute;&egrave;rent les fondations d'un monde nouveau. Soul Society, le Monde des Vivants, Hueco Mundo. La vie et la mort furent s&eacute;par&eacute;es. Le cycle des &acirc;mes inaugura une &egrave;re nouvelle.</p>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Ce que la Cr&eacute;ation r&eacute;v&egrave;le sur l'Enfer</h2>
+
+  <p>La grande v&eacute;rit&eacute; que Soul Society n'enseigne pas dans ses acad&eacute;mies, celle que les Maisons Nobles gardent jalousement depuis des millions d'ann&eacute;es, c'est que l'Enfer ne fut pas cr&eacute;&eacute;. Il existait d&eacute;j&agrave;. L'une des raisons pour lesquelles le Monde des Vivants fut cr&eacute;&eacute; &eacute;tait pr&eacute;cis&eacute;ment de servir de couvercle &agrave; l'Enfer &mdash; ce qui signifie que l'Enfer pr&eacute;c&egrave;de la naissance des Trois Mondes.</p>
+
+  <p>L'Enfer n'est pas une prison construite par les Shinigami. Il n'est pas une invention du cycle cosmique. Il est ant&eacute;rieur &agrave; tout cela &mdash; un ab&icirc;me qui existait d&eacute;j&agrave; dans la Mer Primordiale, que les Cinq Anc&ecirc;tres reconnurent comme une r&eacute;alit&eacute; &agrave; contenir plut&ocirc;t qu'&agrave; d&eacute;truire. Les Trois Mondes furent partiellement &eacute;rig&eacute;s autour de lui. Le Monde des Vivants fait office de couvercle. Et ce couvercle, depuis la mutilation du Re&imacr;o, repose sur un &eacute;quilibre extr&ecirc;mement fragile.</p>
+
+  <p>L'&eacute;quilibre entre l'Enfer et les Trois Mondes repose sur une condition pr&eacute;cise&nbsp;: le Reiatsu contenu dans l'Enfer doit rester proportionnel &agrave; celui des Trois Mondes r&eacute;unis. S'il vient &agrave; le d&eacute;passer, le couvercle peut &ecirc;tre soulev&eacute; de l'int&eacute;rieur.</p>
+
+  <p>C'est cette v&eacute;rit&eacute; que le Kons&omacr; Reisai &mdash; le rituel fun&eacute;raire des Capitaines &mdash; vient compliquer d'une fa&ccedil;on que Soul Society ne comprend pas encore pleinement.</p>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Le Re&imacr;o aujourd'hui</h2>
+
+  <p>Le Re&imacr;o existe encore, dans un &eacute;tat qui d&eacute;passe l'entendement. Scell&eacute; dans son cristal, mutil&eacute; de toutes parts, il n'est ni vivant ni mort &mdash; il est devenu le verrou cosmique qui maintient les Trois Mondes s&eacute;par&eacute;s. Ses membres arrach&eacute;s ont acquis une conscience propre, chacun avec son nom, sa personnalit&eacute;, ses capacit&eacute;s. Son bras droit est devenu Mimihagi, la divinit&eacute; qui gouverne la Stagnation. Son bras gauche gouverne la Progression. Son c&oelig;ur et ses organes existent sous d'autres formes encore, dispers&eacute;s &agrave; travers la cosmologie du monde.</p>
+
+  <p>Sa puissance &mdash; l'Almighty, ce don proph&eacute;tique de voir et d'alt&eacute;rer le futur &mdash; fut h&eacute;rit&eacute;e par son fils. Et sa chair sacrifi&eacute;e est la source de toute puissance spirituelle&nbsp;: les Quincy tiennent leur force de lui. Les Shinigami sont, en un sens, ses enfants aussi. Hueco Mundo lui doit son existence. Tout d&eacute;coule du sacrifice d'un &ecirc;tre qui choisit de ne pas r&eacute;sister.</p>
+
+  <p>Ce que cela r&eacute;v&egrave;le sur le p&eacute;ch&eacute; originel de Soul Society, sur la l&eacute;gitimit&eacute; de ses institutions, sur la nature de la paix que les Trois Mondes ont connue depuis des mill&eacute;naires &mdash; c'est une question que personne ne pose &agrave; voix haute. Pas encore.</p>
+</section>
+
+<!-- ── SHINIGAMI ─────────────────────────────── -->
+<section class="tab-content" id="shinigami">
+  <div class="section-kanji">死神</div>
+  <p class="chronicle-intro">Premi&egrave;re Chronique &mdash; L'Histoire des Shinigami</p>
+
+  <h2>I. Avant l'ordre</h2>
+
+  <p>Les Shinigami n'ont pas toujours exist&eacute; sous cette forme. Avant la fondation du Gotei, il y avait simplement des &acirc;mes &mdash; des &acirc;mes plus puissantes que les autres, des &ecirc;tres n&eacute;s dans Soul Society ou arriv&eacute;s du Monde des Vivants avec un Reishi d'une densit&eacute; exceptionnelle, qui d&eacute;veloppaient spontan&eacute;ment des capacit&eacute;s spirituelles sans cadre institutionnel ni nom officiel. On les appelait Shinigami parce que leur puissance les s&eacute;parait naturellement des &acirc;mes ordinaires du Rukongai, mais le terme ne d&eacute;signait encore aucune organisation.</p>
+
+  <p>Soul Society &eacute;tait un territoire fragment&eacute;, gouvern&eacute; par la force brute. Des groupes arm&eacute;s contr&ocirc;laient des quartiers entiers. Les &acirc;mes sans puissance vivaient sous la domination de ceux qui en avaient. Les Hollow d&eacute;vastaient le Monde des Vivants sans r&eacute;gulation. Le cycle cosmique fonctionnait par accident plus que par volont&eacute;.</p>
+
+  <p>C'est dans ce contexte que naquit ce qu'on conna&icirc;t aujourd'hui comme le Gotei 13.</p>
+
+  <h2>II. La fondation &mdash; un ordre n&eacute; dans le sang</h2>
+
+  <p>Il faut comprendre que le Gotei des origines ne ressemblait en rien &agrave; l'institution qui existe aujourd'hui. La premi&egrave;re g&eacute;n&eacute;ration du Gotei 13 n'&eacute;tait pas des d&eacute;fenseurs au sens noble du terme &mdash; c'&eacute;tait une bande de tueurs redoutables pour lesquels le mot &laquo;&nbsp;d&eacute;fense&nbsp;&raquo; n'&eacute;tait qu'une &eacute;tiquette. Son fondateur, le premier Capitaine-Commandant de l'histoire, &eacute;tait un &ecirc;tre d'une brutalit&eacute; froide et calcul&eacute;e qui n'avait aucun scrupule &agrave; sacrifier ses propres subordonn&eacute;s si les circonstances l'exigeaient. Ce n'&eacute;tait pas un id&eacute;aliste. C'&eacute;tait quelqu'un qui avait compris que seule une organisation de puissances collectives pouvait mettre fin au chaos, et qui avait la volont&eacute; d'en payer le prix.</p>
+
+  <p>Les treize premiers Capitaines qu'il r&eacute;unit autour de lui &eacute;taient &agrave; son image &mdash; des guerriers d'une efficacit&eacute; terrifiante, dont certains portaient des noms qui inspiraient autant la terreur que le respect. Ce Gotei des origines imposa un ordre &agrave; Soul Society non pas par la persuasion mais par la force, district apr&egrave;s district, jusqu'&agrave; ce que personne n'ose plus s'y opposer.</p>
+
+  <p>Parmi ces premiers Capitaines, trois figures m&eacute;ritent d'&ecirc;tre mentionn&eacute;es pour comprendre l'histoire qui suivit. K&omacr;shin J&umacr;r&omacr;maru, le Capitaine-Commandant fondateur, portait un Zanpakut&omacr; de type feu &mdash; l'a&icirc;n&eacute; et le plus puissant de cette cat&eacute;gorie. Il mourut de vieillesse apr&egrave;s des mill&eacute;naires d'existence, ce qui &eacute;tait presque sans pr&eacute;c&eacute;dent pour un &ecirc;tre de sa puissance. T&omacr;ka Shibari, premi&egrave;re &agrave; porter le titre non officiel de Kenpachi, poss&eacute;dait un Zanpakut&omacr; en &eacute;tat de lib&eacute;ration permanente &mdash; son lien avec son &acirc;me &eacute;tait si total que la s&eacute;paration entre les deux n'avait jamais eu lieu. Elle tomba au combat, ce qui &eacute;tait la seule fa&ccedil;on qu'elle aurait accept&eacute; de partir. Renj&omacr; Mikazuchi, enfin, &eacute;tait le plus myst&eacute;rieux des trois &mdash; un Capitaine qui avait apparemment abrit&eacute; quelque chose d'autre en lui, une entit&eacute; spirituelle d'une nature inconnue, et qui mourut dans un &eacute;tat de paix sereine qui contrastait avec toute la violence de l'&eacute;poque.</p>
+
+  <p>Ces trois &ecirc;tres, et d'autres avec eux, furent honor&eacute;s par le Kons&omacr; Reisai apr&egrave;s leur mort. Ce qu'ils ignoraient &mdash; ce que tous ignoraient &mdash; sera r&eacute;v&eacute;l&eacute; plus loin.</p>
+
+  <h2>III. La Guerre contre le Lichtreich</h2>
+
+  <p>Le premier grand test du Gotei ne vint pas de l'int&eacute;rieur de Soul Society, mais de l'ext&eacute;rieur. Dans le Monde des Vivants, une civilisation s'&eacute;tait d&eacute;velopp&eacute;e autour d'une philosophie spirituelle radicalement oppos&eacute;e &agrave; celle des Shinigami&nbsp;: le Lichtreich, l'Empire de Lumi&egrave;re, constitu&eacute; de Quincy organis&eacute;s sous la banni&egrave;re de leur Empereur.</p>
+
+  <p>L&agrave; o&ugrave; les Shinigami purifiaient les Hollow pour les r&eacute;int&eacute;grer dans le cycle cosmique, les Quincy les d&eacute;truisaient enti&egrave;rement et d&eacute;finitivement &mdash; effa&ccedil;ant leurs &acirc;mes de l'existence. Cette diff&eacute;rence philosophique n'&eacute;tait pas qu'une question d'&eacute;thique. Elle mena&ccedil;ait l'&eacute;quilibre fondamental des Trois Mondes&nbsp;: les &acirc;mes d&eacute;truites par les Quincy ne retournaient pas dans le cycle, ce qui cr&eacute;ait un d&eacute;s&eacute;quilibre progressif entre le Monde des Vivants et Soul Society.</p>
+
+  <p>La guerre qui s'ensuivit fut totale. Le Lichtreich, men&eacute; par son Empereur &mdash; un &ecirc;tre d'une puissance prodigieuse, fils du Re&imacr;o lui-m&ecirc;me sans que quiconque le sache encore &mdash; envahit Soul Society dans l'intention de renverser le Gotei. Le Capitaine-Commandant fondateur fit face. Ce qui se passa dans ce combat singulier reste l'un des r&eacute;cits les plus soigneusement pr&eacute;serv&eacute;s des archives de Soul Society &mdash; et l'un des plus censur&eacute;s. Ce qu'on sait&nbsp;: l'Empereur Quincy fut vaincu, son arm&eacute;e d&eacute;faite, son empire d&eacute;cim&eacute;.</p>
+
+  <p>Dans la paix qui suivit, le Gotei se transforma profond&eacute;ment. La brutalit&eacute; des origines c&eacute;da progressivement la place &agrave; quelque chose de plus nuanc&eacute; &mdash; une institution qui avait trouv&eacute; dans la victoire des choses &agrave; prot&eacute;ger et &agrave; ch&eacute;rir, et qui d&eacute;veloppa un sens de la justice l&agrave; o&ugrave; n'existait auparavant que la volont&eacute; de vaincre.</p>
+
+  <h2>IV. L'adoucissement et ses cons&eacute;quences</h2>
+
+  <p>Les g&eacute;n&eacute;rations suivantes du Gotei furent diff&eacute;rentes. La Shin'&omacr; Academy fut fond&eacute;e pour former les nouveaux Shinigami dans un cadre structur&eacute; plut&ocirc;t que dans le chaos sanglant des origines. Le Kons&omacr; devint une pratique codifi&eacute;e, enseign&eacute;e, ritualis&eacute;e. Les treize divisions pr&eacute;cis&egrave;rent leurs r&ocirc;les respectifs. Soul Society commen&ccedil;a &agrave; ressembler &agrave; une institution plut&ocirc;t qu'&agrave; une force d'occupation.</p>
+
+  <p>Mais quelque chose se perdit aussi dans cette transformation. Selon l'Empereur Quincy lui-m&ecirc;me, le Gotei originel &eacute;tait une force &agrave; respecter pr&eacute;cis&eacute;ment parce que son chef ne reculait devant rien &mdash; et que cette organisation mourut il y a mille ans, remplac&eacute;e par quelque chose de plus noble mais aussi de plus vuln&eacute;rable. La critique &eacute;tait cruelle. Elle n'&eacute;tait pas enti&egrave;rement fausse.</p>
+
+  <p>Et pendant ce temps, le secret du Kons&omacr; Reisai continuait &agrave; s'approfondir.</p>
+
+  <h2>V. Le secret du Kons&omacr; Reisai</h2>
+
+  <p>&Agrave; un moment donn&eacute; dans les premi&egrave;res g&eacute;n&eacute;rations du Gotei &mdash; personne ne sait exactement quand, et les archives de la Maison Tsunayashiro sur ce sujet ont &eacute;t&eacute; soigneusement expurg&eacute;es &mdash; quelqu'un comprit le probl&egrave;me que posait la mort des Shinigami de haut rang.</p>
+
+  <p>Quand un Shinigami ordinaire meurt, son corps se d&eacute;compose en Reishi et retourne dans le sol de Soul Society, comme une rivi&egrave;re qui rejoint la mer. Mais les Shinigami de rang Capitaine ont une densit&eacute; de Reishi trop &eacute;lev&eacute;e pour ce processus. Leur &acirc;me ne peut pas &ecirc;tre r&eacute;absorb&eacute;e. Si elle flotte librement dans Soul Society, elle d&eacute;s&eacute;quilibre l'environnement spirituel de fa&ccedil;on irr&eacute;versible.</p>
+
+  <p>La solution fut formalis&eacute;e en rituel solennel. Douze ans apr&egrave;s la mort d'un Capitaine, une c&eacute;r&eacute;monie est organis&eacute;e. Un Hollow est sacrifi&eacute; devant la tombe. Et le Reishi du Capitaine d&eacute;funt est canalis&eacute; vers l'Enfer &mdash; la seule destination capable de contenir une telle concentration d'&eacute;nergie spirituelle sans menacer l'&eacute;quilibre des Trois Mondes.</p>
+
+  <p>Personne, dans les rangs inf&eacute;rieurs du Gotei, ne sait la v&eacute;rit&eacute; de ce rituel. On leur enseigne qu'il s'agit d'une fa&ccedil;on de guider l'&acirc;me des grands d&eacute;funts vers le repos. C'est un mensonge bienveillant qui a dur&eacute; des mill&eacute;naires. Des g&eacute;n&eacute;rations de Capitaines ont &eacute;t&eacute; honor&eacute;es lors de c&eacute;r&eacute;monies solennelles, pleur&eacute;es par leurs subordonn&eacute;s, et pr&eacute;cipit&eacute;es en Enfer &agrave; leur insu.</p>
+
+  <p>La dette s'est accumul&eacute;e pendant tr&egrave;s, tr&egrave;s longtemps.</p>
+
+  <h2>VI. Les Deux Piliers</h2>
+
+  <p>Dans les archives les plus secr&egrave;tes de Soul Society &mdash; celles que seul le Capitaine-Commandant et le Conseil Central 46 ont le droit de consulter &mdash; est mentionn&eacute;e la th&eacute;orie des Deux Piliers Maudits.</p>
+
+  <p>Deux entit&eacute;s d'une densit&eacute; de Reishi extraordinaire existaient dans l'ordre cosmique sans avoir &eacute;t&eacute; envoy&eacute;es en Enfer, maintenant involontairement un contrepoids &agrave; l'accumulation infernale. Leur existence n'&eacute;tait connue que de quelques initi&eacute;s. Leurs noms n'apparaissent dans aucun registre public. Ce qu'on sait de leur nature&nbsp;: l'une d'elles repr&eacute;sentait une puissance de Stagnation et l'autre une puissance de Progression &mdash; un &eacute;quilibre &agrave; elles deux qui refl&eacute;tait quelque chose de fondamental dans la structure cosmique.</p>
+
+  <p>Ces deux entit&eacute;s ont disparu. De fa&ccedil;on concomitante, ou presque. Les circonstances de leur disparition sont le sujet des sp&eacute;culations les plus confidentielles au sein du Gotei actuel. Sans elles, la balance entre l'Enfer et les Trois Mondes a commenc&eacute; &agrave; se rompre &mdash; et la Fissure a suivi.</p>
+
+  <h2>VII. Le Gotei face &agrave; la Fissure</h2>
+
+  <p>Le Gotei d'aujourd'hui est une institution de plusieurs mill&eacute;naires, portant le poids de toute cette histoire. Ses Capitaines savent maintenant la v&eacute;rit&eacute; du Kons&omacr; Reisai &mdash; elle leur a &eacute;t&eacute; r&eacute;v&eacute;l&eacute;e apr&egrave;s les &eacute;v&eacute;nements de la Grande Guerre contre les Quincy survivants, quand il n'&eacute;tait plus possible de la cacher. Ce qu'ils font de cette v&eacute;rit&eacute; divise profond&eacute;ment le haut commandement.</p>
+
+  <p>La question n'est pas seulement&nbsp;: que faire de la Fissure&nbsp;? Elle est aussi&nbsp;: ceux que nous avons envoy&eacute;s en Enfer pendant des mill&eacute;naires &mdash; sont-ils nos ennemis, nos victimes, ou les deux &agrave; la fois&nbsp;?</p>
+</section>
+
+<!-- ── TOGABITO ──────────────────────────────── -->
+<section class="tab-content" id="togabito">
+  <div class="section-kanji">咎人</div>
+  <p class="chronicle-intro">Deuxi&egrave;me Chronique &mdash; L'Histoire des Togabito</p>
+
+  <h2>I. Ce qu'est r&eacute;ellement la damnation</h2>
+
+  <p>Un Togabito n'est pas une esp&egrave;ce. C'est une condition &mdash; la condition de ceux que l'Enfer a r&eacute;clam&eacute;s. Et l'Enfer r&eacute;clame des &acirc;mes pour des raisons tr&egrave;s diff&eacute;rentes, ce qui rend les Togabito la communaut&eacute; la plus h&eacute;t&eacute;rog&egrave;ne des Quatre Races.</p>
+
+  <p>La premi&egrave;re voie vers la damnation est la plus connue&nbsp;: les p&eacute;ch&eacute;s commis de son vivant dans le Monde des Vivants. Certaines &acirc;mes humaines portent des actes si lourds que le Kons&omacr; ordinaire ne peut pas les guider vers Soul Society. Quand un Shinigami pose le manche de son Zanpakut&omacr; sur leur front, les Portes de l'Enfer s'ouvrent plut&ocirc;t que le chemin habituel. Ces &acirc;mes y sont pr&eacute;cipit&eacute;es malgr&eacute; elles, encha&icirc;n&eacute;es par les Jigokusari, et condamn&eacute;es &agrave; l'&eacute;ternit&eacute;.</p>
+
+  <p>La deuxi&egrave;me voie est moins intuitive&nbsp;: les Hollow purifi&eacute;s par un Zanpakut&omacr;. La purification efface les p&eacute;ch&eacute;s commis en tant que Hollow &mdash; mais pas ceux de la vie humaine qui pr&eacute;c&eacute;da la corruption. Un &ecirc;tre profond&eacute;ment mauvais avant de devenir Hollow peut donc arriver en Enfer malgr&eacute; la purification Shinigami. L'acte de guider une &acirc;me n'est pas un acte de jugement moral. C'est un acte de recyclage cosmique. Que l'&acirc;me m&eacute;rite ou non d'&ecirc;tre recycl&eacute;e, c'est une autre question.</p>
+
+  <p>La troisi&egrave;me voie est la plus troublante&nbsp;: les Shinigami de rang Capitaine envoy&eacute;s par le Kons&omacr; Reisai. Ceux-l&agrave; n'arrivent pas en Enfer &agrave; cause de leurs p&eacute;ch&eacute;s. Ils arrivent &agrave; cause de la densit&eacute; de leur Reishi &mdash; trop concentr&eacute; pour &ecirc;tre r&eacute;absorb&eacute; par Soul Society, trop dense pour ne pas d&eacute;s&eacute;quilibrer l'environnement s'il est laiss&eacute; libre. Ce sont des damn&eacute;s par n&eacute;cessit&eacute; cosmique, pas par jugement. Et ils le savent, d&eacute;sormais.</p>
+
+  <h2>II. L'Enfer avant l'arriv&eacute;e des grandes puissances</h2>
+
+  <p>Les tout premiers Togabito &mdash; ceux qui peupl&egrave;rent l'Enfer bien avant que le Gotei n'existe, bien avant que la premi&egrave;re Porte se referme sur un Shinigami &mdash; arriv&egrave;rent dans un environnement dont personne dans les Trois Mondes ne connaissait les r&egrave;gles.</p>
+
+  <p>Il n'y avait pas de guide. Pas de structure. Seulement les Kushan&amacr;da, cr&eacute;atures colossales &agrave; quatre membres dont la seule fonction apparente est de d&eacute;vorer et de punir. Seulement les Jigokusari, cha&icirc;nes spirituelles issues de la chair m&ecirc;me de l'Enfer, qui s'enroulent autour des &acirc;mes condamn&eacute;es et les contraignent dans leur propre mort cyclique. Et seulement les cinq strates &mdash; du Pr&amacr;tus au Sai&omacr;bu &mdash; dont la violence et la densit&eacute; d'&eacute;nergie infernale s'intensifient &agrave; mesure qu'on descend.</p>
+
+  <p>La grande majorit&eacute; des Togabito des premi&egrave;res g&eacute;n&eacute;rations sombra dans la d&eacute;solation. Certains sont devenus ce qu'on trouve aujourd'hui au Premier Niveau&nbsp;: des &acirc;mes qui ont abandonn&eacute; toute r&eacute;sistance, qui ont oubli&eacute; leur propre nom, qui errent dans un &eacute;tat de soumission totale que m&ecirc;me les Kushan&amacr;da n'ont plus de raison de punir.</p>
+
+  <p>Mais une minorit&eacute; refusa de se briser.</p>
+
+  <h2>III. La transformation par la souffrance</h2>
+
+  <p>Des si&egrave;cles de mort et de r&eacute;surrection font quelque chose &agrave; une &acirc;me. La m&ecirc;me chose n'arrive pas &agrave; toutes les &acirc;mes &mdash; c'est peut-&ecirc;tre l&agrave; la d&eacute;couverte la plus fascinante que l'Enfer r&eacute;v&egrave;le sur la nature de la conscience. Certains sombrent. D'autres durcissent. D'autres encore &mdash; les plus rares, les plus int&eacute;ressants &mdash; traversent.</p>
+
+  <p>Ces derniers ont commenc&eacute; &agrave; comprendre l'Enfer de l'int&eacute;rieur. Ses cycles. Ses lois tacites. Les zones o&ugrave; les Kushan&amacr;da patrouillent moins souvent. Les strates qui se rejoignent &agrave; certains moments et s'&eacute;loignent &agrave; d'autres. Ils ont appris &agrave; tenir leurs Jigokusari non plus comme un fardeau mais comme une extension de leur volont&eacute; &mdash; une arme forg&eacute;e par la souffrance plut&ocirc;t que subie par elle.</p>
+
+  <p>La puissance qu'un Togabito ancien d&eacute;veloppe ne ressemble &agrave; rien de ce que les Trois Mondes connaissent. Elle n'est pas classifiable dans les cadres Shinigami, dans la logique des Arrancar, dans la rigueur des Quincy. Elle na&icirc;t de l'absence prolong&eacute;e de tout espoir et de la victoire, malgr&eacute; cela, sur soi-m&ecirc;me. C'est une puissance de l'int&eacute;rieur, alchimique, qui n'a pas de nom dans les textes de Soul Society parce que Soul Society n'a jamais voulu regarder assez longtemps dans cette direction.</p>
+
+  <h2>IV. La Fissure &mdash; et ce qu'elle change</h2>
+
+  <p>La Fissure est la premi&egrave;re chose qui soit arriv&eacute;e en Enfer depuis des millions d'ann&eacute;es qui ne soit pas une punition. Pour ceux qui ont pass&eacute; des mill&eacute;naires &agrave; comprendre l'environnement infernal dans ses moindres d&eacute;tails, c'est l'&eacute;quivalent d'un tremblement de terre dans une architecture que tout le monde croyait immuable. Les murs n'ont pas c&eacute;d&eacute;. Mais quelque chose a boug&eacute;.</p>
+
+  <p>Les Jigokusari des Togabito les plus anciens se sont l&eacute;g&egrave;rement rel&acirc;ch&eacute;es depuis la Fissure &mdash; pas assez pour permettre une libert&eacute; r&eacute;elle, mais assez pour &ecirc;tre perceptible. Les Kushan&amacr;da, dont le comportement &eacute;tait parfaitement pr&eacute;visible depuis des &eacute;ternit&eacute;s, montrent des irr&eacute;gularit&eacute;s. Le Jigoku no Rinki &mdash; ces sph&egrave;res noires phosphorescentes qui apparaissent lorsque l'&eacute;quilibre infernal est perturb&eacute; &mdash; flottent d&eacute;sormais en permanence dans certaines zones plut&ocirc;t que de se manifester ponctuellement.</p>
+
+  <p>Les Togabito sont divis&eacute;s sur la signification de tout cela. Une faction y voit une opportunit&eacute; d'&eacute;vasion &mdash; g&eacute;n&eacute;ralement les plus r&eacute;cents, les plus d&eacute;sesp&eacute;r&eacute;s. Une autre pr&eacute;f&egrave;re comprendre la cause avant d'agir &mdash; les plus anciens, les plus strat&egrave;ges. Une troisi&egrave;me, la plus silencieuse, pense que la Fissure est un signal &mdash; que quelque chose change dans la structure fondamentale de l'Enfer, et que cette transformation est d'une importance bien sup&eacute;rieure &agrave; la simple question de sortir.</p>
+</section>
+
+<!-- ── ARRANCAR ──────────────────────────────── -->
+<section class="tab-content" id="arrancar">
+  <div class="section-kanji">破面</div>
+  <p class="chronicle-intro">Troisi&egrave;me Chronique &mdash; L'Histoire des Arrancar</p>
+
+  <h2>I. Ce qu'est un Hollow &mdash; la v&eacute;rit&eacute; sans ornement</h2>
+
+  <p>Pour comprendre les Arrancar, il faut d'abord accepter une r&eacute;alit&eacute; que les manuels de la Shin'&omacr; Academy traitent en trois lignes et qu'aucun Shinigami ordinaire ne prend le temps de vraiment contempler&nbsp;: un Hollow n'est pas un monstre. C'est une personne.</p>
+
+  <p>Ou plut&ocirc;t, c'&eacute;tait une personne.</p>
+
+  <p>Quand un &ecirc;tre humain meurt, son &acirc;me se d&eacute;tache du corps physique. Si un Shinigami est pr&eacute;sent, il pose le manche de son Zanpakut&omacr; sur le front de l'&acirc;me &mdash; geste du Kons&omacr; &mdash; et l'&acirc;me part vers Soul Society pour une nouvelle existence. Mais si aucun Shinigami n'est l&agrave;, l'&acirc;me reste dans le Monde des Vivants sous la forme d'un Plus &mdash; un fant&ocirc;me bienveillant li&eacute; &agrave; sa vie pass&eacute;e par ce qu'on appelle la Cha&icirc;ne du Destin, Innen no Kusari, un fil spirituel qui part du centre de sa poitrine.</p>
+
+  <p>Cette cha&icirc;ne commence &agrave; se ronger d&egrave;s que l'&acirc;me ne parvient plus &agrave; avancer. Plus un Plus s'attarde dans le Monde des Vivants, plus les petites bouches qui rongent sa Cha&icirc;ne du Destin de l'int&eacute;rieur s'ouvrent et se referment. Ce processus &mdash; l'Empi&egrave;tement &mdash; commence lentement, mais sa phase finale est violente&nbsp;: la cha&icirc;ne dispara&icirc;t enti&egrave;rement, un trou s'ouvre l&agrave; o&ugrave; elle &eacute;tait attach&eacute;e, l&agrave; o&ugrave; le c&oelig;ur &eacute;tait autrefois. Et ce qui restait de la personne se dissout et se reforme sous une autre forme.</p>
+
+  <p>Un masque appara&icirc;t. Le trou dans la poitrine est d&eacute;sormais visible et b&eacute;ant. La cr&eacute;ature qui existe &agrave; cet endroit a perdu son c&oelig;ur &mdash; pas au sens figur&eacute;, mais litt&eacute;ralement&nbsp;: le si&egrave;ge de son identit&eacute;, de ses souvenirs, de ce qui la rendait elle-m&ecirc;me a disparu dans le vide. Ce qu'il reste, c'est la faim. Une faim impossible &agrave; satisfaire, qui pousse le Hollow &agrave; d&eacute;vorer d'autres &acirc;mes dans l'espoir de combler ce vide &mdash; alors que rien ne le pourra jamais.</p>
+
+  <p>C'est peut-&ecirc;tre la trag&eacute;die la plus profonde de la cosmologie&nbsp;: les monstres que les Shinigami chassent sont les victimes d'un syst&egrave;me qui les a abandonn&eacute;s.</p>
+
+  <h2>II. L'&eacute;volution &mdash; de la chute &agrave; la r&eacute;surrection</h2>
+
+  <p>Hueco Mundo &mdash; litt&eacute;ralement le Monde Creux &mdash; est le domaine naturel des Hollow. Un d&eacute;sert blanc infini sous une lune immobile dans un ciel perp&eacute;tuellement nocturne. Les formations qui pars&egrave;ment le paysage ne sont pas des arbres mais des structures de quartz, des cristaux de Reishi p&eacute;trifi&eacute;s par des mill&eacute;naires d'accumulation. C'est un monde sans piti&eacute;, sans direction, o&ugrave; la seule r&egrave;gle est la survie.</p>
+
+  <p>Et dans ce monde, les Hollow &eacute;voluent selon une logique que rien d'autre dans les Trois Mondes ne refl&egrave;te aussi clairement&nbsp;: manger ou &ecirc;tre mang&eacute;, &agrave; l'&eacute;chelle cosmique.</p>
+
+  <p>Un Hollow ordinaire reste limit&eacute;. Pour d&eacute;passer cette limite, il n'a qu'une seule option&nbsp;: d&eacute;vorer d'autres Hollow. Ce processus est &agrave; la fois physique et spirituel. En absorbant d'autres &acirc;mes, le Hollow accumule du Reishi &mdash; mais il dilue aussi sa propre identit&eacute; dans la masse des consciences qu'il a englouties. &Agrave; un stade extr&ecirc;me de cette cannibale accumulation, des centaines de Hollow se fondent en une seule entit&eacute;&nbsp;: le Menos, le Gillian. Une cr&eacute;ature colossale, quasi d&eacute;pourvue de personnalit&eacute; propre, o&ugrave; une seule conscience peut parfois dominer les autres si elle est assez forte.</p>
+
+  <p>Ce Gillian dominant peut continuer &agrave; &eacute;voluer. Il devient Adjuchas si sa conscience individuelle parvient &agrave; rester coh&eacute;rente malgr&eacute; la masse. Et pour les plus rares, les plus extraordinaires &mdash; ceux dont la volont&eacute; survit &agrave; l'accumulation de milliers d'&acirc;mes d&eacute;vor&eacute;es &mdash; une derni&egrave;re transformation est possible&nbsp;: le Vasto Lorde. Une cr&eacute;ature qui a retrouv&eacute; une forme presque humaine, une intelligence comparable &agrave; celle des &ecirc;tres conscients, et un Reishi qui d&eacute;passe celui de la plupart des Capitaines Shinigami.</p>
+
+  <p>C'est &agrave; partir de ce stade que la fronti&egrave;re entre Hollow et Arrancar devient perm&eacute;able.</p>
+
+  <h2>III. La rupture du masque &mdash; devenir Arrancar</h2>
+
+  <p>Un Arrancar est un Hollow qui a bris&eacute; son masque &mdash; ou une partie de son masque. Cet acte lib&egrave;re quelque chose d'inattendu&nbsp;: en brisant ce qui les d&eacute;finissait comme Hollow, ces &ecirc;tres acqui&egrave;rent des capacit&eacute;s propres aux Shinigami tout en conservant leur puissance d'origine, acc&eacute;dant ainsi &agrave; une force qui d&eacute;passe consid&eacute;rablement leur forme ant&eacute;rieure.</p>
+
+  <p>Ils retrouvent une apparence humaine. Le fragment de masque qui demeure sur leur visage est la cicatrice permanente de ce qu'ils &eacute;taient &mdash; certains la portent comme une marque d'honneur, d'autres la dissimulent. Le trou dans la poitrine reste, lui &mdash; visible, b&eacute;ant, sans r&eacute;ponse. Certains Arrancar ont pass&eacute; des si&egrave;cles &agrave; tenter de comprendre ce que ce vide signifie vraiment. Aucun n'a trouv&eacute; de r&eacute;ponse d&eacute;finitive.</p>
+
+  <p>Leur Zanpakut&omacr; n'est pas un Zanpakut&omacr; au sens Shinigami du terme. C'est l'inverse&nbsp;: l&agrave; o&ugrave; le Zanpakut&omacr; d'un Shinigami est l'extension lib&eacute;r&eacute;e d'une &acirc;me, celui d'un Arrancar contient sa puissance. La lib&eacute;rer &mdash; la Resurrecci&oacute;n &mdash; revient &agrave; retrouver temporairement leur forme Hollow compl&egrave;te, avec toute la force que cela implique. C'est un acte de d&eacute;pouillement autant que de d&eacute;cha&icirc;nement.</p>
+
+  <h2>IV. L'histoire de Hueco Mundo</h2>
+
+  <p>Bien avant que Las Noches n'existe sous sa forme actuelle, Hueco Mundo &eacute;tait gouvern&eacute; par le plus simple des principes&nbsp;: le plus puissant commande. Il n'y avait pas de hi&eacute;rarchie formelle, pas de titre, pas d'institution. Il y avait seulement des Hollow plus ou moins capables de tenir leur territoire, et au sommet, un &ecirc;tre dont le Reishi d&eacute;passait de si loin celui de ses cong&eacute;n&egrave;res que sa simple pr&eacute;sence suffisait &agrave; ordonner le chaos autour de lui.</p>
+
+  <p>C'est cet &ecirc;tre qui b&acirc;tit les premi&egrave;res fondations de ce qu'on appelle aujourd'hui Las Noches &mdash; alors sans toit ni murs, car il estimait que le ciel de Hueco Mundo &eacute;tait son plafond naturel. Autour de lui, une hi&eacute;rarchie se forma progressivement &mdash; les plus puissants comme bras arm&eacute;s, les Fracci&oacute;n comme serviteurs, les N&uacute;meros comme soldats. Ce n'&eacute;tait pas une philosophie. C'&eacute;tait une constatation.</p>
+
+  <p>Au fil des g&eacute;n&eacute;rations d'Arrancar qui se succ&eacute;d&egrave;rent &agrave; la t&ecirc;te de Hueco Mundo, Las Noches fut construite et agrandie couche apr&egrave;s couche. Chaque &eacute;poque y laissa sa marque architecturale &mdash; des ailes b&acirc;ties dans des mat&eacute;riaux diff&eacute;rents, des couloirs dont la logique n'est compr&eacute;hensible que si on conna&icirc;t l'histoire de leur construction, des m&eacute;caniques internes dont certaines furent invent&eacute;es par des &ecirc;tres morts depuis des si&egrave;cles et que personne ne comprend plus enti&egrave;rement.</p>
+
+  <h2>V. Ce que la Fissure r&eacute;veille dans les Arrancar</h2>
+
+  <p>La relation entre les Hollow, les Arrancar et l'Enfer est plus intime qu'on ne le pense. Ce trou dans la poitrine &mdash; cette absence fondamentale qui d&eacute;finit l'identit&eacute; m&ecirc;me des Hollow &mdash; r&eacute;sonne avec quelque chose dans l'&eacute;nergie infernale d'une fa&ccedil;on que ni les Shinigami ni les Quincy ne per&ccedil;oivent.</p>
+
+  <p>Depuis la Fissure, certains Arrancar qui se sont approch&eacute;s des zones de contamination au Jigoku no Rinki reviennent modifi&eacute;s. Leur Cero prend parfois une teinte violac&eacute;e. Leur Hierro se transforme d'une fa&ccedil;on que nul n'a encore su classifier. Et plusieurs d'entre eux d&eacute;crivent une sensation qu'ils n'arrivent pas &agrave; nommer autrement que comme une l&eacute;g&egrave;re compl&eacute;tude &mdash; comme si le vide dans leur poitrine, pour la premi&egrave;re fois de leur existence, se remplissait partiellement.</p>
+
+  <p>Ce n'est peut-&ecirc;tre pas une co&iuml;ncidence que les Hollow portent un trou dans la poitrine et que l'Enfer soit une r&eacute;alit&eacute; qui pr&eacute;c&egrave;de les Trois Mondes. La connexion entre ces deux vides n'a jamais &eacute;t&eacute; th&eacute;oris&eacute;e s&eacute;rieusement &mdash; personne n'en avait la raison avant la Fissure. Hueco Mundo est aujourd'hui profond&eacute;ment divis&eacute; entre ceux qui craignent cette r&eacute;sonance, ceux qui la recherchent, et ceux &mdash; la majorit&eacute; &mdash; qui ne savent pas encore quoi en penser.</p>
+</section>
+
+<!-- ── QUINCY ────────────────────────────────── -->
+<section class="tab-content" id="quincy">
+  <div class="section-kanji">滅却師</div>
+  <p class="chronicle-intro">Quatri&egrave;me Chronique &mdash; L'Histoire des Quincy</p>
+
+  <h2>I. L'origine &mdash; les h&eacute;ritiers du Re&imacr;o</h2>
+
+  <p>Les Quincy ne sont pas des &acirc;mes mortes. Ils ne sont pas des cr&eacute;atures de Soul Society ou de Hueco Mundo. Ce sont des humains vivants &mdash; des &ecirc;tres du Monde des Vivants qui portent depuis leur naissance une sensibilit&eacute; spirituelle exceptionnelle&nbsp;: la capacit&eacute; de percevoir, de manipuler et de mobiliser le Reishi ambiant qui compose toute chose.</p>
+
+  <p>Cette capacit&eacute; n'est pas acquise par l'entra&icirc;nement seul. Elle est h&eacute;rit&eacute;e. Transmise de g&eacute;n&eacute;ration en g&eacute;n&eacute;ration dans les lign&eacute;es Quincy, elle remonte &agrave; une source unique&nbsp;: le Re&imacr;o lui-m&ecirc;me est la source de toute puissance Quincy. Son fils &mdash; l'Empereur Quincy &mdash; porta cette puissance &agrave; son niveau le plus absolu, et depuis lors, son sang se transmet dans toutes les lign&eacute;es de ceux qu'on appelle Quincy. Chaque Quincy qui existe porte en lui un fragment de cette h&eacute;r&eacute;dit&eacute; divine, parfois sous une forme pure et directe, parfois dilu&eacute; au fil des g&eacute;n&eacute;rations et des alliances matrimoniales.</p>
+
+  <p>Cette origine explique pourquoi les Quincy sont fondamentalement diff&eacute;rents des autres races. Ils ne sont pas les enfants d'un syst&egrave;me cosmique comme les Shinigami le sont &mdash; ils sont les h&eacute;ritiers d'une puissance qui pr&eacute;c&egrave;de ce syst&egrave;me. Et cette position particuli&egrave;re leur conf&egrave;re une fa&ccedil;on de percevoir le Reishi qui est unique&nbsp;: pas comme une extension de soi, pas comme un environnement &agrave; traverser, mais comme un tissu vivant dont on peut lire chaque fil, cartographier chaque courant, anticiper chaque rupture.</p>
+
+  <h2>II. La philosophie &mdash; pourquoi les Quincy d&eacute;truisent</h2>
+
+  <p>L&agrave; o&ugrave; un Shinigami purifie un Hollow pour lui permettre de retourner dans le cycle cosmique, un Quincy le d&eacute;truit compl&egrave;tement. Les deux actes semblent similaires de loin. Ils ne le sont pas.</p>
+
+  <p>La diff&eacute;rence fondamentale r&eacute;side dans ce que deviennent les &acirc;mes&nbsp;: les Shinigami r&eacute;int&egrave;grent les Hollow dans le cycle, permettant &agrave; leurs &acirc;mes de retourner dans Soul Society. Les Quincy les effacent enti&egrave;rement de l'existence &mdash; si bien que ces &acirc;mes n'augmentent que du c&ocirc;t&eacute; du Monde des Vivants, rompant progressivement l'&eacute;quilibre entre les Trois Mondes.</p>
+
+  <p>Pourquoi les Quincy persistent-ils dans cette approche malgr&eacute; ses cons&eacute;quences&nbsp;? Parce qu'elle n'est pas un choix philosophique abstrait &mdash; c'est une n&eacute;cessit&eacute; visc&eacute;rale. Le Reishi d'un Hollow est un poison pour un Quincy. S'il p&eacute;n&egrave;tre dans leur corps, il d&eacute;truit leur &acirc;me sans possibilit&eacute; de r&eacute;mission. Les Quincy ne d&eacute;truisent pas les Hollow parce qu'ils les jugent indignes de r&eacute;demption. Ils les d&eacute;truisent parce qu'ils n'ont pas le luxe de les purifier.</p>
+
+  <p>Cette v&eacute;rit&eacute; fondamentale n'excuse pas les cons&eacute;quences cosmiques de leurs m&eacute;thodes. Mais elle explique pourquoi les Quincy ont toujours vu dans l'accusation Shinigami &mdash; <em>vous d&eacute;truisez l'&eacute;quilibre</em> &mdash; une hypocrisie douloureuse&nbsp;: on leur reproche de survivre.</p>
+
+  <h2>III. L'&acirc;ge d'or &mdash; le Lichtreich</h2>
+
+  <p>Avant la grande guerre, les Quincy n'&eacute;taient pas des individus &eacute;parpill&eacute;s ni des familles isol&eacute;es. Ils &eacute;taient une civilisation.</p>
+
+  <p>Le Lichtreich &mdash; l'Empire de Lumi&egrave;re &mdash; s'&eacute;tendait sur plusieurs territoires du Monde des Vivants. Organis&eacute; en clans dont chacun avait d&eacute;velopp&eacute; des branches de savoir distinctes, il portait une culture, des institutions, une m&eacute;moire collective. Certains clans s'&eacute;taient sp&eacute;cialis&eacute;s dans les techniques offensives. D'autres dans les pratiques d&eacute;fensives du Blut &mdash; cette fortification spirituelle du corps qui rendait leurs guerriers d'&eacute;lite presque imperm&eacute;ables aux blessures ordinaires. D'autres encore dans la compr&eacute;hension analytique du Reishi et ses applications m&eacute;dicales.</p>
+
+  <p>&Agrave; son apog&eacute;e, le Lichtreich &eacute;tait une puissance qui pouvait regarder le Gotei 13 en face. Ses guerriers d'&eacute;lite portaient les premiers germes de ce qu'on appellerait plus tard les Sternritter &mdash; des &ecirc;tres auxquels l'Empereur avait grav&eacute; dans l'&acirc;me une lettre de puissance, Schrift, transformant leur capacit&eacute; individuelle en quelque chose d'incommensurable.</p>
+
+  <p>L'id&eacute;ologie du Lichtreich &eacute;tait simple&nbsp;: les Hollow sont une abomination. Leur destruction compl&egrave;te est un acte de justice, pas un trouble cosmique. Si l'&eacute;quilibre des Trois Mondes d&eacute;pend du recyclage de ces cr&eacute;atures, c'est que l'&eacute;quilibre lui-m&ecirc;me est d&eacute;faillant &mdash; et que c'est lui qu'il faut changer, pas les m&eacute;thodes des Quincy.</p>
+
+  <h2>IV. La d&eacute;faite et la quasi-extinction</h2>
+
+  <p>Le conflit entre le Lichtreich et le Gotei &eacute;tait in&eacute;vitable. Deux visions incompatibles de ce que devrait &ecirc;tre le monde, deux forces militaires en expansion dans des sph&egrave;res d'influence qui se touchaient de plus en plus.</p>
+
+  <p>La d&eacute;faite du Lichtreich fut totale. Son Empereur affronta le Capitaine-Commandant du Gotei dans un combat singulier, fut vaincu, et les arm&eacute;es Quincy furent d&eacute;cim&eacute;es. Les survivants se dispers&egrave;rent dans le Monde des Vivants ou se r&eacute;fugi&egrave;rent l&agrave; o&ugrave; ils pensaient &ecirc;tre introuvables. Apr&egrave;s avoir perdu la guerre contre les Shinigami, les Quincy qui surv&eacute;curent s'&eacute;chapp&egrave;rent vers le Seireitei, l'endroit qu'ils estimaient le moins surveill&eacute;, et cr&eacute;&egrave;rent un espace dans les &laquo;&nbsp;ombres&nbsp;&raquo; en manipulant le Reishi.</p>
+
+  <p>Dans les d&eacute;cennies qui suivirent, les Shinigami traqu&egrave;rent et &eacute;limin&egrave;rent m&eacute;thodiquement les Quincy qui &eacute;taient rest&eacute;s visibles dans le Monde des Vivants. Des centaines d'ann&eacute;es avant les &eacute;v&eacute;nements r&eacute;cents, les Shinigami d&eacute;cid&egrave;rent d'an&eacute;antir les Quincy pour pr&eacute;server l'&eacute;quilibre des &acirc;mes et pr&eacute;venir l'effondrement des Trois Mondes. Ce g&eacute;nocide ne s'accomplit pas dans la violence spectaculaire d'une bataille &mdash; il se d&eacute;roula dans la discr&eacute;tion m&eacute;thodique d'une extermination organis&eacute;e, famille apr&egrave;s famille, lign&eacute;e apr&egrave;s lign&eacute;e.</p>
+
+  <p>La cicatrice ne se referma jamais.</p>
+
+  <h2>V. Le Wandenreich &mdash; l'Empire Invisible</h2>
+
+  <p>Les Quincy r&eacute;fugi&eacute;s dans les ombres du Seireitei fond&egrave;rent une organisation secr&egrave;te&nbsp;: le Wandenreich, l'Empire Invisible. Pendant des si&egrave;cles, nourris par le Reishi abondant de Soul Society, ils s'entra&icirc;n&egrave;rent, perp&eacute;tu&egrave;rent leurs traditions, affin&egrave;rent leurs techniques loin de tout regard ennemi.</p>
+
+  <p>La haine des Shinigami fut soigneusement cultiv&eacute;e &mdash; non par vengeance aveugle, mais comme une flamme qu'on entretient pour rester en vie. Elle fut transmise &agrave; des g&eacute;n&eacute;rations qui n'avaient jamais vu le Monde des Vivants, qui ne connaissaient l'Empire de Lumi&egrave;re que par les r&eacute;cits de leurs a&iuml;eux, qui grandissaient avec pour seul horizon les ombres du Seireitei et la certitude que la surface appartenait &agrave; leurs ennemis.</p>
+
+  <p>Dans notre chronologie propre &mdash; distincte des &eacute;v&eacute;nements de la Grande Guerre contre les survivants Quincy &mdash; le Wandenreich n'a pas suivi le m&ecirc;me chemin que celui que certains textes &eacute;voquent. Sans leur Empereur pour les guider vers une confrontation ouverte, les diff&eacute;rentes branches du Wandenreich ont d&eacute;velopp&eacute; des philosophies divergentes. Certains cherchent une forme de r&eacute;paration. D'autres cherchent &agrave; survivre dans un monde qui ne les voulait pas. D'autres encore &mdash; les plus rares &mdash; cherchent &agrave; comprendre pourquoi les Shinigami les ont &eacute;limin&eacute;s, et si les raisons invoqu&eacute;es dissimulaient une peur plus profonde et plus ancienne.</p>
+
+  <h2>VI. Ce que les Quincy voient que les autres ne voient pas</h2>
+
+  <p>La perception Quincy du Reishi leur donne une lecture du monde radicalement diff&eacute;rente. L&agrave; o&ugrave; un Shinigami per&ccedil;oit le flux d'&eacute;nergie comme une extension de sa propre puissance, l&agrave; o&ugrave; un Arrancar le ressent dans sa chair comme une nourriture ou un danger, un Quincy le voit comme une carte &mdash; un tissu vivant avec ses courants, ses lacunes, ses distorsions.</p>
+
+  <p>Depuis la Fissure, cette vision leur r&eacute;v&egrave;le quelque chose que les autres races ne peuvent pas percevoir avec la m&ecirc;me clart&eacute;&nbsp;: la progression du Reishi infernal dans les Trois Mondes n'est pas al&eacute;atoire. Elle suit une logique. Elle a une direction. Quelque chose dans l'&eacute;nergie qui filtre des zones de rupture semble se mouvoir vers quelque chose &mdash; ou chercher quelqu'un.</p>
+
+  <p>Ce que cette observation signifie, les Quincy survivants en d&eacute;battent en secret. La partager avec les Shinigami&nbsp;? L'utiliser comme monnaie d'&eacute;change pour une reconnaissance qu'on leur a d&eacute;ni&eacute;e pendant des si&egrave;cles&nbsp;? La garder pr&eacute;cieusement comme le seul avantage qu'ils poss&egrave;dent dans le conflit qui vient&nbsp;?</p>
+
+  <p>Ils n'ont pas encore d&eacute;cid&eacute;. Mais le temps presse.</p>
+</section>
+
+<!-- ── DIVISION ZÉRO ─────────────────────────── -->
+<section class="tab-content" id="division-zero">
+  <div class="section-kanji">零番隊</div>
+  <p class="chronicle-intro">La Division Z&eacute;ro dans Infernum Aeterna</p>
+
+  <h2>Ce qu'elle est canoniquement</h2>
+
+  <p>La Division Z&eacute;ro &mdash; aussi appel&eacute;e la Garde Royale &mdash; est une institution qui n'ob&eacute;it pas au Gotei 13. Elle n'ob&eacute;it pas au Conseil Central 46. Elle ob&eacute;it &agrave; la volont&eacute; des anc&ecirc;tres des cinq Grandes Maisons Nobles &mdash; ceux-l&agrave; m&ecirc;mes qui commirent le P&eacute;ch&eacute; Originel. C'est leur volont&eacute; que la Division Z&eacute;ro perp&eacute;tue, non celle du Roi des &Acirc;mes.</p>
+
+  <p>Ses membres sont d'anciens Capitaines du Gotei promus apr&egrave;s avoir apport&eacute; quelque chose de fondamental &agrave; Soul Society. Leur puissance combin&eacute;e d&eacute;passe celle du Gotei 13 tout entier &mdash; &agrave; tel point que dans les situations d'urgence, les membres doivent briser le sceau de pacte du sang qui lie leurs vies entre elles pour lib&eacute;rer leur plein potentiel, parce que se battre sans restriction d&eacute;truirait les Trois Mondes.</p>
+
+  <p>Ils r&eacute;sident dans le Palais du Re&imacr;o &mdash; une dimension flottante au-dessus de Soul Society, accessible uniquement par ceux qui portent l'&Omacr;ken, la cl&eacute; spirituelle grav&eacute;e dans leurs propres os. Leurs vies sont li&eacute;es au Palais&nbsp;: tant que celui-ci existe et qu'un membre de la Garde survit, les membres tomb&eacute;s peuvent &ecirc;tre ressuscit&eacute;s en appelant leur nom.</p>
+
+  <h2>Sa position dans notre lore</h2>
+
+  <p>La Division Z&eacute;ro est la gardienne des secrets les plus profonds de l'univers. Elle sait la v&eacute;rit&eacute; du P&eacute;ch&eacute; Originel. Elle sait ce qu'est vraiment le Kons&omacr; Reisai. Elle sait que l'Enfer pr&eacute;c&egrave;de les Trois Mondes. Et elle choisit, depuis des millions d'ann&eacute;es, de ne rien dire.</p>
+
+  <p>Dans notre chronologie alternative, la Division Z&eacute;ro occupe une position d'une complexit&eacute; extraordinaire face &agrave; la Fissure.</p>
+
+  <p>Les Deux Piliers Maudits mentionn&eacute;s dans notre lore correspondent canoniquement &agrave; deux fragments du Re&imacr;o mutil&eacute; qui avaient acquis une conscience propre. Le bras droit devint Mimihagi, divinit&eacute; de la Stagnation. Le bras gauche, divinit&eacute; de la Progression. Ces deux entit&eacute;s maintenaient involontairement l'&eacute;quilibre entre l'accumulation infernale et les Trois Mondes &mdash; l'une retenant ce qui tendait &agrave; avancer, l'autre propulsant ce qui tendait &agrave; stagner. Ensemble, elles compensaient ce que le Re&imacr;o scell&eacute; ne pouvait plus r&eacute;guler seul.</p>
+
+  <p>Leur disparition simultan&eacute;e n'est pas un accident. C'est soit une catastrophe soit un acte d&eacute;lib&eacute;r&eacute;. La Division Z&eacute;ro est la seule institution qui pourrait savoir lequel des deux. Et elle se tait.</p>
+
+  <p>La Fissure place donc la Division Z&eacute;ro face &agrave; un dilemme existentiel&nbsp;: intervenir signifie r&eacute;v&eacute;ler des si&egrave;cles de mensonge institutionnel. Ne pas intervenir signifie laisser l'Enfer se d&eacute;verser dans les Trois Mondes. Les membres actuels ne sont pas unanimes sur la r&eacute;ponse &agrave; apporter.</p>
+</section>
+
+<!-- ── CRÉATION ──────────────────────────────── -->
+<section class="tab-content" id="creation">
+  <div class="section-kanji">創造</div>
+  <p class="chronicle-intro">Guide de Cr&eacute;ation &mdash; Personnages Originaux par Faction</p>
+
+  <!-- SHINIGAMI -->
+  <div class="faction-card" style="border-left: 3px solid #E8E8F0;">
+    <h3 style="color: #E8E8F0;">死神 &mdash; Shinigami</h3>
+
+    <p><strong>Ce que le lore autorise&nbsp;:</strong> Le Gotei 13 a treize divisions, chacune avec ses propres traditions, sa culture interne, ses tensions. Un personnage Shinigami peut &ecirc;tre n&eacute; &agrave; Soul Society ou arriv&eacute; du Monde des Vivants &mdash; dans les deux cas, son histoire avant la mort nourrit qui il est aujourd'hui. Les rangs disponibles vont de l'&eacute;l&egrave;ve de la Shin'&omacr; Academy au Capitaine &mdash; chaque niveau offre un angle narratif diff&eacute;rent.</p>
+
+    <p><strong>Ce qui rend un personnage Shinigami int&eacute;ressant dans ce contexte&nbsp;:</strong> La r&eacute;v&eacute;lation du Kons&omacr; Reisai fracture l'identit&eacute; de tous les Shinigami qui apprennent la v&eacute;rit&eacute;. Ceux qui l'ignorent encore sont peut-&ecirc;tre plus libres &mdash; mais aussi plus vuln&eacute;rables &agrave; ce choc quand il viendra. La question centrale&nbsp;: depuis combien de temps sert-on une institution fond&eacute;e sur un mensonge, et qu'est-ce qu'on fait quand on l'apprend&nbsp;?</p>
+
+    <ul class="guide-list">
+      <li>Shinigami d'une lign&eacute;e noble dont l'anc&ecirc;tre figure dans les l&eacute;gendes de l'Enfer</li>
+      <li>Ancien &eacute;l&egrave;ve de la Shin'&omacr; Academy qui a d&eacute;couvert des archives censur&eacute;es sur le Kons&omacr; Reisai</li>
+      <li>Lieutenant dont le Capitaine vient de mourir &mdash; et qui assistera donc &agrave; sa c&eacute;r&eacute;monie fun&eacute;raire dans quelques ann&eacute;es</li>
+      <li>Shinigami ayant surv&eacute;cu &agrave; une exp&eacute;dition aux fronti&egrave;res de la contamination infernale</li>
+    </ul>
+  </div>
+
+  <!-- TOGABITO -->
+  <div class="faction-card" style="border-left: 3px solid #6B1FA8;">
+    <h3 style="color: #9B59B6;">咎人 &mdash; Togabito</h3>
+
+    <p><strong>Ce que le lore autorise&nbsp;:</strong> Les Togabito sont la faction la plus diverse du serveur. Il n'y a pas de race d'origine &mdash; n'importe quelle &acirc;me peut devenir Togabito. Ce qui les diff&eacute;rencie les uns des autres, c'est quand ils sont arriv&eacute;s en Enfer et pourquoi. Un Togabito r&eacute;cent est encore proche de son ancienne identit&eacute;. Un Togabito mill&eacute;naire a tout oubli&eacute; sauf sa volont&eacute; de survivre.</p>
+
+    <p><strong>Ce qui rend un personnage Togabito int&eacute;ressant dans ce contexte&nbsp;:</strong> La Fissure change tout pour eux. Les cha&icirc;nes se rel&acirc;chent l&eacute;g&egrave;rement. Quelque chose qui ressemble de loin &agrave; de l'espoir commence &agrave; exister. Comment un &ecirc;tre forg&eacute; par des si&egrave;cles de souffrance r&eacute;agit-il &agrave; ce sentiment qu'il avait appris &agrave; tuer en lui-m&ecirc;me pour survivre&nbsp;?</p>
+
+    <ul class="guide-list">
+      <li>Ancien criminel de guerre dont la chute fut si profonde qu'il n'en parle jamais</li>
+      <li>&Acirc;me arriv&eacute;e r&eacute;cemment, encore incr&eacute;dule, encore reconnaissable</li>
+      <li>Togabito mill&eacute;naire qui a cartographi&eacute; mentalement les cinq Strates</li>
+      <li>Ancien Shinigami de rang inf&eacute;rieur persuad&eacute; qu'il y a une erreur</li>
+    </ul>
+  </div>
+
+  <!-- ARRANCAR -->
+  <div class="faction-card" style="border-left: 3px solid #8A8A7A;">
+    <h3 style="color: #8A8A7A;">破面 &mdash; Arrancar</h3>
+
+    <p><strong>Ce que le lore autorise&nbsp;:</strong> Un Arrancar peut venir de n'importe quelle strate d'&eacute;volution. La hi&eacute;rarchie &agrave; Hueco Mundo est directe&nbsp;: Espada, Fracci&oacute;n, N&uacute;meros, et Arrancar sans rang &mdash; chacun ayant son espace narratif propre.</p>
+
+    <p><strong>Ce qui rend un personnage Arrancar int&eacute;ressant dans ce contexte&nbsp;:</strong> Ce trou dans la poitrine. Cette absence fondamentale. Et maintenant, la r&eacute;sonance avec l'&eacute;nergie infernale. La question centrale&nbsp;: si quelque chose peut l&eacute;g&egrave;rement remplir ce vide, &agrave; quel prix est-on pr&ecirc;t &agrave; le chercher&nbsp;?</p>
+
+    <ul class="guide-list">
+      <li>Arrancar ayant surv&eacute;cu &agrave; une contamination au Jigoku no Rinki</li>
+      <li>Ancien Gillian devenu Vasto Lorde sur des si&egrave;cles, hant&eacute; par des souvenirs vol&eacute;s</li>
+      <li>Fracci&oacute;n d&eacute;vou&eacute; &agrave; un Espada pour des raisons qui d&eacute;passent la hi&eacute;rarchie</li>
+      <li>Arrancar qui se souvient de sa vie humaine et ne sait pas quoi faire de cette m&eacute;moire</li>
+    </ul>
+  </div>
+
+  <!-- QUINCY -->
+  <div class="faction-card" style="border-left: 3px solid #1A3A6B;">
+    <h3 style="color: #4A8ABB;">滅却師 &mdash; Quincy</h3>
+
+    <p><strong>Ce que le lore autorise&nbsp;:</strong> Les Quincy vivants descendent soit des lign&eacute;es pures du Lichtreich (Echt), soit de lign&eacute;es crois&eacute;es (Gemischt). Ils peuvent &ecirc;tre int&eacute;gr&eacute;s dans le Wandenreich ou ind&eacute;pendants &mdash; des solitaires ayant surv&eacute;cu sans l'organisation secr&egrave;te.</p>
+
+    <p><strong>Ce qui rend un personnage Quincy int&eacute;ressant dans ce contexte&nbsp;:</strong> Ils voient ce que les autres ne voient pas. La progression de la contamination infernale est pour eux une carte lisible. Ils portent aussi le fardeau d'&ecirc;tre une race que Soul Society a tent&eacute; d'exterminer.</p>
+
+    <ul class="guide-list">
+      <li>Quincy Echt gardant jalousement les secrets de la cartographie infernale</li>
+      <li>Quincy Gemischt dans l'entre-deux &mdash; ni assez pur, ni assez ignorant</li>
+      <li>Quincy isol&eacute;, survivant de la quasi-extinction, sans contact avec le Wandenreich</li>
+      <li>Analyste dont l'obsession pour la direction de l'&eacute;nergie infernale inqui&egrave;te ses sup&eacute;rieurs</li>
+    </ul>
+  </div>
+
+  <div class="section-sep">&bull; &bull; &bull;</div>
+
+  <h2>Les tensions inter-factions qui nourrissent le RP</h2>
+
+  <div class="tension-block">
+    <strong>Shinigami &harr; Togabito</strong> &mdash; La r&eacute;v&eacute;lation du Kons&omacr; Reisai. Les Togabito qui rencontrent des Shinigami sortis des Trois Mondes portent la question&nbsp;: <em>vous saviez&nbsp;?</em> Les Shinigami qui rencontrent d'anciens confr&egrave;res en Enfer portent la m&ecirc;me question, invers&eacute;e.
+  </div>
+
+  <div class="tension-block">
+    <strong>Arrancar &harr; Togabito</strong> &mdash; La r&eacute;sonance entre le vide des Hollow et l'&eacute;nergie infernale. Les Arrancar qui cherchent &agrave; comprendre ce qu'ils ressentent pr&egrave;s des failles et les Togabito qui connaissent l'Enfer depuis des si&egrave;cles ont des choses &agrave; s'apprendre mutuellement &mdash; et des raisons de se m&eacute;fier.
+  </div>
+
+  <div class="tension-block">
+    <strong>Quincy &harr; Shinigami</strong> &mdash; La vieille blessure. Un mill&eacute;naire de g&eacute;nocide ne s'oublie pas. Mais la Fissure cr&eacute;e une menace commune qui oblige &agrave; choisir&nbsp;: continuer &agrave; se ha&iuml;r ou s'allier pour survivre.
+  </div>
+
+  <div class="tension-block">
+    <strong>Quincy &harr; Togabito</strong> &mdash; Les Quincy voient la direction que prend l'&eacute;nergie infernale. Les Togabito anciens connaissent ce que cette direction signifie de l'int&eacute;rieur. Aucun des deux camps n'a le tableau complet seul.
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  &mdash; Infernum Aeterna &middot; Jigoku no Sekai &mdash;
+</footer>
+
+<!-- ═══ JAVASCRIPT ═══ -->
+<script>
+(function() {
+  const tabBar = document.getElementById('tabBar');
+  const tabs = tabBar.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+
+  function activate(tabId) {
+    const btn = tabBar.querySelector('[data-tab="' + tabId + '"]');
+    if (!btn) return;
+
+    const color = btn.dataset.color;
+
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+
+    contents.forEach(function(c) { c.classList.remove('active'); });
+    var target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+
+    document.documentElement.style.setProperty('--accent', color);
+
+    // Scroll tab into view on mobile
+    btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tabId = this.dataset.tab;
+      activate(tabId);
+      history.replaceState(null, '', '#' + tabId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Deep linking
+  var hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    activate(hash);
+  }
+})();
+</script>
+
+</body>
+</html>

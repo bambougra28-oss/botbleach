@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Runtime data
+data/roles_ids.json
+data/channels_ids.json
+data/personnages.json
+data/combats_actifs.json
+data/evenements.json
+data/ambiance.json
+data/zones_dynamiques.json
+data/moderation.json
+
+# OS
+Thumbs.db
+.DS_Store

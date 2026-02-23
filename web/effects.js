@@ -10,34 +10,34 @@
   var FACTION_FX = {
     shinigami: {
       type: 'petals',
-      colors: ['rgba(232,232,240,0.12)', 'rgba(232,232,240,0.25)', 'rgba(232,232,240,0.08)'],
-      bg: 'radial-gradient(ellipse at 50% 0%, rgba(232,232,240,0.04), transparent 60%)',
+      colors: ['rgba(232,232,240,0.35)', 'rgba(232,232,240,0.55)', 'rgba(232,232,240,0.25)'],
+      bg: 'radial-gradient(ellipse at 50% 0%, rgba(232,232,240,0.10), transparent 60%)',
       rgb: '232,232,240'
     },
     togabito: {
       type: 'embers',
-      colors: ['rgba(139,0,0,0.2)', 'rgba(107,31,168,0.15)', 'rgba(180,40,40,0.12)'],
-      bg: 'radial-gradient(at 50% 100%, rgba(107,31,168,0.05), transparent 50%), radial-gradient(at 100% 50%, rgba(139,0,0,0.03), transparent 40%)',
+      colors: ['rgba(139,0,0,0.5)', 'rgba(107,31,168,0.4)', 'rgba(180,40,40,0.35)'],
+      bg: 'radial-gradient(at 50% 100%, rgba(107,31,168,0.12), transparent 50%), radial-gradient(at 100% 50%, rgba(139,0,0,0.08), transparent 40%)',
       rgb: '107,31,168'
     },
     arrancar: {
       type: 'sand',
-      colors: ['rgba(138,138,122,0.15)', 'rgba(220,210,190,0.1)', 'rgba(160,150,130,0.08)'],
-      bg: 'radial-gradient(at 50% 50%, rgba(138,138,122,0.04), transparent 55%)',
+      colors: ['rgba(138,138,122,0.4)', 'rgba(220,210,190,0.3)', 'rgba(160,150,130,0.25)'],
+      bg: 'radial-gradient(at 50% 50%, rgba(138,138,122,0.10), transparent 55%)',
       rgb: '138,138,122'
     },
     quincy: {
       type: 'light',
-      colors: ['rgba(26,58,107,0.2)', 'rgba(100,150,255,0.12)', 'rgba(60,100,180,0.1)'],
-      bg: 'radial-gradient(at 30% 0%, rgba(26,58,107,0.05), transparent 50%), radial-gradient(at 70% 0%, rgba(26,58,107,0.04), transparent 50%)',
+      colors: ['rgba(26,58,107,0.5)', 'rgba(100,150,255,0.35)', 'rgba(60,100,180,0.3)'],
+      bg: 'radial-gradient(at 30% 0%, rgba(26,58,107,0.12), transparent 50%), radial-gradient(at 70% 0%, rgba(26,58,107,0.10), transparent 50%)',
       rgb: '26,58,107'
     }
   };
 
   var DEFAULT_FX = {
     type: 'default',
-    colors: ['rgba(201,168,76,0.08)', 'rgba(201,168,76,0.05)'],
-    bg: 'radial-gradient(at 50% 50%, rgba(201,168,76,0.02), transparent 50%)',
+    colors: ['rgba(201,168,76,0.25)', 'rgba(201,168,76,0.18)'],
+    bg: 'radial-gradient(at 50% 50%, rgba(201,168,76,0.06), transparent 50%)',
     rgb: '201,168,76'
   };
 
@@ -49,8 +49,8 @@
   var running = false;
   var isMobile = false;
   var isSmall = false;
-  var MAX_PARTICLES = 40;
-  var SPAWN_RATE = 0.15;
+  var MAX_PARTICLES = 50;
+  var SPAWN_RATE = 0.25;
 
   // ── Helpers ─────────────────────────────────────
   function rand(min, max) { return Math.random() * (max - min) + min; }
@@ -96,19 +96,19 @@
         p.x = rand(0, W);
         p.y = rand(-20, -5);
         p.vx = rand(-0.3, 0.3);
-        p.vy = rand(0.3, 0.8);
-        p.size = rand(3, 7);
+        p.vy = rand(0.4, 1.0);
+        p.size = rand(4, 9);
         p.maxLife = rand(200, 400);
         p.phase = rand(0, Math.PI * 2);
-        p.rotW = rand(1.5, 3); // ellipse width ratio
+        p.rotW = rand(1.5, 3);
         break;
 
       case 'embers':
         p.x = rand(0, W);
         p.y = rand(H + 5, H + 20);
-        p.vx = rand(-0.4, 0.4);
-        p.vy = rand(-0.5, -1.2);
-        p.size = rand(2, 5);
+        p.vx = rand(-0.5, 0.5);
+        p.vy = rand(-0.6, -1.4);
+        p.size = rand(3, 7);
         p.maxLife = rand(150, 350);
         p.flicker = rand(0, Math.PI * 2);
         break;
@@ -116,30 +116,30 @@
       case 'sand':
         p.x = rand(-20, -5);
         p.y = rand(0, H);
-        p.vx = rand(0.4, 1.0);
-        p.vy = rand(-0.1, 0.1);
-        p.size = rand(1.5, 4);
+        p.vx = rand(0.5, 1.2);
+        p.vy = rand(-0.15, 0.15);
+        p.size = rand(2, 5);
         p.maxLife = rand(250, 500);
-        p.angular = Math.random() < 0.3; // fragment angulaire
+        p.angular = Math.random() < 0.35;
         break;
 
       case 'light':
         p.x = rand(0, W);
         p.y = rand(H + 5, H + 20);
-        p.vx = rand(-0.2, 0.2);
-        p.vy = rand(-0.3, -0.7);
-        p.size = rand(2, 5);
+        p.vx = rand(-0.25, 0.25);
+        p.vy = rand(-0.4, -0.8);
+        p.size = rand(3, 6);
         p.maxLife = rand(200, 450);
         p.phase = rand(0, Math.PI * 2);
-        p.isCross = Math.random() < 0.25;
+        p.isCross = Math.random() < 0.3;
         break;
 
-      default: // 'default' — subtle gold
+      default: // 'default' — gold
         p.x = rand(0, W);
         p.y = rand(0, H);
-        p.vx = rand(-0.15, 0.15);
-        p.vy = rand(-0.15, 0.15);
-        p.size = rand(1.5, 3);
+        p.vx = rand(-0.2, 0.2);
+        p.vy = rand(-0.2, 0.2);
+        p.size = rand(2, 4);
         p.maxLife = rand(300, 600);
         break;
     }
@@ -231,7 +231,7 @@
 
     if (p.isCross) {
       // Quincy cross shape (2 lines)
-      var s = p.size * 1.5;
+      var s = p.size * 2;
       ctx.beginPath();
       ctx.moveTo(p.x - s, p.y);
       ctx.lineTo(p.x + s, p.y);
@@ -272,7 +272,7 @@
     ctx.clearRect(0, 0, W, H);
 
     // Spawn
-    var maxSpawn = currentFX.type === 'default' ? 15 : MAX_PARTICLES;
+    var maxSpawn = currentFX.type === 'default' ? 25 : MAX_PARTICLES;
     if (particles.length < maxSpawn && Math.random() < SPAWN_RATE) {
       particles.push(spawnParticle());
     }

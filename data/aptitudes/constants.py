@@ -15,13 +15,13 @@ REIRYOKU_PAR_RANG = {
     "sanseki":          14,
     "fukutaicho":       18,
     "taicho":           22,
-    "sotaicho":         24,
+    "sotaicho":         26,
     # Togabito
     "zainin":           3,
     "togabito_damne":   8,
     "tan_togabito":     14,
     "ko_togabito":      20,
-    "gokuo":            24,
+    "gokuo":            26,
     # Arrancar
     "horo":             3,
     "gillian":          5,
@@ -30,15 +30,15 @@ REIRYOKU_PAR_RANG = {
     "numeros":          14,
     "fraccion":         17,
     "privaron_espada":  20,
-    "espada":           22,
-    "rey":              24,
+    "espada":           23,
+    "rey":              26,
     # Quincy
     "minarai":          3,
     "quincy_confirme":  7,
     "jagdarmee":        12,
     "sternritter":      18,
     "schutzstaffel":    22,
-    "seitei":           24,
+    "seitei":           26,
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

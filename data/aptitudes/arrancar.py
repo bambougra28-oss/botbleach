@@ -502,7 +502,7 @@ RESURRECCION = {
             "palier": 1,
             "cout": 1,
             "prereqs": [],
-            "rang_min": None,
+            "rang_min": "numeros",
             "description": (
                 "L'État Scellé. L'Arrancar apprend à maintenir consciemment le sceau "
                 "de son Zanpakutō, canalisant un filet de puissance Hollow sans le briser. "
@@ -518,7 +518,7 @@ RESURRECCION = {
             "palier": 1,
             "cout": 1,
             "prereqs": [],
-            "rang_min": None,
+            "rang_min": "numeros",
             "description": (
                 "L'Instinct. Le souvenir du Hollow affleure à la surface — pas assez pour "
                 "transformer, juste assez pour réagir. Les réflexes deviennent surhumains, "
@@ -534,7 +534,7 @@ RESURRECCION = {
             "palier": 1,
             "cout": 1,
             "prereqs": [],
-            "rang_min": None,
+            "rang_min": "numeros",
             "description": (
                 "La Résonance du Zanpakutō. L'Arrancar cesse de voir son arme comme un "
                 "objet étranger et commence à sentir le Hollow scellé à l'intérieur — ses "
@@ -552,7 +552,7 @@ RESURRECCION = {
             "palier": 2,
             "cout": 2,
             "prereqs": ["arr_res_p1b"],
-            "rang_min": None,
+            "rang_min": "numeros",
             "description": (
                 "La Propriété Unique. Chaque Resurrección possède un aspect qui lui est "
                 "propre — une capacité spéciale qui reflète la nature profonde du Hollow. "
@@ -568,7 +568,7 @@ RESURRECCION = {
             "palier": 2,
             "cout": 2,
             "prereqs": ["arr_res_p1a", "arr_res_p1c"],
-            "rang_min": None,
+            "rang_min": "numeros",
             "description": (
                 "Le Signe de la Libération. Le pouvoir de la Resurrección commence à "
                 "suinter à travers le sceau — une manifestation partielle qui altère "
@@ -586,7 +586,7 @@ RESURRECCION = {
             "palier": 2,
             "cout": 2,
             "prereqs": ["arr_res_p1b", "arr_res_p1c"],
-            "rang_min": None,
+            "rang_min": "numeros",
             "description": (
                 "L'Éveil Instinctif. Le dialogue avec le Hollow intérieur atteint un "
                 "seuil de profondeur où les réflexes transcendent l'entraînement — le "

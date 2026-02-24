@@ -234,8 +234,10 @@ def est_sur_budget(aptitudes_debloquees: list[str], rang_cle: str, bonus: int = 
 # ══════════════════════════════════════════════════════════════════════════════
 
 def puissance_spirituelle(points: int) -> int:
-    """Calcule la Puissance Spirituelle (PS) à partir des points de progression."""
-    return max(1, points // 100)
+    """Calcule la Puissance Spirituelle (PS) à partir des points de progression.
+    Formule quadratique : PS = points² ÷ 1000 (minimum 1).
+    L'échelle quadratique creuse exponentiellement l'écart entre rangs élevés."""
+    return max(1, points * points // 1000)
 
 
 def palier_combat(ps_a: int, ps_b: int) -> dict:

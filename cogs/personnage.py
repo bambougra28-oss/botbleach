@@ -156,7 +156,7 @@ class Personnage(commands.Cog):
         # Puissance Spirituelle
         from data.aptitudes import puissance_spirituelle
         ps = puissance_spirituelle(points)
-        embed.add_field(name="⚡ Puissance Spirituelle", value=f"**{ps}** PS", inline=True)
+        embed.add_field(name="⚡ Puissance Spirituelle", value=f"**{ps:,}** PS", inline=True)
         embed.add_field(name="Statut",  value="✅ Validé" if valide else "⏳ En attente", inline=True)
         if barre:
             embed.add_field(name="Progression", value=barre, inline=False)
@@ -503,7 +503,7 @@ class Personnage(commands.Cog):
             ps = puissance_spirituelle(pts)
             lignes.append(
                 f"{medailles[i]} **{p['nom_perso']}** {emoji_f}\n"
-                f"  {p.get('rang_label', '—')} · **{pts:,}** pts · ⚡ {ps} PS"
+                f"  {p.get('rang_label', '—')} · **{pts:,}** pts · ⚡ {ps:,} PS"
             )
 
         embed.description = "\n".join(lignes)

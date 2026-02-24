@@ -424,40 +424,39 @@ Warning → 3 warnings/24h → Infraction auto (timeout 30min)
 
 ## Puissance Spirituelle (PS)
 
-Indicateur chiffré de force relative pour guider la narration en combat.
+Indicateur chiffré de force relative, utilisé pour guider la narration en combat. L'échelle est quadratique : chaque rang supérieur est exponentiellement plus puissant que le précédent.
 
 ### Formule
-`PS = points // 100` (minimum 1)
+`PS = points * points // 1000` (minimum 1)
 
-Exemples : 500 pts → 5 PS · 2000 pts → 20 PS · 10000 pts → 100 PS
+Quelques repères : un étudiant à 500 pts possède 250 PS, un Adjuchas à 2 000 pts en a 4 000, un Capitaine à 8 500 pts atteint 72 250, et un Commandant à 10 000 pts culmine à 100 000 PS.
 
-### Paliers de combat (écart de PS entre combattants)
+### Paliers de combat
 
-| Écart | Nom | Kanji | P1 | P2 | P3 |
-|-------|-----|-------|----|----|-----|
-| 0-10 | Équilibre | 均衡 | normal | normal | normal |
-| 11-25 | Ascendant | 優勢 | réduit | normal | normal |
-| 26-40 | Domination | 制圧 | inefficace | réduit | normal |
-| 41-60 | Écrasement | 圧倒 | inefficace | inefficace | réduit |
-| 61+ | Abîme | 深淵 | inefficace | inefficace | inefficace |
+L'écart de PS entre deux combattants détermine un palier narratif. Le MJ s'en sert pour juger si les aptitudes du plus faible portent encore leurs effets.
 
-Les effets sont des **guides narratifs**, pas des mécaniques automatiques :
-- `normal` = fonctionne pleinement
-- `réduit` = efficacité diminuée (dégâts moindres, durée réduite)
-- `inefficace` = sans effet significatif sauf circonstances exceptionnelles
+| Écart PS | Palier | Kanji | Éveil | Maîtrise | Transcendance |
+|----------|--------|-------|-------|----------|---------------|
+| 0 à 2 000 | Équilibre | 均衡 | normal | normal | normal |
+| 2 001 à 8 000 | Ascendant | 優勢 | réduit | normal | normal |
+| 8 001 à 25 000 | Domination | 制圧 | inefficace | réduit | normal |
+| 25 001 à 55 000 | Écrasement | 圧倒 | inefficace | inefficace | réduit |
+| 55 001+ | Abîme | 深淵 | inefficace | inefficace | inefficace |
+
+Ces paliers sont des guides narratifs, pas des mécaniques rigides. « Normal » signifie que la technique fonctionne pleinement. « Réduit » signifie que son efficacité diminue sensiblement. « Inefficace » signifie qu'elle n'a plus d'effet significatif sauf circonstances exceptionnelles.
 
 ### PS des PNJ prédéfinis
 
-| PNJ | PS | Justification |
+| PNJ | PS | Contexte |
 |-----|-----|------|
-| Kushanāda | 90 | Gardien millénaire |
-| Damné Ancien | 60 | Togabito millénaire |
-| PNJ Personnalisé | 50 | Défaut staff |
-| Quincy Réfugié | 30 | Entraîné mais affaibli |
-| Garde du Seireitei | 20 | Shinigami moyen |
-| Hollow Errant | 12 | Hollow commun |
-| Marchand du Rukongai | 3 | Civil |
-| Esprit Perdu | 2 | Âme errante |
+| Kushanāda | 150 000 | Gardien millénaire de l'Enfer |
+| Damné Ancien | 80 000 | Togabito millénaire, rivalise un Capitaine |
+| PNJ Personnalisé | 30 000 | Valeur par défaut pour les PNJ staff |
+| Quincy Réfugié | 12 000 | Entraîné mais affaibli par l'exil |
+| Garde du Seireitei | 4 000 | Shinigami de rang standard |
+| Hollow Errant | 1 500 | Hollow commun |
+| Marchand du Rukongai | 100 | Civil, quasi sans pouvoir spirituel |
+| Esprit Perdu | 50 | Âme errante |
 
 ### Utilisation dans le code
 ```python
@@ -467,11 +466,11 @@ palier = palier_combat(ps_a, ps_b)              # dict depuis PALIERS_COMBAT
 # palier["nom"], palier["kanji"], palier["effet_p1"], etc.
 ```
 
-### Où c'est affiché
-- `/personnage` — champ "⚡ Puissance Spirituelle"
-- `/classement` — PS à côté des points
-- Création de combat — embed avec palier et effets sur P1/P2/P3
-- `/pnj-liste` et invocation PNJ — PS dans le catalogue et l'embed
+### Où la PS est affichée
+- `/personnage` : champ Puissance Spirituelle (formaté avec séparateurs de milliers)
+- `/classement` : PS à côté des points
+- Création de combat : embed avec le palier et ses effets sur chaque palier d'aptitude
+- `/pnj-liste` et invocation PNJ : PS dans le catalogue et l'embed d'apparition
 
 ---
 

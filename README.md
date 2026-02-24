@@ -1,185 +1,136 @@
-# ⛩️ Infernum Aeterna — Bot Discord
+# Infernum Aeterna
 
-Bot administrateur pour le serveur de jeu de rôle **Infernum Aeterna**  
-Univers Bleach · Arc de l'Enfer · Timeline indépendante du canon TYBW
+Bot Discord pour un serveur de jeu de rôle francophone dans l'univers Bleach. Timeline alternative, arc de l'Enfer. Quatre factions jouables, progression par points, système d'aptitudes complet, narration IA intégrée.
 
----
+Python 3.11+ · discord.py 2.x · Anthropic SDK (Claude)
 
-## Prérequis
+## Ce que fait le bot
 
-- Python 3.11+
-- Un serveur Discord avec les permissions Administrateur
-- Une clé API Anthropic (Claude)
+Infernum Aeterna gère un serveur RP de bout en bout. À l'installation, il construit la totalité de la structure Discord : rôles, catégories, channels, permissions par faction, messages d'accueil, boutons persistants. En fonctionnement, il accompagne chaque étape du jeu.
 
----
+**Accueil des joueurs.** Un nouveau membre reçoit le rôle Observateur, un message narratif immersif, puis un parcours d'intégration en plusieurs étapes. Serment, choix de faction, soumission de fiche, validation staff. Le tout sans intervention manuelle.
+
+**Personnages.** Soumission par modal Discord, validation staff, attribution automatique des rôles de faction et de rang. Le dashboard `/personnage` affiche la progression, les statistiques de combat, la Puissance Spirituelle et le rang actuel.
+
+**Combat.** Création de fils dédiés avec `/combat`, suivi tour par tour, calcul automatique du palier de puissance entre les deux combattants. Archivage automatique des combats inactifs après sept jours. Statistiques victoires/défaites mises à jour à la clôture.
+
+**Aptitudes.** Chaque faction possède quatre Voies d'aptitudes (environ 20 techniques par faction), réparties en trois paliers : Éveil, Maîtrise et Transcendance. Le budget de Reiryoku croît avec le rang et se dépense librement dans les Voies.
+
+**Puissance Spirituelle.** Un indicateur chiffré calculé à partir des points de progression (PS = Points² ÷ 1 000). L'échelle quadratique crée des écarts de puissance cohérents : un étudiant possède 250 PS, un Capitaine atteint 72 250 PS, un Commandant culmine à 100 000 PS. En combat, l'écart de PS détermine un palier narratif (Équilibre, Ascendant, Domination, Écrasement, Abîme) qui guide l'efficacité des aptitudes.
+
+**Narration IA.** Le bot génère des narrations épiques via Claude pour les montées en rang, les validations de fiche, les clôtures d'arc et les moments clés du RP. Des messages d'ambiance IA sont publiés automatiquement dans les zones actives.
+
+**PNJ interactifs.** Huit personnages non-joueurs invocables par les joueurs, chacun avec sa personnalité et sa puissance spirituelle. Les échanges se font en thread dédié, via Claude, avec un quota journalier.
+
+**Missions, territoires, journaux.** Système complet de missions créées par le staff, guerre d'influence entre factions sur six zones contestées, journaux personnels en forum Discord avec événements automatiques.
+
+**Modération autonome.** Détection de spam, raids, et contenu problématique en trois tiers : heuristique instantanée, analyse IA par lots, commandes staff. Escalade automatique des récidivistes.
 
 ## Installation
 
 ```bash
-# 1. Cloner ou copier le dossier infernum_bot/
-# 2. Installer les dépendances
 pip install -r requirements.txt
-
-# 3. Configurer l'environnement
 cp .env.example .env
-# Éditer .env avec vos tokens
-
-# 4. Lancer le bot
+# Remplir DISCORD_TOKEN, ANTHROPIC_API_KEY, GUILD_ID
 python main.py
 ```
 
-### Contenu de `.env`
-```
-DISCORD_TOKEN=ton_token_discord
-ANTHROPIC_API_KEY=ta_cle_anthropic
-GUILD_ID=id_numerique_du_serveur
-```
-
----
-
-## Premier démarrage
-
-Une fois le bot connecté, exécuter dans n'importe quel channel Discord :
-
-```
-/setup
-```
-
-Le bot va créer en 2-3 minutes :
-- 37 rôles avec couleurs et positions
-- 11 catégories
-- 65+ channels avec permissions granulaires par faction
-- Messages épinglés initiaux (boutons faction, règles, etc.)
-
----
+Au premier lancement, exécuter `/setup` dans n'importe quel channel. Le bot construit tout le serveur en quelques minutes : 37 rôles, 11 catégories, plus de 65 channels avec permissions granulaires.
 
 ## Architecture
 
 ```
-infernum_bot/
-├── main.py                   — Point d'entrée, chargement des 8 cogs
-├── config.py                 — Tokens, palette couleurs, prompt Narrateur
-├── requirements.txt
-├── .env.example
-├── README.md
+├── main.py                    Point d'entrée, chargement des 15 cogs
+├── config.py                  Couleurs, prompts IA, paliers de combat
 ├── cogs/
-│   ├── construction.py       — /setup, boutons persistants
-│   ├── narrateur.py          — /narrer, /flash, déclencheurs auto
-│   ├── combat.py             — /combat, /tour, /clore-combat, archivage auto
-│   ├── personnage.py         — /personnage, /fiche-*, /classement, /historique
-│   ├── zones.py              — /zone-creer, /zone-archiver
-│   ├── ambiance.py           — Messages d'ambiance IA automatiques
-│   ├── evenements.py         — Arcs narratifs, Fissure, portails
-│   └── lore.py               — /lore, /glossaire, /fiche-faction, /strates
-└── data/
-    ├── structure_serveur.py  — Définition des 37 rôles et 65+ channels
-    ├── roles_ids.json         — Généré par /setup
-    ├── personnages.json       — Généré automatiquement
-    ├── combats_actifs.json    — Généré automatiquement
-    ├── evenements.json        — Généré automatiquement
-    ├── ambiance.json          — Généré automatiquement
-    └── zones_dynamiques.json  — Généré automatiquement
+│   ├── construction.py        /setup, /refresh-lore, boutons persistants
+│   ├── narrateur.py           /narrer, /flash, narrations automatiques
+│   ├── combat.py              /combat, /tour, /clore-combat, archivage
+│   ├── personnage.py          /personnage, /fiche-*, /classement
+│   ├── zones.py               Zones RP dynamiques
+│   ├── ambiance.py            Messages d'ambiance IA (boucle 10min)
+│   ├── evenements.py          Arcs narratifs, Fissure, événements planifiés
+│   ├── lore.py                /lore, /glossaire, /fiche-faction, /strates
+│   ├── moderation.py          Modération 3 tiers (heuristique + IA + staff)
+│   ├── scenes.py              Scènes RP en forums, archivage automatique
+│   ├── missions.py            Missions staff, acceptation, rapports
+│   ├── pnj.py                 PNJ interactifs IA (8 PNJ, sessions thread)
+│   ├── territoire.py          Guerre de factions, influence, saisons
+│   └── journal.py             Journaux personnels, événements auto
+├── data/
+│   ├── structure_serveur.py   Définition des rôles et channels
+│   ├── aptitudes/             Système d'aptitudes (4 factions × 4 voies)
+│   └── *.json                 Persistence runtime (personnages, combats, etc.)
+├── utils/
+│   └── json_store.py          Persistence JSON thread-safe (asyncio.Lock)
+├── web/
+│   ├── index.html             Page lore statique (GitHub Pages)
+│   └── aptitudes.html         Système d'aptitudes interactif
+└── tests/
+    └── test_integration.py    49 tests (structure, imports, données, logique)
 ```
 
----
+## Commandes
 
-## Commandes (35 commandes slash)
+Le bot expose une cinquantaine de commandes slash, réparties par domaine.
 
-### 🏗️ Construction
-| Commande | Accès | Description |
+**Construction** : `/setup`, `/purge-serveur`, `/scan-channels`, `/sync-roles`, `/refresh-lore`, `/sync-permissions`
+
+**Narration** : `/narrer`, `/flash`
+
+**Combat** : `/combat`, `/tour`, `/clore-combat`, `/combats-actifs`
+
+**Personnages** : `/personnage`, `/fiche-soumettre`, `/fiche-valider`, `/points-ajouter`, `/rang-attribuer`, `/classement`, `/historique`, `/chercher-perso`, `/relation-declarer`, `/relations`
+
+**Scènes et zones** : `/scene-creer`, `/scene-rejoindre`, `/scene-clore`, `/scenes-actives`, `/zone-creer`, `/zone-archiver`, `/zones-actives`
+
+**Missions** : `/mission-creer`, `/mission-accepter`, `/mission-rapport`, `/mission-valider`, `/missions-actives`
+
+**PNJ** : `/pnj-invoquer`, `/pnj-parler`, `/pnj-congedier`, `/pnj-liste`
+
+**Événements** : `/arc-ouvrir`, `/arc-clore`, `/arc-actuel`, `/arc-evenement`, `/fissure-etat`, `/portail-ouvrir`, `/portail-fermer`, `/etat-serveur`, `/evenement-planifier`, `/evenements-liste`
+
+**Territoires** : `/territoire`, `/influence`, `/territoire-reset`, `/territoire-historique`
+
+**Journal** : `/journal`, `/journal-ecrire`, `/journal-lire`, `/journal-stats`
+
+**Lore** : `/lore`, `/glossaire`, `/fiche-faction`, `/strates`
+
+**Ambiance** : `/ambiance-activer`, `/ambiance-desactiver`, `/ambiance-forcer`, `/ambiance-statut`
+
+**Modération** : `/mod-warn`, `/mod-timeout`, `/mod-historique`, `/mod-config`, `/mod-rapport`
+
+## Système de progression
+
+Quatre factions, chacune avec sa propre hiérarchie de rangs et ses propres seuils de points.
+
+| Faction | Rangs | Points |
 |---|---|---|
-| `/setup` | Admin | Construit le serveur complet (rôles, catégories, channels) |
-| `/purge-serveur` | Admin | Supprime tous les channels et rôles gérés |
+| Shinigami | 7 (Gakusei à Sōtaichō) | 500 à 10 000 |
+| Togabito | 5 (Zainin à Gokuō) | 500 à 10 000 |
+| Arrancar | 9 (Horō à Rey) | 500 à 10 000 |
+| Quincy | 6 (Minarai à Seitei) | 500 à 10 000 |
 
-### 📜 Narration
-| Commande | Accès | Description |
-|---|---|---|
-| `/narrer` | Staff | Génère une narration épique via Claude (8 types × 3 longueurs) |
-| `/flash` | Staff | Publie une alerte narrative courte dans flash-événements |
+La montée en rang est détectée automatiquement quand les points franchissent un seuil. Le staff est notifié, le joueur reçoit ses nouveaux rôles, et une narration épique est publiée dans le journal de l'Enfer.
 
-### ⚔️ Combat
-| Commande | Accès | Description |
-|---|---|---|
-| `/combat` | Tous | Crée un fil de combat avec un adversaire |
-| `/tour` | Participants | Signale la fin d'un tour et enregistre l'action |
-| `/clore-combat` | Participants / Staff | Clôture le combat, propose une narration épique |
-| `/combats-actifs` | Staff | Liste tous les combats en cours |
+## Pages web
 
-> Les fils de combat inactifs depuis **7 jours** sont archivés automatiquement.
+Deux pages HTML statiques déployables sur GitHub Pages, sans dépendance externe (à l'exception de Google Fonts).
 
-### 👤 Personnages
-| Commande | Accès | Description |
-|---|---|---|
-| `/personnage` | Tous | Dashboard complet d'un personnage (barre progression, stats) |
-| `/fiche-soumettre` | Tous | Soumet une fiche via modal Discord |
-| `/fiche-valider` | Staff | Valide une fiche, attribue les rôles, notifie en DM |
-| `/points-ajouter` | Staff | Ajoute ou retire des points, vérifie la montée en rang |
-| `/rang-attribuer` | Staff | Attribue un rang, met à jour les rôles, déclenche la narration |
-| `/classement` | Tous | Leaderboard top 10 global ou par faction |
-| `/historique` | Tous | Fiche narrative complète (rangs, combats, progression) |
-| `/chercher-perso` | Tous | Recherche un personnage par nom ou faction |
+**Chroniques des Quatre Races** (`web/index.html`) : le lore intégral du serveur en sept onglets. Prologue, Shinigami, Togabito, Arrancar, Quincy, Division Zéro, Création de personnage.
 
-### 📍 Zones Dynamiques
-| Commande | Accès | Description |
-|---|---|---|
-| `/zone-creer` | Staff | Crée un salon RP temporaire dans une catégorie existante |
-| `/zone-archiver` | Staff | Archive (ferme) un salon dynamique avec message de clôture |
-| `/zones-actives` | Staff | Liste toutes les zones dynamiques ouvertes |
+**Système d'Aptitudes** (`web/aptitudes.html`) : présentation interactive des quatre factions, de leurs Voies et de toutes les aptitudes. Arbres visuels, descriptions narratives, section Système avec les paliers de combat et la Puissance Spirituelle.
 
-### 🌫️ Ambiance
-| Commande | Accès | Description |
-|---|---|---|
-| `/ambiance-activer` | Staff | Active les messages d'ambiance IA dans un channel |
-| `/ambiance-desactiver` | Staff | Désactive les messages d'ambiance |
-| `/ambiance-forcer` | Staff | Déclenche immédiatement un message d'ambiance |
-| `/ambiance-statut` | Staff | Liste les channels avec ambiance active |
+## Déploiement
 
-### 📖 Événements & Arcs
-| Commande | Accès | Description |
-|---|---|---|
-| `/arc-ouvrir` | Admin | Démarre un nouvel arc narratif (déclenche narration auto) |
-| `/arc-clore` | Admin | Clôture l'arc avec résumé IA publié dans les archives |
-| `/arc-actuel` | Tous | Affiche l'arc en cours et l'état de la Fissure |
-| `/arc-evenement` | Staff | Ajoute un événement notable à l'arc en cours |
-| `/fissure-etat` | Admin | Met à jour l'état public de la Fissure (5 niveaux) |
-| `/portail-ouvrir` | Staff | Rend un channel événementiel visible + ping rôle |
-| `/portail-fermer` | Staff | Archive un channel événementiel |
-| `/etat-serveur` | Tous | Tableau de bord global (Fissure, arc, membres, factions) |
-
-### 📚 Lore
-| Commande | Accès | Description |
-|---|---|---|
-| `/lore` | Tous | Résumé d'un concept clé (Fissure, Reiō, Konsō Reisai…) |
-| `/glossaire` | Tous | Définition d'un terme japonais du lore |
-| `/fiche-faction` | Tous | Fiche complète d'une faction jouable |
-| `/strates` | Tous | Carte narrative des cinq Strates de l'Enfer |
-
----
-
-## Système de rangs et points
-
-| Faction | Rangs | Points min → max |
-|---|---|---|
-| Shinigami | 7 rangs | 500 → 10 000 |
-| Togabito | 4 rangs | 500 → 10 000 |
-| Arrancar | 5 rangs | 800 → 10 000 |
-| Quincy | 4 rangs | 500 → 10 000 |
-
-La montée en rang est détectée automatiquement après `/points-ajouter` et notifie le staff.  
-Le vainqueur d'un combat est enregistré automatiquement dans les statistiques.
-
----
-
-## Déploiement VPS
-
-### Avec screen (simple)
+### Avec screen
 ```bash
 screen -S infernum
 python main.py
 # Ctrl+A puis D pour détacher
 ```
 
-### Avec systemd (recommandé)
+### Avec systemd
 ```ini
 # /etc/systemd/system/infernum.service
 [Unit]
@@ -197,31 +148,7 @@ EnvironmentFile=/opt/infernum_bot/.env
 [Install]
 WantedBy=multi-user.target
 ```
-```bash
-systemctl enable infernum
-systemctl start infernum
-journalctl -u infernum -f
-```
-
----
-
-## Comportements automatiques
-
-| Déclencheur | Action automatique |
-|---|---|
-| Nouveau membre rejoint | Rôle Observateur + message de bienvenue |
-| Fiche validée | Narration d'accueil publiée dans journal-de-l-enfer |
-| Points dépassent un seuil | Alerte montée en rang dans canal staff |
-| Rang attribué | Narration de promotion + DM au joueur |
-| Arc ouvert | Narration d'ouverture publiée dans journal-de-l-enfer |
-| Arc clôturé | Résumé épique archivé dans archives-des-arcs |
-| Combat clôturé | Stats joueurs mises à jour automatiquement |
-| Fil de combat inactif 7j | Archivage automatique du fil Discord |
-
----
 
 ## Notes techniques
 
-- Les boutons (faction, abonnements, combat) sont **persistants** : ils survivent aux redémarrages du bot grâce aux `custom_id` statiques.
-- Les données sont stockées en JSON dans `data/`. Pour une production avec beaucoup d'utilisateurs, envisager une migration vers SQLite.
-- Le bot utilise le modèle `claude-sonnet-4-5`. Chaque narration coûte ~1-3 secondes et ~500-1000 tokens.
+Les boutons d'interaction (serment, combat, scènes, abonnements) utilisent des `custom_id` statiques et survivent aux redémarrages du bot. Les données sont stockées en JSON dans `data/`, protégées par un verrou asyncio pour la concurrence. Le bot utilise Claude Sonnet pour la narration et Claude Haiku pour la modération IA.

@@ -36,11 +36,11 @@ COULEURS = {
 
 # ─── Paliers de combat (Puissance Spirituelle) ──────────────────────────────
 PALIERS_COMBAT = [
-    {"ecart_min": 0,  "ecart_max": 10,  "nom": "Équilibre",   "kanji": "均衡", "effet_p1": "normal",      "effet_p2": "normal",      "effet_p3": "normal"},
-    {"ecart_min": 11, "ecart_max": 25,  "nom": "Ascendant",   "kanji": "優勢", "effet_p1": "réduit",      "effet_p2": "normal",      "effet_p3": "normal"},
-    {"ecart_min": 26, "ecart_max": 40,  "nom": "Domination",  "kanji": "制圧", "effet_p1": "inefficace",  "effet_p2": "réduit",      "effet_p3": "normal"},
-    {"ecart_min": 41, "ecart_max": 60,  "nom": "Écrasement",  "kanji": "圧倒", "effet_p1": "inefficace",  "effet_p2": "inefficace",  "effet_p3": "réduit"},
-    {"ecart_min": 61, "ecart_max": 999, "nom": "Abîme",       "kanji": "深淵", "effet_p1": "inefficace",  "effet_p2": "inefficace",  "effet_p3": "inefficace"},
+    {"ecart_min": 0,     "ecart_max": 2_000,   "nom": "Équilibre",   "kanji": "均衡", "effet_p1": "normal",      "effet_p2": "normal",      "effet_p3": "normal"},
+    {"ecart_min": 2_001, "ecart_max": 8_000,   "nom": "Ascendant",   "kanji": "優勢", "effet_p1": "réduit",      "effet_p2": "normal",      "effet_p3": "normal"},
+    {"ecart_min": 8_001, "ecart_max": 25_000,  "nom": "Domination",  "kanji": "制圧", "effet_p1": "inefficace",  "effet_p2": "réduit",      "effet_p3": "normal"},
+    {"ecart_min": 25_001,"ecart_max": 55_000,  "nom": "Écrasement",  "kanji": "圧倒", "effet_p1": "inefficace",  "effet_p2": "inefficace",  "effet_p3": "réduit"},
+    {"ecart_min": 55_001,"ecart_max": 999_999, "nom": "Abîme",       "kanji": "深淵", "effet_p1": "inefficace",  "effet_p2": "inefficace",  "effet_p3": "inefficace"},
 ]
 
 # ─── Prompt système du Narrateur ──────────────────────────────────────────────

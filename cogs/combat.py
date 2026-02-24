@@ -168,10 +168,10 @@ class Combat(commands.Cog):
         # Texte palier pour l'embed
         ecart = abs(ps_init - ps_adv)
         palier_txt = (
-            f"**{initiateur.display_name}** : {ps_init} PS · "
-            f"**{adversaire.display_name}** : {ps_adv} PS\n"
-            f"Palier : {palier['kanji']} **{palier['nom']}** (écart {ecart})\n"
-            f"├ P1 : {palier['effet_p1']} · P2 : {palier['effet_p2']} · P3 : {palier['effet_p3']}"
+            f"**{initiateur.display_name}** : {ps_init:,} PS\n"
+            f"**{adversaire.display_name}** : {ps_adv:,} PS\n"
+            f"{palier['kanji']} **{palier['nom']}** (écart : {ecart:,})\n"
+            f"Éveil : {palier['effet_p1']} · Maîtrise : {palier['effet_p2']} · Transcendance : {palier['effet_p3']}"
         )
 
         embed = discord.Embed(

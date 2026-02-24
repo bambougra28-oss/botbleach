@@ -423,40 +423,41 @@ LORE_DATA = {
         "couleur": COULEURS["gris_acier"],
         "web_fragment": "",
         "description": (
-            "Le système de progression d'Infernum Aeterna reflète l'évolution narrative "
-            "de votre personnage — pas seulement ses victoires en combat."
+            "La progression d'un personnage dans Infernum Aeterna reflète son "
+            "parcours narratif. Les points ne récompensent pas seulement les "
+            "victoires en combat : chaque scène écrite, chaque arc traversé, "
+            "chaque contribution au lore fait avancer le personnage."
         ),
         "fields": [
-            ("Obtenir des points",
-             "Participation active au RP (scènes écrites, arcs narratifs), "
-             "victoires en combat (`/clore-combat`), contributions lore validées "
-             "par le staff, événements serveur. Points attribués par le staff via "
-             "`/points-ajouter`."),
-            ("Montée en rang",
-             "Automatique à chaque seuil franchi. Le staff est notifié. "
-             "Déclenche une narration épique dans `#journal-de-l-enfer`. "
-             "Nouveaux rôles et accès aux zones plus profondes débloqués."),
-            ("Aptitudes — Système Reiryoku (霊力)",
-             "Chaque rang accorde un budget de **Reiryoku** (霊力) à répartir dans les "
-             "**Voies** de votre faction (4 Voies, 20 aptitudes par faction). "
-             "Trois paliers : **Éveil** (1 霊力), **Maîtrise** (2 霊力), **Transcendance** (3 霊力). "
-             "Le Palier 3 est réservé aux rangs élevés. "
-             "Commandes : `/aptitudes` (dashboard), `/voie` (arbre), `/aptitude-debloquer`."),
+            ("Gagner des points",
+             "Le staff attribue les points via `/points-ajouter` en récompense "
+             "du RP actif : scènes, arcs narratifs, victoires en combat, "
+             "événements serveur. Quand un seuil de rang est franchi, la montée "
+             "est automatique et déclenche une narration épique dans "
+             "le journal de l'Enfer."),
+            ("Aptitudes et Reiryoku (霊力)",
+             "Chaque rang accorde un budget de **Reiryoku** à répartir librement "
+             "dans les quatre **Voies** de votre faction (environ 20 aptitudes chacune). "
+             "Trois paliers d'aptitudes existent : **Éveil** (1 霊力), **Maîtrise** "
+             "(2 霊力) et **Transcendance** (3 霊力). Le dernier palier est réservé aux "
+             "rangs les plus élevés et exige une condition RP validée par le staff."),
+            ("Puissance Spirituelle",
+             "Chaque personnage possède une **Puissance Spirituelle** (PS), calculée "
+             "à partir de ses points : **PS = Points² ÷ 1 000** (minimum 1). "
+             "L'échelle est quadratique, ce qui signifie que l'écart de puissance "
+             "entre un novice et un vétéran est colossal. Un étudiant à 500 pts "
+             "possède 250 PS, un Capitaine à 8 500 pts en a 72 250, et un "
+             "Commandant à 10 000 pts culmine à 100 000.\n\n"
+             "En combat, cet écart détermine un **palier** qui guide la narration :\n"
+             "**均衡 Équilibre** (écart < 2 000) : toutes les aptitudes fonctionnent\n"
+             "**優勢 Ascendant** (2 001 à 8 000) : les techniques de base faiblissent\n"
+             "**制圧 Domination** (8 001 à 25 000) : seules les Maîtrises et au-delà portent\n"
+             "**圧倒 Écrasement** (25 001 à 55 000) : seule la Transcendance a encore un impact\n"
+             "**深淵 Abîme** (55 001+) : aucune technique ne peut combler le gouffre"),
             ("Mort narrative",
-             "Possible avec accord des deux joueurs + validation staff. "
-             "Le personnage peut « mourir » narrativement et renaître avec un nouveau "
-             "contexte, ou rejouer depuis le début avec ses acquis lore."),
-            ("⚡ Puissance Spirituelle (PS)",
-             "Chaque personnage possède une **Puissance Spirituelle** (PS) calculée à "
-             "partir de ses points de progression : **PS = Points ÷ 100** (minimum 1). "
-             "En combat, l'écart de PS entre deux combattants détermine un **palier** :\n"
-             "• **均衡 Équilibre** (0-10) — toutes aptitudes fonctionnent normalement\n"
-             "• **優勢 Ascendant** (11-25) — P1 du plus faible réduit\n"
-             "• **制圧 Domination** (26-40) — P1 inefficace, P2 réduit\n"
-             "• **圧倒 Écrasement** (41-60) — P1/P2 inefficaces, P3 réduit\n"
-             "• **深淵 Abîme** (61+) — toutes aptitudes inefficaces\n"
-             "Ces paliers sont des **guides narratifs** — le MJ les utilise pour "
-             "pondérer les effets des techniques en combat."),
+             "La mort d'un personnage est possible avec l'accord des joueurs concernés "
+             "et la validation du staff. Le personnage peut renaître dans un nouveau "
+             "contexte ou repartir de zéro en conservant ses acquis narratifs."),
         ],
     },
     "gotei": {

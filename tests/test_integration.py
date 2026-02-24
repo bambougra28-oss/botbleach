@@ -426,8 +426,8 @@ def test_aptitudes_constants():
     from data.aptitudes.constants import REIRYOKU_PAR_RANG, RANGS_P3, COUT_PALIER
     # Budget Reiryoku existe pour toutes les factions
     assert len(REIRYOKU_PAR_RANG) >= 25, f"Trop peu de rangs dans REIRYOKU_PAR_RANG : {len(REIRYOKU_PAR_RANG)}"
-    # Budget max = 24
-    assert max(REIRYOKU_PAR_RANG.values()) == 24
+    # Budget max = 26 (rangs apex : Sōtaichō, Gokuō, Rey, Seitei)
+    assert max(REIRYOKU_PAR_RANG.values()) == 26
     # Budget min = 3
     assert min(REIRYOKU_PAR_RANG.values()) == 3
     # P3 restrictions pour les 4 factions
@@ -599,31 +599,38 @@ def test_main_charge_aptitudes():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_puissance_spirituelle_calcul():
-    """Vérifie PS = points // 100, minimum 1."""
+    """Vérifie PS = points² // 1000, minimum 1."""
     from data.aptitudes import puissance_spirituelle
-    assert puissance_spirituelle(500) == 5
-    assert puissance_spirituelle(10000) == 100
-    assert puissance_spirituelle(0) == 1   # min 1
-    assert puissance_spirituelle(50) == 1  # min 1
-    assert puissance_spirituelle(1200) == 12
-    assert puissance_spirituelle(99) == 1  # min 1
+    assert puissance_spirituelle(500) == 250          # 500² / 1000 = 250
+    assert puissance_spirituelle(10000) == 100_000    # 10000² / 1000 = 100 000
+    assert puissance_spirituelle(0) == 1              # min 1
+    assert puissance_spirituelle(50) == 2             # 50² / 1000 = 2
+    assert puissance_spirituelle(1200) == 1440        # 1200² / 1000 = 1 440
+    assert puissance_spirituelle(31) == 1             # 31² / 1000 = 0 → min 1
+    assert puissance_spirituelle(8500) == 72_250      # 8500² / 1000 = 72 250
 
 
 def test_palier_combat_equilibre():
-    """Écart 0-10 = Équilibre."""
+    """Écart 0-2000 = Équilibre."""
     from data.aptitudes import palier_combat
-    palier = palier_combat(50, 55)
+    palier = palier_combat(72_250, 72_250)  # Deux Taichō, écart 0
     assert palier["nom"] == "Équilibre"
     assert palier["kanji"] == "均衡"
     assert palier["effet_p1"] == "normal"
+    # Écart 1500 — toujours Équilibre
+    palier2 = palier_combat(6_250, 4_750)
+    assert palier2["nom"] == "Équilibre"
 
 
 def test_palier_combat_abime():
-    """Écart 61+ = Abîme."""
+    """Écart 55001+ = Abîme."""
     from data.aptitudes import palier_combat
-    palier = palier_combat(10, 90)
+    palier = palier_combat(100_000, 250)  # Sōtaichō vs Gakusei, écart 99 750
     assert palier["nom"] == "Abîme"
     assert palier["effet_p3"] == "inefficace"
+    # Écart ~30 000 = Écrasement (pas Abîme)
+    palier2 = palier_combat(72_250, 42_250)
+    assert palier2["nom"] == "Écrasement"
 
 
 def test_paliers_combat_config():

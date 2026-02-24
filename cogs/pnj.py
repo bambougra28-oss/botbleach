@@ -43,7 +43,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Neutre, impersonnel, parle à la troisième personne. Voix de pierre.",
         "emoji": "🔴",
         "couleur": "gris_acier",
-        "ps": 90,
+        "ps": 150_000,
     },
     "garde_seireitei": {
         "nom": "Garde du Seireitei",
@@ -51,7 +51,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Formel, respectueux des rangs, inquiet mais stoïque.",
         "emoji": "⚔️",
         "couleur": "blanc_seireitei",
-        "ps": 20,
+        "ps": 4_000,
     },
     "marchand_rukongai": {
         "nom": "Marchand du Rukongai",
@@ -59,7 +59,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Rusé, bavard, parle en métaphores. Sait plus qu'il ne devrait.",
         "emoji": "🏪",
         "couleur": "or_pale",
-        "ps": 3,
+        "ps": 100,
     },
     "hollow_errant": {
         "nom": "虚 Hollow Errant",
@@ -67,7 +67,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Sauvage mais lucide par moments. Parle de manière fragmentée.",
         "emoji": "👹",
         "couleur": "noir_abyssal",
-        "ps": 12,
+        "ps": 1_500,
     },
     "damne_ancien": {
         "nom": "Damné Ancien",
@@ -75,7 +75,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Philosophe, résigné, parle de la souffrance comme d'un art. Sagesse sombre.",
         "emoji": "⛓️",
         "couleur": "pourpre_infernal",
-        "ps": 60,
+        "ps": 80_000,
     },
     "quincy_refugie": {
         "nom": "Quincy Réfugié",
@@ -83,7 +83,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Méfiant, pragmatique, loyal envers les siens. Parle à voix basse.",
         "emoji": "🏹",
         "couleur": "bleu_abyssal",
-        "ps": 30,
+        "ps": 12_000,
     },
     "esprit_perdu": {
         "nom": "Esprit Perdu",
@@ -91,7 +91,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Confus, nostalgique, poétique. Ne sait plus qui il est.",
         "emoji": "👻",
         "couleur": "gris_sable",
-        "ps": 2,
+        "ps": 50,
     },
     "personnalise": {
         "nom": "PNJ Personnalisé",
@@ -99,7 +99,7 @@ PNJ_CATALOGUE = {
         "personnalite": "Défini par le contexte fourni.",
         "emoji": "🎭",
         "couleur": "or_ancien",
-        "ps": 50,
+        "ps": 30_000,
     },
 }
 
@@ -372,7 +372,7 @@ class PNJ(commands.Cog):
         embed_intro = self._construire_embed(pnj_data, texte_intro, "Apparition")
         ps = pnj_data.get("ps")
         if ps:
-            embed_intro.add_field(name="⚡ Puissance Spirituelle", value=f"**{ps}** PS", inline=True)
+            embed_intro.add_field(name="⚡ Puissance Spirituelle", value=f"**{ps:,}** PS", inline=True)
         embed_intro.add_field(
             name="Comment interagir",
             value=(
@@ -564,13 +564,13 @@ class PNJ(commands.Cog):
             if cle == "personnalise":
                 continue  # Affiché séparément
             lignes_catalogue.append(
-                f"{data['emoji']} **{data['nom']}** · ⚡ {data.get('ps', '?')} PS\n"
+                f"{data['emoji']} **{data['nom']}** · ⚡ {data.get('ps', '?'):,} PS\n"
                 f"  *{data['description']}*"
             )
 
         texte_catalogue = "\n\n".join(lignes_catalogue)
         texte_catalogue += (
-            f"\n\n🎭 **PNJ Personnalisé** · ⚡ 50 PS (défaut)\n"
+            f"\n\n🎭 **PNJ Personnalisé** · ⚡ 30,000 PS (défaut)\n"
             f"  *Un PNJ défini par vos soins via le paramètre `contexte`.*"
         )
 

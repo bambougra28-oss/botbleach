@@ -261,7 +261,7 @@ class Combat(commands.Cog):
             description=f"**Tour {combat['tour']}** · {interaction.user.mention}\n\n*{action}*",
             color=COULEURS["or_pale"]
         )
-        embed.set_footer(text="⸻ Awaiting response ⸻")
+        embed.set_footer(text="⸻ En attente de réponse ⸻")
         await interaction.response.send_message(embed=embed)
 
     # ══════════════════════════════════════════════════════════════════════════

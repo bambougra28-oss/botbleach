@@ -653,7 +653,7 @@ class Missions(commands.Cog):
                         f"Felicitations, **{nom_perso}**. Votre rapport a ete valide.\n\n"
                         f"**Recompense :** +**{recompense:,}** pts"
                         + (f"\n*{mission.get('recompense_texte')}*" if mission.get("recompense_texte") else "")
-                        + f"\n\n\u300c Chaque mission accomplie rapproche de la legende. \u300d"
+                        + f"\n\nVotre progression a ete mise a jour."
                     ),
                     color=COULEURS["or_ancien"]
                 )
@@ -689,7 +689,7 @@ class Missions(commands.Cog):
                     description=(
                         f"**{nom_perso}**, votre rapport pour la mission `{mission_id}` "
                         f"n'a pas ete retenu par le staff.\n\n"
-                        f"\u300c L'echec est un maitre plus severe que la victoire. \u300d"
+                        f"Vous pouvez retenter lorsqu'une nouvelle mission sera disponible."
                     ),
                     color=COULEURS["rouge_chaine"]
                 )
@@ -778,7 +778,7 @@ class Missions(commands.Cog):
             embed = discord.Embed(
                 title="\U0001f4cb Missions Actives",
                 description=f"*Aucune mission active{filtre_txt} pour le moment.*\n\n"
-                            f"\u300c Le calme precede toujours la tempete. \u300d",
+                            f"Consultez ce canal regulierement.",
                 color=COULEURS["gris_acier"]
             )
             embed.set_footer(text="\u2e3b Infernum Aeterna \u00b7 Missions \u2e3b")

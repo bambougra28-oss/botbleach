@@ -576,22 +576,22 @@ button { font-family: inherit; cursor: pointer; }
 <header class="sim-header">
   <div class="sim-header-left">
     <div>
-      <div class="sim-header-title" id="headerTitle">\u6A21\u64EC\u5668 \u2014 Simulateur de Build</div>
+      <div class="sim-header-title" id="headerTitle">模擬器 — Simulateur de Build</div>
       <div class="sim-header-kanji" id="headerSub">Infernum Aeterna</div>
     </div>
   </div>
   <nav>
-    <a href="aptitudes.html">\u2190 Aptitudes</a>
-    <a href="chronologie.html">\u2190 Chronologie</a>
-    <a href="index.html">\u2190 Lore</a>
+    <a href="aptitudes.html">← Aptitudes</a>
+    <a href="chronologie.html">← Chronologie</a>
+    <a href="index.html">← Lore</a>
     <a href="#" id="btnChangeFaction" style="display:none;">Changer de faction</a>
   </nav>
 </header>
 
 <!-- Section: Faction Select -->
 <section id="factionSelect">
-  <div class="faction-select-title">\u9078\u629E \u2014 Choisissez votre Faction</div>
-  <div class="faction-select-sub">S\u00E9lectionnez une faction pour commencer \u00E0 construire votre arbre d'aptitudes.</div>
+  <div class="faction-select-title">選択 — Choisissez votre Faction</div>
+  <div class="faction-select-sub">Sélectionnez une faction pour commencer à construire votre arbre d'aptitudes.</div>
   <div class="faction-grid" id="factionGrid"></div>
 </section>
 
@@ -602,7 +602,7 @@ button { font-family: inherit; cursor: pointer; }
     <div class="rank-chips" id="rankChips"></div>
     <div class="meter-wrap">
       <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
-      <div class="meter-label" id="meterLabel">0 / 0 \u970A\u529B</div>
+      <div class="meter-label" id="meterLabel">0 / 0 霊力</div>
     </div>
   </div>
   <!-- Voie Pills -->
@@ -612,7 +612,7 @@ button { font-family: inherit; cursor: pointer; }
     <div class="tree-canvas" id="treeCanvas"></div>
     <div class="detail-panel">
       <div class="detail-empty" id="detailEmpty">
-        <div>Cliquez sur un n\u0153ud<br>pour voir ses d\u00E9tails</div>
+        <div>Cliquez sur un nœud<br>pour voir ses détails</div>
       </div>
       <div class="detail-content" id="detailContent">
         <div class="detail-palier" id="detPalier"></div>
@@ -628,16 +628,16 @@ button { font-family: inherit; cursor: pointer; }
   <!-- Summary Bar -->
   <div class="summary-bar">
     <div class="summary-toggle" id="summaryToggle">
-      <span>R\u00E9sum\u00E9 du build</span>
-      <span class="arrow">\u25BC</span>
+      <span>Résumé du build</span>
+      <span class="arrow">▼</span>
     </div>
     <div class="summary-details" id="summaryDetails">
       <div class="summary-voies" id="summaryVoies"></div>
       <div class="summary-actions">
-        <button id="btnCopyLink">\uD83D\uDD17 Copier le lien</button>
-        <button id="btnExportJSON">\uD83D\uDCE4 Exporter JSON</button>
-        <button id="btnImportJSON">\uD83D\uDCE5 Importer JSON</button>
-        <button id="btnReset">\u267B\uFE0F R\u00E9initialiser</button>
+        <button id="btnCopyLink">🔗 Copier le lien</button>
+        <button id="btnExportJSON">📤 Exporter JSON</button>
+        <button id="btnImportJSON">📥 Importer JSON</button>
+        <button id="btnReset">♻️ Réinitialiser</button>
       </div>
     </div>
   </div>
@@ -646,7 +646,7 @@ button { font-family: inherit; cursor: pointer; }
 <!-- Import Modal -->
 <div class="modal-overlay" id="importModal">
   <div class="modal-box">
-    <h3>\uD83D\uDCE5 Importer un Build</h3>
+    <h3>📥 Importer un Build</h3>
     <textarea id="importTextarea" placeholder='Collez votre JSON ici...'></textarea>
     <div class="modal-actions">
       <button id="importCancel">Annuler</button>

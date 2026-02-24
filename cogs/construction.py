@@ -1058,29 +1058,43 @@ async def _peupler_channels_lore(guild: discord.Guild):
     e.set_footer(text="⸻ Infernum Aeterna · Système ⸻")
     await poster(ch, e)
 
-    # ── 5b. systeme-et-competences — embeds aptitudes par faction ────────────
+    # ── 5b. systeme-et-competences — résumé aptitudes + lien web ─────────────
     try:
-        from data.aptitudes import VOIES_PAR_FACTION
-        from data.aptitudes.constants import EMOJI_FACTION as APT_EMOJI, COULEURS_FACTION, EMOJI_PALIER, NOM_PALIER
-        for faction, voies in VOIES_PAR_FACTION.items():
-            emoji_f = APT_EMOJI.get(faction, "")
-            for voie in voies:
-                e = discord.Embed(
-                    title=f"{emoji_f} {voie['kanji']} {voie['nom']} · {voie['sous_titre']}",
-                    description=voie["description"],
-                    color=COULEURS_FACTION.get(faction, COULEURS["or_ancien"]),
-                )
-                for apt in voie["aptitudes"]:
-                    desc_courte = apt["description"].split(".")[0] + "." if "." in apt["description"] else apt["description"][:120]
-                    e.add_field(
-                        name=f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} {apt['nom']} ({apt['kanji']}) · {apt['cout']}霊力",
-                        value=desc_courte,
-                        inline=False,
-                    )
-                e.set_footer(text=f"⸻ Infernum Aeterna · {faction.capitalize()} · Aptitudes ⸻")
-                await poster(ch, e)
+        from cogs.aptitudes import APTITUDES_WEB_URL
+        e = discord.Embed(
+            title="🔮 Aptitudes et Voies de Combat",
+            description=(
+                "Chaque faction dispose de **quatre Voies** qui définissent le style "
+                "de combat de votre personnage. En progressant, vous débloquez un "
+                "budget de **Reiryoku** (霊力) à répartir librement entre ces Voies.\n\n"
+                "Trois paliers par aptitude :\n"
+                "🟢 **Éveil** — les fondamentaux (1 霊力)\n"
+                "🔵 **Maîtrise** — la spécialisation (2 霊力)\n"
+                "🟣 **Transcendance** — le sommet, réservé aux rangs élevés (3 霊力)\n\n"
+                "Chaque Voie compte huit à dix aptitudes réparties sur ces paliers. "
+                "Les combinaisons entre Voies forgent l'identité martiale du personnage."
+            ),
+            color=COULEURS["gris_acier"],
+        )
+        e.add_field(
+            name="Voies par faction",
+            value=(
+                "⚔️ **Shinigami** — Zanjutsu · Kidō · Hohō · Hakuda\n"
+                "🔥 **Togabito** — Jigokusari · Gōka · Saisei · Rinki\n"
+                "💀 **Arrancar** — Cero · Hierro · Sonído · Resurrección\n"
+                "✡️ **Quincy** — Reishi Sōsa · Blut · Hirenkyaku · Seikei"
+            ),
+            inline=False,
+        )
+        e.add_field(
+            name="\u200b",
+            value=f"🌐 **[Consulter le détail complet des aptitudes]({APTITUDES_WEB_URL})**",
+            inline=False,
+        )
+        e.set_footer(text="⸻ Infernum Aeterna · Système ⸻")
+        await poster(ch, e)
     except Exception as ex:
-        log.warning("[LORE] Embeds aptitudes non postés : %s", ex)
+        log.warning("[LORE] Embed aptitudes résumé non posté : %s", ex)
 
     # ── 6. bestiaire-infernal — 3 embeds ─────────────────────────────────────
     ch = find_ch("bestiaire")
@@ -1375,6 +1389,45 @@ async def _peupler_channels_lore(guild: discord.Guild):
                 "instructions entraient en conflit avec quelque chose de nouveau."
             ),
             "couleur": "gris_acier"
+        },
+        {
+            "titre": "🥨 Kenpachi Dorian · ケンパチ・ドリアン",
+            "desc": (
+                "Premier et dernier Shinigami d'origine européenne à avoir intégré "
+                "le Gotei 13. Les archives de la Douzième Division — pourtant "
+                "habituées à l'invraisemblable — consacrent à son cas un dossier "
+                "entier classé sous la mention « inexplicable et probablement faux ».\n\n"
+                "Dorian aurait maîtrisé le Zanjutsu, le Hakuda, le Hohō, le Kidō, le "
+                "contrôle du Reiatsu et le Senryaku de manière simultanée et absolue. "
+                "À sa sortie de l'Académie. Le jour même de son entrée, si l'on en croit "
+                "certains témoignages. Les examinateurs auraient tenté de le recaler par "
+                "principe, mais son Reiatsu aurait fait fondre les formulaires.\n\n"
+                "Sa puissance spirituelle, scellée sous sept couches de Kidō, trois "
+                "Bakudō expérimentaux et un cadenas acheté au Rukongai, dépassait "
+                "paraît-il celle de l'ensemble du Gotei 13 réuni. Des Capitaines "
+                "auraient perdu connaissance en le croisant dans un couloir. Le Reio "
+                "lui-même — selon des sources invérifiables et franchement suspectes "
+                "— aurait esquissé un froncement de sourcil, ce qui constituerait "
+                "la seule émotion jamais attribuée au Roi des Âmes.\n\n"
+                "Son Bankai, nommé « Tout Ce Qui Existe, N'Existe Pas, Et N'Existera "
+                "Jamais Sauf Le Mardi », possédait la capacité simultanée de contrôler "
+                "le temps, l'espace, la gravité, les émotions, les souvenirs, la météo, "
+                "les courants marins du Dangai et les prix du marché au Rukongai. Son "
+                "Shikai seul suffisait à réécrire les lois de la physique dans un "
+                "rayon de douze kilomètres. Personne ne l'a vu, mais tout le monde "
+                "en est absolument certain.\n\n"
+                "Il mourut à l'âge de vingt-trois ans, étouffé par un bretzel.\n\n"
+                "Le rapport officiel mentionne un pique-nique au pied du Sōkyoku, un "
+                "bretzel artisanal offert par un membre de la Quatrième Division, et un "
+                "silence gêné de quatorze minutes avant que quiconque ne songe à "
+                "intervenir. Sa puissance spirituelle, capable selon les témoins "
+                "d'ébranler les fondations du Seireitei et de faire pleurer les "
+                "Kushanāda, s'avéra rigoureusement inapte à déloger un morceau de "
+                "pâte salée de sa trachée.\n\n"
+                "Les treize Divisions observèrent une minute de silence.\n"
+                "Puis reprirent leurs activités, légèrement soulagées."
+            ),
+            "couleur": "gris_sable"
         },
     ]
     for fig in figures:

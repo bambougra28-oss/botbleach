@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infernum Aeterna &mdash; Chronologie des &Egrave;res</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0A0A0F;
+  --bg-content: #111118;
+  --bg-card: #18181F;
+  --text-main: #F5F5F5;
+  --text-muted: #A0A0B0;
+  --or-ancien: #C9A84C;
+  --blanc-seireitei: #E8E8F0;
+  --pourpre: #6B1FA8;
+  --gris-sable: #8A8A7A;
+  --bleu-abyssal: #1A3A6B;
+  --or-pale: #D4AF37;
+  --gris-acier: #7B7D8A;
+  --rouge-chaine: #8B0000;
+  --accent: var(--or-ancien);
+  --fc-rgb: 201,168,76;
+  --era-color: #C9A84C;
+
+  --era-1: #4A8DB7;
+  --era-2: #8B2500;
+  --era-3: #E8E8F0;
+  --era-4: #1A3A6B;
+  --era-5: #D4AF37;
+  --era-6: #6B1FA8;
+  --era-7: #C9A84C;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Noto Serif JP', 'Georgia', serif;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────── */
+.site-header {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+  background: linear-gradient(180deg, #0D0D14 0%, var(--bg-deep) 100%);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+  position: relative;
+  z-index: 10;
+}
+.site-header .kanji-title {
+  font-size: 3rem; font-weight: 900; color: var(--or-ancien);
+  letter-spacing: 0.3em; text-shadow: 0 0 30px rgba(201, 168, 76, 0.3);
+}
+.site-header .subtitle {
+  font-size: 1.1rem; color: var(--text-muted); margin-top: 0.3rem; letter-spacing: 0.15em;
+}
+.site-header .sub-subtitle {
+  font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem; opacity: 0.6;
+}
+.nav-links {
+  margin-top: 0.8rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+}
+.nav-link {
+  font-size: 0.8rem; color: var(--or-ancien); text-decoration: none; opacity: 0.6; transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 1; }
+
+/* ── ERA SIDEBAR NAV ────────────────── */
+.era-nav {
+  position: fixed; left: 1.2rem; top: 50%; transform: translateY(-50%);
+  z-index: 50; display: flex; flex-direction: column; gap: 1rem; align-items: center;
+}
+.era-dot {
+  width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);
+  background: transparent; cursor: pointer; transition: all 0.4s ease; position: relative;
+}
+.era-dot:hover { border-color: rgba(255,255,255,0.5); }
+.era-dot.active {
+  width: 16px; height: 16px; border-color: var(--era-color);
+  background: var(--era-color); box-shadow: 0 0 12px var(--era-color);
+}
+.era-dot .dot-tooltip {
+  position: absolute; left: 24px; top: 50%; transform: translateY(-50%);
+  background: var(--bg-card); color: var(--text-muted); font-size: 0.7rem;
+  padding: 0.2rem 0.5rem; border-radius: 4px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.era-dot:hover .dot-tooltip { opacity: 1; }
+
+/* ── TIMELINE CONTAINER ─────────────── */
+.timeline {
+  max-width: 900px; margin: 0 auto; padding: 2rem 2rem 4rem;
+  position: relative; z-index: 3;
+}
+
+/* Spine central */
+.timeline::before {
+  content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    var(--era-1) 0%, var(--era-1) 14%,
+    var(--era-2) 14%, var(--era-2) 28%,
+    var(--era-3) 28%, var(--era-3) 42%,
+    var(--era-4) 42%, var(--era-4) 52%,
+    var(--era-5) 52%, var(--era-5) 64%,
+    var(--era-6) 64%, var(--era-6) 78%,
+    var(--era-7) 78%, var(--era-7) 100%
+  );
+  opacity: 0.5;
+}
+
+/* ── ERA SECTION ────────────────────── */
+.era { padding: 3rem 0 2rem; position: relative; }
+
+/* Era header block */
+.era-header {
+  text-align: center; padding: 2.5rem 1.5rem 2rem; margin-bottom: 2.5rem;
+  position: relative; overflow: hidden;
+  border-radius: 8px; background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.era-header .era-kanji-bg {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 5rem; font-weight: 900; opacity: 0.06; letter-spacing: 0.3em;
+  pointer-events: none; color: var(--era-color);
+}
+.era-header .era-number {
+  font-size: 0.8rem; color: var(--era-color); letter-spacing: 0.2em;
+  text-transform: uppercase; margin-bottom: 0.3rem; position: relative; z-index: 1;
+}
+.era-header .era-title {
+  font-size: 1.6rem; font-weight: 700; position: relative; z-index: 1;
+  color: var(--text-main);
+}
+.era-header .era-subtitle {
+  font-size: 0.95rem; color: var(--text-muted); font-style: italic;
+  margin-top: 0.5rem; position: relative; z-index: 1;
+}
+.era-header::after {
+  content: ''; position: absolute; bottom: 0; left: 25%; right: 25%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--era-color), transparent);
+  opacity: 0.3;
+}
+
+/* ── EVENT CARDS ────────────────────── */
+.event-row {
+  display: flex; align-items: flex-start; margin-bottom: 2.5rem; position: relative;
+}
+.event-row.left { flex-direction: row; }
+.event-row.right { flex-direction: row-reverse; }
+
+.event-card {
+  width: calc(50% - 2.5rem); position: relative;
+  background: var(--bg-card); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px; padding: 1.5rem;
+  opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  backdrop-filter: blur(4px);
+}
+.event-row.right .event-card { transform: translateX(30px); }
+.event-card.visible { opacity: 1; transform: translateX(0); }
+
+.event-card .event-title {
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem;
+  color: var(--era-color);
+}
+.event-card p {
+  margin-bottom: 0.8rem; text-align: justify; hyphens: auto;
+  font-size: 0.92rem; color: var(--text-muted); line-height: 1.7;
+}
+.event-card p:last-child { margin-bottom: 0; }
+
+/* Connector line from card to spine */
+.event-connector {
+  position: absolute; top: 1.5rem; width: 2.5rem; height: 2px;
+  background: var(--era-color); opacity: 0.3;
+}
+.event-row.left .event-connector { right: -2.5rem; }
+.event-row.right .event-connector { left: -2.5rem; }
+
+/* Spine node dot */
+.event-node {
+  position: absolute; left: 50%; top: 1.5rem; width: 10px; height: 10px;
+  border-radius: 50%; background: var(--era-color); transform: translateX(-50%);
+  box-shadow: 0 0 8px var(--era-color); z-index: 2;
+  opacity: 0; transition: opacity 0.6s ease 0.2s;
+}
+.event-node.visible { opacity: 1; }
+
+/* ── FOOTER ─────────────────────────── */
+.site-footer {
+  text-align: center; padding: 2rem 1rem; color: var(--text-muted);
+  font-size: 0.8rem; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.04);
+  position: relative; z-index: 3;
+}
+
+/* ── FX LAYERS ──────────────────────── */
+#fx-bg-overlay { position: fixed; inset: 0; z-index: 1; pointer-events: none; transition: background 1.2s ease; }
+#fx-particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+.site-header, .timeline, .site-footer { position: relative; z-index: 3; }
+
+/* ── RESPONSIVE ─────────────────────── */
+@media (max-width: 768px) {
+  .site-header .kanji-title { font-size: 2rem; letter-spacing: 0.15em; }
+
+  /* Sidebar → horizontal bar */
+  .era-nav {
+    position: sticky; top: 0; left: 0; transform: none;
+    flex-direction: row; justify-content: center; gap: 0.6rem;
+    background: var(--bg-deep); padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    z-index: 50; width: 100%;
+  }
+  .era-dot .dot-tooltip { display: none; }
+
+  .timeline { padding: 1.5rem 1rem 3rem; }
+
+  /* Spine left-aligned */
+  .timeline::before { left: 1rem; transform: none; }
+
+  /* All cards stack right */
+  .event-row, .event-row.left, .event-row.right {
+    flex-direction: row !important; justify-content: flex-end;
+  }
+  .event-card, .event-row.right .event-card {
+    width: calc(100% - 3rem); margin-left: 3rem;
+    transform: translateX(20px);
+  }
+  .event-card.visible { transform: translateX(0); }
+
+  .event-node { left: 1rem; }
+  .event-row.left .event-connector,
+  .event-row.right .event-connector {
+    left: 1rem; right: auto; top: 1.5rem; width: calc(3rem - 1rem);
+  }
+
+  .era-header { padding: 1.5rem 1rem; }
+  .era-header .era-kanji-bg { font-size: 3rem; }
+  .era-header .era-title { font-size: 1.3rem; }
+}
+
+@media (max-width: 480px) {
+  .event-card { padding: 1rem; }
+  .event-card p { font-size: 0.85rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="kanji-title">時代記</div>
+  <div class="subtitle">INFERNUM AETERNA</div>
+  <div class="sub-subtitle">Chronologie des &Egrave;res &mdash; De la Mer Primordiale &agrave; la Fissure</div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">&larr; Chroniques des Quatre Races</a>
+    <a href="aptitudes.html" class="nav-link">Syst&egrave;me d'Aptitudes &rarr;</a>
+  </div>
+</header>
+
+<!-- ERA SIDEBAR NAV -->
+<nav class="era-nav" id="eraNav">
+  <div class="era-dot active" data-era="ere-1" style="--dot-color: var(--era-1);">
+    <span class="dot-tooltip">&Egrave;re I &mdash; Mer Primordiale</span>
+  </div>
+  <div class="era-dot" data-era="ere-2" style="--dot-color: var(--era-2);">
+    <span class="dot-tooltip">&Egrave;re II &mdash; Chaos Originel</span>
+  </div>
+  <div class="era-dot" data-era="ere-3" style="--dot-color: var(--era-3);">
+    <span class="dot-tooltip">&Egrave;re III &mdash; Fondation du Gotei</span>
+  </div>
+  <div class="era-dot" data-era="ere-4" style="--dot-color: var(--era-4);">
+    <span class="dot-tooltip">&Egrave;re IV &mdash; Guerre de Lumi&egrave;re</span>
+  </div>
+  <div class="era-dot" data-era="ere-5" style="--dot-color: var(--era-5);">
+    <span class="dot-tooltip">&Egrave;re V &mdash; Si&egrave;cles de Silence</span>
+  </div>
+  <div class="era-dot" data-era="ere-6" style="--dot-color: var(--era-6);">
+    <span class="dot-tooltip">&Egrave;re VI &mdash; Grande Guerre</span>
+  </div>
+  <div class="era-dot" data-era="ere-7" style="--dot-color: var(--era-7);">
+    <span class="dot-tooltip">&Egrave;re VII &mdash; La Fissure</span>
+  </div>
+</nav>
+
+<!-- TIMELINE -->
+<main class="timeline" id="timeline">
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE I — LA MER PRIMORDIALE                    -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-1" data-era-color="#4A8DB7">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">混沌の海</div>
+    <div class="era-number">&Egrave;re I</div>
+    <div class="era-title">La Mer Primordiale</div>
+    <div class="era-subtitle">L'&eacute;tat indivisible, avant la naissance des mondes et la s&eacute;paration de la vie et de la mort</div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">L'Obscurit&eacute; et la Faim</div>
+      <p>Avant que le monde soit ce qu'il est, il n'y avait pas de monde. Il y avait la Mer Primordiale, Gensho no Umi &mdash; un &eacute;tat indivisible dans lequel le vivant et le mort n'&eacute;taient pas distincts, dans lequel chaque &acirc;me existait sans na&icirc;tre et disparaissait sans mourir.</p>
+      <p>Ce monde &eacute;tait silencieux. Mais il n'&eacute;tait pas en paix. Une obscurit&eacute; le rongea de l'int&eacute;rieur &mdash; une faim sans nom, une corruption qui d&eacute;vorait les &acirc;mes les unes apr&egrave;s les autres sans qu'il y ait de recours, sans qu'il y ait de gardien pour y mettre fin.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">L'&Eacute;mergence du Re&imacr;o</div>
+      <p>Un &ecirc;tre &eacute;mergea de la Mer Primordiale &mdash; une puissance qui d&eacute;passait tout ce qu'elle avait jamais produit, et la volont&eacute; de prot&eacute;ger ce qui existait encore. Il chassa l'obscurit&eacute;. Il d&eacute;vora les &acirc;mes corrompues. Pendant un temps, l'&eacute;quilibre sembla possible.</p>
+      <p>Mais annihiler des &acirc;mes, m&ecirc;me corrompues, d&eacute;stabilisait la Mer Primordiale d'une autre fa&ccedil;on. Cet &ecirc;tre portait en lui des capacit&eacute;s qui ne correspondaient &agrave; aucune cat&eacute;gorie future. Il pr&eacute;c&eacute;dait les classifications. On l'appellerait plus tard Re&imacr;o &mdash; le Roi des &Acirc;mes.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">La Mutilation</div>
+      <p>Cinq &ecirc;tres observ&egrave;rent le Re&imacr;o. Les anc&ecirc;tres des cinq Grandes Maisons Nobles. Chacun avait ses raisons &mdash; la peur, l'ambition, la n&eacute;cessit&eacute;, le d&eacute;sir d'ordre. Cinq raisons diff&eacute;rentes, une seule d&eacute;cision.</p>
+      <p>Ils le captur&egrave;rent. Ils l'immobilis&egrave;rent &agrave; l'aide d'une &eacute;p&eacute;e c&eacute;r&eacute;monielle, lui arrach&egrave;rent les bras, les jambes, les organes, le c&oelig;ur, le scell&egrave;rent dans un cristal pour l'&eacute;ternit&eacute;. Et le Re&imacr;o, tout au long de ce supplice, ne r&eacute;sista pas. Il avait vu ce qui allait arriver. Il avait peut-&ecirc;tre m&ecirc;me choisi de laisser faire.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">La Cr&eacute;ation des Trois Mondes</div>
+      <p>Utilisant la puissance du Re&imacr;o comme cl&eacute; de vo&ucirc;te de toute chose, les cinq anc&ecirc;tres cr&eacute;&egrave;rent les fondations d'un monde nouveau. Soul Society, le Monde des Vivants, Hueco Mundo. La vie et la mort furent s&eacute;par&eacute;es. Le cycle des &acirc;mes inaugura une &egrave;re nouvelle.</p>
+      <p>L'Enfer ne fut pas cr&eacute;&eacute;. Il existait d&eacute;j&agrave;. L'une des raisons pour lesquelles le Monde des Vivants fut &eacute;rig&eacute; &eacute;tait pr&eacute;cis&eacute;ment de servir de couvercle &agrave; l'Enfer &mdash; un ab&icirc;me d&eacute;j&agrave; pr&eacute;sent dans la Mer Primordiale.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Le Scellement</div>
+      <p>Le Re&imacr;o devint le verrou cosmique. Scell&eacute; dans son cristal, ni vivant ni mort, ses membres arrach&eacute;s acquirent une conscience propre. Son bras droit devint la divinit&eacute; de la Stagnation, son bras gauche celle de la Progression. Son c&oelig;ur et ses organes exist&egrave;rent sous d'autres formes, dispers&eacute;s &agrave; travers la cosmologie.</p>
+      <p>Sa puissance proph&eacute;tique fut h&eacute;rit&eacute;e par son fils. Et sa chair sacrifi&eacute;e devint la source de toute puissance spirituelle. Tout d&eacute;coule du sacrifice d'un &ecirc;tre qui choisit de ne pas r&eacute;sister.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE II — LE CHAOS ORIGINEL                    -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-2" data-era-color="#8B2500">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">原初の混乱</div>
+    <div class="era-number">&Egrave;re II</div>
+    <div class="era-title">Le Chaos Originel</div>
+    <div class="era-subtitle">Des millions d'ann&eacute;es de force brute, o&ugrave; chaque monde forgeait ses propres lois dans le sang</div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Soul Society sans loi</div>
+      <p>Soul Society &eacute;tait un territoire fragment&eacute;, gouvern&eacute; par la force brute. Des groupes arm&eacute;s contr&ocirc;laient des quartiers entiers. Les &acirc;mes sans puissance vivaient sous la domination de ceux qui en avaient. Les Hollow d&eacute;vastaient le Monde des Vivants sans r&eacute;gulation.</p>
+      <p>Des &acirc;mes plus puissantes que les autres d&eacute;veloppaient des capacit&eacute;s spirituelles sans cadre institutionnel. On les appelait Shinigami parce que leur puissance les distinguait, mais le terme ne d&eacute;signait encore aucune organisation. Le cycle cosmique fonctionnait par accident plus que par volont&eacute;.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Les Hollow et leur &eacute;volution</div>
+      <p>Dans le Monde des Vivants, les &acirc;mes humaines abandonn&eacute;es par le syst&egrave;me se corrompaient. Quand la Cha&icirc;ne du Destin se rongeait enti&egrave;rement, un trou s'ouvrait l&agrave; o&ugrave; le c&oelig;ur &eacute;tait. Un masque apparaissait. La faim commen&ccedil;ait.</p>
+      <p>Des centaines de Hollow fusionn&egrave;rent en Gillian. Les plus forts &eacute;volu&egrave;rent en Adjuchas, puis en Vasto Lorde &mdash; des &ecirc;tres dont la volont&eacute; avait surviv&eacute; &agrave; l'accumulation de milliers d'&acirc;mes d&eacute;vor&eacute;es. Hueco Mundo, d&eacute;sert blanc infini sous une lune immobile, devint leur domaine.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">L'Enfer accueille ses premiers Togabito</div>
+      <p>Les tout premiers Togabito arriv&egrave;rent dans un environnement dont personne ne connaissait les r&egrave;gles. Pas de guide, pas de structure. Seulement les Kushan&amacr;da &mdash; cr&eacute;atures colossales dont la seule fonction est de d&eacute;vorer et de punir. Seulement les Jigokusari, cha&icirc;nes issues de la chair m&ecirc;me de l'Enfer.</p>
+      <p>Cinq strates s'&eacute;tageaient dans les profondeurs, du Pr&amacr;tus au Sai&omacr;bu, la violence s'intensifiant &agrave; mesure qu'on descendait. La grande majorit&eacute; sombra dans la d&eacute;solation. Mais une minorit&eacute; refusa de se briser &mdash; et de leur r&eacute;sistance na&icirc;trait une puissance inclassable.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Las Noches s'&eacute;l&egrave;ve</div>
+      <p>Bien avant que Las Noches n'existe sous sa forme actuelle, Hueco Mundo &eacute;tait gouvern&eacute; par le plus simple des principes&nbsp;: le plus puissant commande. Un &ecirc;tre dont le Reishi d&eacute;passait de si loin celui de ses cong&eacute;n&egrave;res b&acirc;tit les premi&egrave;res fondations &mdash; alors sans toit ni murs, car il estimait que le ciel de Hueco Mundo &eacute;tait son plafond naturel.</p>
+      <p>Autour de lui, une hi&eacute;rarchie se forma. Au fil des g&eacute;n&eacute;rations d'Arrancar, Las Noches fut construite couche apr&egrave;s couche, chaque &eacute;poque y laissant sa marque architecturale.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE III — LA FONDATION DU GOTEI               -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-3" data-era-color="#E8E8F0">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">護廷の創設</div>
+    <div class="era-number">&Egrave;re III</div>
+    <div class="era-title">La Fondation du Gotei</div>
+    <div class="era-subtitle">Un ordre n&eacute; dans le sang, treize lames r&eacute;unies par un guerrier au Zanpakut&omacr; de feu</div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Le Premier Capitaine-Commandant</div>
+      <p>Le Gotei des origines ne ressemblait en rien &agrave; l'institution d'aujourd'hui. La premi&egrave;re g&eacute;n&eacute;ration &eacute;tait une bande de tueurs redoutables. Leur fondateur sacrifiait ses propres subordonn&eacute;s sans scrupule quand les circonstances l'exigeaient.</p>
+      <p>Il portait un Zanpakut&omacr; de feu &mdash; l'a&icirc;n&eacute; et le plus puissant de cette cat&eacute;gorie. Il mourut de vieillesse apr&egrave;s des mill&eacute;naires, ce qui &eacute;tait presque sans pr&eacute;c&eacute;dent pour un &ecirc;tre de sa puissance. Il avait compris que seule une organisation de puissances collectives pouvait mettre fin au chaos.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Les Treize Premiers Capitaines</div>
+      <p>K&omacr;shin J&umacr;r&omacr;maru, le fondateur. T&omacr;ka Shibari, premi&egrave;re &agrave; porter le titre non officiel de Kenpachi, dont le Zanpakut&omacr; &eacute;tait en &eacute;tat de lib&eacute;ration permanente. Renj&omacr; Mikazuchi, le plus myst&eacute;rieux, abritant apparemment une entit&eacute; spirituelle d'une nature inconnue.</p>
+      <p>Des guerriers d'une efficacit&eacute; terrifiante, dont certains portaient des noms qui inspiraient autant la terreur que le respect. Ce Gotei des origines imposa un ordre &agrave; Soul Society non pas par la persuasion mais par la force.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">L'Imposition de l'Ordre</div>
+      <p>District apr&egrave;s district, le Gotei des origines imposa sa loi. Ce n'&eacute;tait ni de la diplomatie ni de la persuasion. C'&eacute;tait la volont&eacute; d'un groupe qui avait d&eacute;cid&eacute; que le chaos devait cesser, et la force de l'imposer.</p>
+      <p>Soul Society commen&ccedil;a &agrave; prendre forme. Les Treize Divisions pr&eacute;cis&egrave;rent leurs r&ocirc;les respectifs. L'embryon de ce qui deviendrait une institution se dessinait dans le sillage des lames.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Le Secret du Kons&omacr; Reisai</div>
+      <p>Quelqu'un comprit le probl&egrave;me que posait la mort des Shinigami de haut rang. Leur densit&eacute; de Reishi &eacute;tait trop &eacute;lev&eacute;e pour &ecirc;tre r&eacute;absorb&eacute;e par Soul Society. La solution fut formalis&eacute;e en rituel&nbsp;: douze ans apr&egrave;s la mort d'un Capitaine, une c&eacute;r&eacute;monie envoie son Reishi vers l'Enfer.</p>
+      <p>On enseigna aux rangs inf&eacute;rieurs qu'il s'agissait de guider l'&acirc;me vers le repos. C'&eacute;tait un mensonge bienveillant qui allait durer des mill&eacute;naires.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">La Dette qui s'accumule</div>
+      <p>Des g&eacute;n&eacute;rations de Capitaines furent honor&eacute;es lors de c&eacute;r&eacute;monies solennelles, pleur&eacute;es par leurs subordonn&eacute;s, et pr&eacute;cipit&eacute;es en Enfer &agrave; leur insu. Les plus puissants guerriers de Soul Society devinrent des damn&eacute;s par n&eacute;cessit&eacute; cosmique, pas par jugement.</p>
+      <p>Et la dette enfla, si&egrave;cle apr&egrave;s si&egrave;cle. L'Enfer accumulait une densit&eacute; d'&eacute;nergie spirituelle qui cro&icirc;t &agrave; chaque mort de Capitaine. Un d&eacute;s&eacute;quilibre que personne ne savait encore mesurer.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE IV — LA GUERRE DE LUMIÈRE                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-4" data-era-color="#1A3A6B">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">光の戦争</div>
+    <div class="era-number">&Egrave;re IV</div>
+    <div class="era-title">La Guerre de Lumi&egrave;re</div>
+    <div class="era-subtitle">Le choc entre l'Empire de Lumi&egrave;re et le Gotei des origines, deux visions incompatibles du monde</div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Le Lichtreich</div>
+      <p>Dans le Monde des Vivants, une civilisation s'&eacute;tait d&eacute;velopp&eacute;e autour d'une philosophie radicalement oppos&eacute;e &agrave; celle des Shinigami&nbsp;: le Lichtreich, l'Empire de Lumi&egrave;re. Des clans Quincy sp&eacute;cialis&eacute;s, une culture, des institutions, une m&eacute;moire collective.</p>
+      <p>&Agrave; son apog&eacute;e, le Lichtreich &eacute;tait une puissance qui pouvait regarder le Gotei 13 en face. Son Empereur, fils du Re&imacr;o sans le savoir, avait grav&eacute; dans l'&acirc;me de ses guerriers d'&eacute;lite une lettre de puissance &mdash; Schrift &mdash; transformant leur capacit&eacute; en quelque chose d'incommensurable.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Philosophie fatale</div>
+      <p>L&agrave; o&ugrave; les Shinigami purifiaient les Hollow pour les r&eacute;int&eacute;grer dans le cycle cosmique, les Quincy les d&eacute;truisaient enti&egrave;rement. Les &acirc;mes d&eacute;truites ne retournaient pas dans le cycle, cr&eacute;ant un d&eacute;s&eacute;quilibre progressif entre les mondes.</p>
+      <p>Les Quincy ne d&eacute;truisaient pas les Hollow par cruaut&eacute; mais par n&eacute;cessit&eacute;&nbsp;: le Reishi d'un Hollow est un poison pour un Quincy. Ils n'avaient pas le luxe de purifier. Le conflit entre le Lichtreich et le Gotei &eacute;tait in&eacute;vitable &mdash; deux visions du monde en expansion dans des sph&egrave;res qui se touchaient.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">L'Invasion de Soul Society</div>
+      <p>La guerre fut totale. Le Lichtreich envahit Soul Society dans l'intention de renverser le Gotei. Son Empereur &mdash; un &ecirc;tre d'une puissance prodigieuse &mdash; mena l'assaut.</p>
+      <p>Le Capitaine-Commandant fondateur fit face. Ce combat singulier reste l'un des r&eacute;cits les plus soigneusement pr&eacute;serv&eacute;s et les plus censur&eacute;s des archives de Soul Society.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">La D&eacute;faite de l'Empereur</div>
+      <p>L'Empereur Quincy fut vaincu, son arm&eacute;e d&eacute;faite, son empire d&eacute;cim&eacute;. Les survivants se dispers&egrave;rent dans le Monde des Vivants ou se r&eacute;fugi&egrave;rent l&agrave; o&ugrave; ils pensaient &ecirc;tre introuvables.</p>
+      <p>Dans la paix qui suivit, le Gotei se transforma profond&eacute;ment. La brutalit&eacute; des origines c&eacute;da la place &agrave; quelque chose de plus nuanc&eacute;. La victoire leur avait donn&eacute; des choses &agrave; prot&eacute;ger, et avec elles, un sens de la justice l&agrave; o&ugrave; n'existait auparavant que la volont&eacute; de vaincre.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE V — LES SIÈCLES DE SILENCE                -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-5" data-era-color="#D4AF37">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">沈黙の世紀</div>
+    <div class="era-number">&Egrave;re V</div>
+    <div class="era-title">Les Si&egrave;cles de Silence</div>
+    <div class="era-subtitle">L'adoucissement du Gotei, l'extermination des Quincy, et le mensonge qui continue</div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">L'Adoucissement du Gotei</div>
+      <p>Les g&eacute;n&eacute;rations suivantes furent diff&eacute;rentes. La Shin'&omacr; Academy fut fond&eacute;e pour former les nouveaux Shinigami dans un cadre structur&eacute;. Le Kons&omacr; devint une pratique codifi&eacute;e, enseign&eacute;e, ritualis&eacute;e. Soul Society commen&ccedil;a &agrave; ressembler &agrave; une institution plut&ocirc;t qu'&agrave; une force d'occupation.</p>
+      <p>Mais quelque chose se perdit aussi. Selon l'Empereur Quincy lui-m&ecirc;me, le Gotei originel &eacute;tait une force &agrave; respecter pr&eacute;cis&eacute;ment parce que son chef ne reculait devant rien &mdash; et cette organisation mourut, remplac&eacute;e par quelque chose de plus noble mais aussi de plus vuln&eacute;rable.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">La Shin'&omacr; Academy</div>
+      <p>La formation structur&eacute;e des Shinigami marqua un tournant civilisationnel. Zanjutsu, Kid&omacr;, Hoh&omacr;, Hakuda &mdash; les quatre disciplines furent codifi&eacute;es, enseign&eacute;es, transmises de ma&icirc;tre &agrave; &eacute;l&egrave;ve plut&ocirc;t que vol&eacute;es sur le champ de bataille.</p>
+      <p>Les Treize Divisions pr&eacute;cis&egrave;rent leurs r&ocirc;les. Le chaos sanglant des origines laissa place &agrave; une hi&eacute;rarchie militaire et, lentement, &agrave; la conviction qu'on prot&eacute;geait quelque chose qui m&eacute;ritait de l'&ecirc;tre.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">L'Extermination des Quincy</div>
+      <p>Les Shinigami traqu&egrave;rent et &eacute;limin&egrave;rent m&eacute;thodiquement les Quincy rest&eacute;s visibles dans le Monde des Vivants. Ce g&eacute;nocide ne s'accomplit pas dans la violence spectaculaire d'une bataille &mdash; il se d&eacute;roula dans la discr&eacute;tion m&eacute;thodique d'une extermination organis&eacute;e, famille apr&egrave;s famille, lign&eacute;e apr&egrave;s lign&eacute;e.</p>
+      <p>La raison invoqu&eacute;e&nbsp;: pr&eacute;server l'&eacute;quilibre des &acirc;mes. La cicatrice ne se referma jamais.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Le Wandenreich</div>
+      <p>Les Quincy r&eacute;fugi&eacute;s dans les ombres du Seireitei fond&egrave;rent le Wandenreich, l'Empire Invisible. Pendant des si&egrave;cles, nourris par le Reishi abondant de Soul Society, ils s'entra&icirc;n&egrave;rent et perp&eacute;tu&egrave;rent leurs traditions loin de tout regard ennemi.</p>
+      <p>La haine des Shinigami fut soigneusement cultiv&eacute;e &mdash; non par vengeance aveugle, mais comme une flamme qu'on entretient pour rester en vie. Transmise &agrave; des g&eacute;n&eacute;rations qui n'avaient jamais vu le Monde des Vivants, qui ne connaissaient l'Empire de Lumi&egrave;re que par les r&eacute;cits de leurs a&iuml;eux.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">La Dette continue</div>
+      <p>Et pendant ce temps, le secret du Kons&omacr; Reisai continuait &agrave; s'approfondir. Les Capitaines mouraient, et leurs &acirc;mes &eacute;taient envoy&eacute;es en Enfer. Certains d'entre eux &mdash; les plus puissants, les plus loyaux &mdash; y &eacute;voluaient, d&eacute;couvrant que leur damnation n'&eacute;tait pas un ch&acirc;timent mais une n&eacute;cessit&eacute; cosmique.</p>
+      <p>L'&eacute;quilibre entre l'Enfer et les Trois Mondes repose sur une condition pr&eacute;cise&nbsp;: le Reiatsu contenu dans l'Enfer doit rester proportionnel &agrave; celui des Trois Mondes. Si la balance se rompt, le couvercle peut &ecirc;tre soulev&eacute; de l'int&eacute;rieur.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE VI — LA GRANDE GUERRE                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-6" data-era-color="#6B1FA8">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">大戦</div>
+    <div class="era-number">&Egrave;re VI</div>
+    <div class="era-title">La Grande Guerre</div>
+    <div class="era-subtitle">Le Wandenreich frappe, deux piliers disparaissent, et la v&eacute;rit&eacute; du Kons&omacr; Reisai &eacute;clate</div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Le Wandenreich frappe</div>
+      <p>Les Quincy survivants, nourris dans les ombres du Seireitei pendant des si&egrave;cles, lanc&egrave;rent leur assaut contre Soul Society. Le Gotei, qui s'&eacute;tait adouci au fil des mill&eacute;naires, fit face &agrave; une arm&eacute;e forg&eacute;e par la haine et le temps.</p>
+      <p>Les diff&eacute;rentes branches du Wandenreich, sans leur Empereur pour les guider vers une victoire d&eacute;finitive, d&eacute;velopp&egrave;rent des philosophies divergentes &mdash; certains cherchant la r&eacute;paration, d'autres la survie, d'autres encore la v&eacute;rit&eacute;.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">La Disparition des Deux Piliers</div>
+      <p>Deux entit&eacute;s d'une densit&eacute; de Reishi extraordinaire maintenaient involontairement un contrepoids &agrave; l'accumulation infernale. Le bras droit du Re&imacr;o &mdash; la Stagnation &mdash; et son bras gauche &mdash; la Progression &mdash; compensaient ce que le Re&imacr;o scell&eacute; ne pouvait plus r&eacute;guler seul.</p>
+      <p>Leur disparition simultan&eacute;e n'est pas un accident. C'est soit une catastrophe soit un acte d&eacute;lib&eacute;r&eacute;. Sans elles, la balance entre l'Enfer et les Trois Mondes a commenc&eacute; &agrave; se rompre.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">La R&eacute;v&eacute;lation</div>
+      <p>La v&eacute;rit&eacute; du Kons&omacr; Reisai &eacute;clata au grand jour. Des mill&eacute;naires de mensonge bienveillant r&eacute;v&eacute;l&eacute;s d'un coup. Les Capitaines du Gotei apprirent que leurs pr&eacute;d&eacute;cesseurs n'avaient pas &eacute;t&eacute; guid&eacute;s vers le repos &mdash; ils avaient &eacute;t&eacute; pr&eacute;cipit&eacute;s en Enfer.</p>
+      <p>La Division Z&eacute;ro, qui gardait ce secret depuis des millions d'ann&eacute;es, se taisait encore. La question &eacute;tait trop lourde pour ceux qui la portaient, trop dangereuse pour ceux qui la d&eacute;couvraient.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Division du Haut Commandement</div>
+      <p>Ceux qu'on avait envoy&eacute;s en Enfer pendant des mill&eacute;naires &mdash; &eacute;taient-ils des ennemis ou des victimes&nbsp;? La question divisait profond&eacute;ment le Gotei. Certains plaidaient pour la r&eacute;paration. D'autres estimaient que le rituel &eacute;tait n&eacute;cessaire &agrave; la survie des Trois Mondes.</p>
+      <p>Le dilemme &eacute;tait existentiel&nbsp;: intervenir signifiait r&eacute;v&eacute;ler des si&egrave;cles de mensonge institutionnel. Ne pas intervenir signifiait laisser l'Enfer se d&eacute;verser dans les Trois Mondes. Personne n'&eacute;tait unanime.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ÈRE VII — LA FISSURE                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="era" id="ere-7" data-era-color="#C9A84C">
+
+  <div class="era-header">
+    <div class="era-kanji-bg">亀裂</div>
+    <div class="era-number">&Egrave;re VII</div>
+    <div class="era-title">La Fissure</div>
+    <div class="era-subtitle">Le cristal du Re&imacr;o tremble, la Fronti&egrave;re grandit, et quelque chose frappe aux Portes</div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">Les Portes se fissurent</div>
+      <p>Sans les Deux Piliers, la balance s'est rompue. L'&eacute;quilibre entre l'Enfer et les Trois Mondes, maintenu pendant des millions d'ann&eacute;es par le sacrifice du Re&imacr;o et la pr&eacute;sence de ses fragments, a commenc&eacute; &agrave; c&eacute;der.</p>
+      <p>Les Portes de l'Enfer, con&ccedil;ues pour s'ouvrir bri&egrave;vement lors des c&eacute;r&eacute;monies du Kons&omacr; Reisai, montrent d&eacute;sormais des fissures permanentes. Le couvercle que le Monde des Vivants &eacute;tait cens&eacute; constituer se soul&egrave;ve de l'int&eacute;rieur.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Le Jigoku no Rinki d&eacute;borde</div>
+      <p>Les sph&egrave;res noires phosphorescentes du Jigoku no Rinki &mdash; signes que l'&eacute;quilibre infernal est perturb&eacute; &mdash; flottent d&eacute;sormais en permanence dans certaines zones des Trois Mondes. Les Kushan&amacr;da, dont le comportement &eacute;tait parfaitement pr&eacute;visible depuis des &eacute;ternit&eacute;s, montrent des irr&eacute;gularit&eacute;s.</p>
+      <p>Les Jigokusari des Togabito les plus anciens se sont l&eacute;g&egrave;rement rel&acirc;ch&eacute;es &mdash; pas assez pour la libert&eacute;, mais assez pour &ecirc;tre perceptible. Quelque chose qui ressemble &agrave; de l'espoir commence &agrave; exister en Enfer.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">La Fronti&egrave;re se r&eacute;v&egrave;le</div>
+      <p>L'espace entre les mondes &mdash; toujours th&eacute;orique, toujours invisible &mdash; est devenu un lieu. La Fronti&egrave;re n'est ni Soul Society ni l'Enfer ni le Monde des Vivants. C'est un territoire nouveau, n&eacute; de l'effondrement des barri&egrave;res qui s&eacute;paraient les r&eacute;alit&eacute;s.</p>
+      <p>Les quatre factions ont commenc&eacute; &agrave; y envoyer des &eacute;claireurs, chacune pour ses propres raisons, chacune d&eacute;couvrant que les autres y sont d&eacute;j&agrave;.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Les Quatre Factions convergent</div>
+      <p>Shinigami portant le poids du Kons&omacr; Reisai. Togabito forg&eacute;s par des mill&eacute;naires de souffrance. Arrancar dont le vide r&eacute;sonne avec l'&eacute;nergie infernale. Quincy percevant dans la Fissure ce que nul autre ne voit.</p>
+      <p>Les vieilles blessures se rouvrent&nbsp;: le g&eacute;nocide Quincy, les Capitaines envoy&eacute;s en Enfer, la r&eacute;sonance Hollow-Enfer. Mais la menace commune oblige &agrave; un choix&nbsp;: continuer &agrave; se ha&iuml;r ou s'allier pour survivre.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row left">
+    <div class="event-card">
+      <div class="event-title">L'Entit&eacute; Inconnue</div>
+      <p>Les Quincy, dont la perception du Reishi leur r&eacute;v&egrave;le ce que les autres ne voient pas, rapportent une observation troublante&nbsp;: la progression du Reishi infernal n'est pas al&eacute;atoire. Elle suit une logique. Elle a une direction. Quelque chose dans l'&eacute;nergie qui filtre semble se mouvoir vers quelque chose &mdash; ou chercher quelqu'un.</p>
+      <p>Quelque chose frappe aux Portes depuis l'ext&eacute;rieur. Quelque chose d'ant&eacute;rieur aux Trois Mondes. Quelque chose que m&ecirc;me les archives de la Division Z&eacute;ro ne nomment pas.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+  <div class="event-row right">
+    <div class="event-card">
+      <div class="event-title">Le Pr&eacute;sent</div>
+      <p>Le cristal du Re&imacr;o tremble. La Fronti&egrave;re grandit et remplace les mondes. Les Arrancar ressentent une compl&eacute;tude inqui&eacute;tante pr&egrave;s des zones de contamination. Les Togabito anciens comprennent ce que cette transformation signifie de l'int&eacute;rieur. Les Quincy n'ont pas encore d&eacute;cid&eacute; s'ils partageront ce qu'ils voient.</p>
+      <p>Et la Fissure s'&eacute;largit.</p>
+    </div>
+    <div class="event-connector"></div>
+    <div class="event-node"></div>
+  </div>
+
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  &mdash; Infernum Aeterna &middot; Jigoku no Sekai &mdash;
+</footer>
+
+<!-- EFFECTS -->
+<script src="effects.js"></script>
+<script>
+(function() {
+  // ── Era color map ──
+  var ERA_COLORS = {
+    'ere-1': '#4A8DB7',
+    'ere-2': '#8B2500',
+    'ere-3': '#E8E8F0',
+    'ere-4': '#1A3A6B',
+    'ere-5': '#D4AF37',
+    'ere-6': '#6B1FA8',
+    'ere-7': '#C9A84C'
+  };
+
+  var eraSections = document.querySelectorAll('.era');
+  var eraDots = document.querySelectorAll('.era-dot');
+  var eventCards = document.querySelectorAll('.event-card');
+  var eventNodes = document.querySelectorAll('.event-node');
+  var currentEra = 'ere-1';
+
+  // ── Set era color on CSS variable ──
+  function setEraColor(eraId) {
+    var color = ERA_COLORS[eraId] || ERA_COLORS['ere-1'];
+    document.documentElement.style.setProperty('--era-color', color);
+    document.documentElement.style.setProperty('--accent', color);
+  }
+
+  // ── Update active dot ──
+  function setActiveDot(eraId) {
+    eraDots.forEach(function(dot) {
+      dot.classList.remove('active');
+      if (dot.dataset.era === eraId) dot.classList.add('active');
+    });
+  }
+
+  // ── IntersectionObserver: card reveal ──
+  var cardObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Also reveal the spine node in the same row
+        var row = entry.target.closest('.event-row');
+        if (row) {
+          var node = row.querySelector('.event-node');
+          if (node) node.classList.add('visible');
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+
+  eventCards.forEach(function(card) { cardObserver.observe(card); });
+
+  // ── IntersectionObserver: era tracking ──
+  var eraObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
+        var eraId = entry.target.id;
+        if (eraId !== currentEra) {
+          currentEra = eraId;
+          setActiveDot(eraId);
+          setEraColor(eraId);
+          if (window.InfernumFX && window.InfernumFX.setEra) {
+            InfernumFX.setEra(eraId);
+          }
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  eraSections.forEach(function(section) { eraObserver.observe(section); });
+
+  // ── Dot click → smooth scroll ──
+  eraDots.forEach(function(dot) {
+    dot.addEventListener('click', function() {
+      var eraId = this.dataset.era;
+      var target = document.getElementById(eraId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', '#' + eraId);
+      }
+    });
+  });
+
+  // ── Deep linking ──
+  var hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    setActiveDot(hash);
+    setEraColor(hash);
+    currentEra = hash;
+    // Delay scroll to let page render
+    setTimeout(function() {
+      document.getElementById(hash).scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  } else {
+    setEraColor('ere-1');
+  }
+
+  // ── Init FX ──
+  if (window.InfernumFX) {
+    InfernumFX.init();
+    if (InfernumFX.setEra) {
+      InfernumFX.setEra(hash || 'ere-1');
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

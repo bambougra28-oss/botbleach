@@ -7,6 +7,51 @@
   'use strict';
 
   // ── Config par faction ──────────────────────────
+  var ERA_FX = {
+    'ere-1': {
+      type: 'default',
+      colors: ['rgba(74,141,183,0.3)', 'rgba(74,141,183,0.2)', 'rgba(100,170,210,0.25)'],
+      bg: 'radial-gradient(ellipse at 50% 30%, rgba(74,141,183,0.10), transparent 60%)',
+      rgb: '74,141,183'
+    },
+    'ere-2': {
+      type: 'embers',
+      colors: ['rgba(139,37,0,0.4)', 'rgba(180,50,10,0.35)', 'rgba(120,20,0,0.3)'],
+      bg: 'radial-gradient(at 50% 100%, rgba(139,37,0,0.12), transparent 50%)',
+      rgb: '139,37,0'
+    },
+    'ere-3': {
+      type: 'petals',
+      colors: ['rgba(232,232,240,0.35)', 'rgba(232,232,240,0.25)', 'rgba(220,220,235,0.3)'],
+      bg: 'radial-gradient(ellipse at 50% 0%, rgba(232,232,240,0.10), transparent 60%)',
+      rgb: '232,232,240'
+    },
+    'ere-4': {
+      type: 'light',
+      colors: ['rgba(26,58,107,0.5)', 'rgba(60,100,180,0.35)', 'rgba(100,150,255,0.3)'],
+      bg: 'radial-gradient(at 30% 0%, rgba(26,58,107,0.12), transparent 50%), radial-gradient(at 70% 0%, rgba(26,58,107,0.10), transparent 50%)',
+      rgb: '26,58,107'
+    },
+    'ere-5': {
+      type: 'default',
+      colors: ['rgba(212,175,55,0.3)', 'rgba(212,175,55,0.2)', 'rgba(230,200,80,0.18)'],
+      bg: 'radial-gradient(at 50% 50%, rgba(212,175,55,0.08), transparent 55%)',
+      rgb: '212,175,55'
+    },
+    'ere-6': {
+      type: 'embers',
+      colors: ['rgba(107,31,168,0.4)', 'rgba(139,0,0,0.35)', 'rgba(150,50,200,0.3)'],
+      bg: 'radial-gradient(at 50% 100%, rgba(107,31,168,0.12), transparent 50%), radial-gradient(at 100% 50%, rgba(139,0,0,0.08), transparent 40%)',
+      rgb: '107,31,168'
+    },
+    'ere-7': {
+      type: 'embers',
+      colors: ['rgba(201,168,76,0.3)', 'rgba(139,0,0,0.25)', 'rgba(180,150,60,0.2)'],
+      bg: 'radial-gradient(at 50% 50%, rgba(201,168,76,0.08), transparent 50%), radial-gradient(at 50% 100%, rgba(139,0,0,0.06), transparent 40%)',
+      rgb: '201,168,76'
+    }
+  };
+
   var FACTION_FX = {
     shinigami: {
       type: 'petals',
@@ -400,6 +445,22 @@
       document.documentElement.style.setProperty('--fc-rgb', fx.rgb);
 
       // Clear particles on faction change for clean transition
+      if (changed) {
+        particles = [];
+      }
+    },
+
+    setEra: function (id) {
+      var fx = ERA_FX[id] || DEFAULT_FX;
+      var changed = fx !== currentFX;
+      currentFX = fx;
+
+      if (overlay) {
+        overlay.style.background = fx.bg;
+      }
+
+      document.documentElement.style.setProperty('--fc-rgb', fx.rgb);
+
       if (changed) {
         particles = [];
       }

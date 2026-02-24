@@ -556,7 +556,7 @@ shinigami: { nom:"Shinigami", kanji:"死神", couleur:"#E8E8F0", accroche:"Les g
 {nom:"Oni Dekopin",kanji:"鬼デコピン",p:3,c:3,desc:"La Pichenette du Démon. L'absurdité de la technique ne fait que souligner sa terreur — un simple mouvement de doigt, une pichenette qui projette l'adversaire à travers des murs. La concentration de Reishi dans un point de contact minuscule produit une pression monstrueuse. Ceux qui en sont victimes décrivent l'impact d'un boulet de canon. Ceux qui la maîtrisent sourient.",cond:"Démonstration RP de puissance Hakuda disproportionnée.",prereqNom:"Ikkotsu + Tesshō"}
 ]}
 ]},
-togabito: { nom:"Togabito", kanji:"哎人", couleur:"#6B1FA8", accroche:"Les damnés de l’Enfer — quatre souffrances transmutées en puissance par ceux qui refusent de disparaître.", voies:[
+togabito: { nom:"Togabito", kanji:"咎人", couleur:"#6B1FA8", accroche:"Les damnés de l’Enfer — quatre souffrances transmutées en puissance par ceux qui refusent de disparaître.", voies:[
 {id:"jigokusari",nom:"Jigokusari",kanji:"地獄鎖",sousTitre:"Les Chaînes de l'Enfer",desc:"Les chaînes sont une excroissance de la volonté de l'Enfer, enroulées autour des âmes damnées. La plupart les subissent. Quelques-uns cessent de les combattre et découvrent qu'elles peuvent servir.",apt:[
 {nom:"Kusari Sōjū",kanji:"鎖操",p:1,c:1,desc:"Manipuler les chaînes plutôt que les subir. Le Togabito apprend à diriger les maillons comme des appendices supplémentaires — lents d'abord, maladroits, mais répondant à la volonté plutôt qu'à la douleur. En ancrant une chaîne et en se tractant le long d'elle, le damné acquiert une mobilité rudimentaire mais efficace — un Hohō de fer et de souffrance. Le premier pas vers la maîtrise est d'accepter que ces chaînes sont désormais une partie de soi."},
 {nom:"Kusari Tate",kanji:"鎖盾",p:1,c:1,desc:"Les chaînes se tissent devant le corps en un bouclier improvisé. Le métal infernal absorbe les impacts avec une efficacité que l'acier des Trois Mondes ne peut égaler — chaque maillon est saturé du Reishi corrompu de l'Enfer, une matière que même le Zanpakutō peine à trancher."},
@@ -702,7 +702,8 @@ Object.keys(FACTIONS).forEach(function(fk) {
   html += emblemHtml;
   html += '<div class="hero-kanji" style="color:' + f.couleur + '">' + f.kanji + '</div>';
   html += '<div class="hero-title" style="color:' + f.couleur + '">' + f.nom + '</div>';
-  html += '<div class="hero-sub">' + f.accroche + '</div></div>';
+  html += '<div class="hero-sub">' + f.accroche + '</div>';
+  html += '<div style="margin-top:0.6em;font-size:0.85em;"><a href="index.html#' + fk + '" style="color:' + f.couleur + ';text-decoration:none;opacity:0.8;">&#x2190; Lire le lore ' + f.nom + '</a></div></div>';
   html += '<nav class="voie-nav" data-faction="' + fk + '">';
   f.voies.forEach(function(v, i) {
     html += '<button class="voie-pill' + (i===0?' active':'') + '" data-voie="' + v.id + '" style="--fc:' + f.couleur + '">' + v.kanji + ' ' + v.nom + '</button>';

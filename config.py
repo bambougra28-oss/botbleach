@@ -32,6 +32,10 @@ COULEURS = {
     "gris_acier":       0x7B7D8A,
 
     "orange_mission":   0xFF8C00,
+    "brun_cendre":      0x8B2500,
+    "or_soufre":        0xB8860B,
+    "violet_profond":   0x1A0030,
+    "noir_absolu":      0x050505,
 }
 
 # ─── Paliers de combat (Puissance Spirituelle) ──────────────────────────────

@@ -497,7 +497,10 @@ class Construction(commands.Cog):
         # Nettoyer les anciens messages du bot dans les channels lore
         cles_lore = [
             "fissure-du-monde", "infernum-aeterna", "les-quatre-factions", "geographie",
-            "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche"
+            "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche",
+            "figures-de-legende", "etat-de-la-fissure", "tableau-des-missions",
+            "hierarchie-des-espada", "veille-de-la-fissure", "etat-de-la-frontiere",
+            "incidents-repertories", "progression", "objectifs-narratifs", "esprits-perdus"
         ]
         for cle in cles_lore:
             ch = trouver_channel(guild, cle)
@@ -871,6 +874,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     """Poste le lore dans les channels CHRONIQUES et ADMINISTRATION après /setup."""
     from cogs.lore import GLOSSAIRE, FICHES_FACTION, STRATES, LORE_DATA
     from cogs.personnage import RANGS_POINTS
+    from cogs.aptitudes import APTITUDES_WEB_URL
 
     def find_ch(partial: str):
         for ch in guild.text_channels:
@@ -1060,7 +1064,6 @@ async def _peupler_channels_lore(guild: discord.Guild):
 
     # ── 5b. systeme-et-competences — résumé aptitudes + lien web ─────────────
     try:
-        from cogs.aptitudes import APTITUDES_WEB_URL
         e = discord.Embed(
             title="🔮 Aptitudes et Voies de Combat",
             description=(
@@ -1096,7 +1099,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     except Exception as ex:
         log.warning("[LORE] Embed aptitudes résumé non posté : %s", ex)
 
-    # ── 6. bestiaire-infernal — 3 embeds ─────────────────────────────────────
+    # ── 6. bestiaire-infernal — embeds ──────────────────────────────────────
     ch = find_ch("bestiaire")
     embeds_bestiaire = [
         {
@@ -1150,6 +1153,48 @@ async def _peupler_channels_lore(guild: discord.Guild):
                              "et ne pas les attaquer. Personne ne sait pourquoi."),
             ],
             "couleur": "noir_abyssal"
+        },
+        {
+            "titre": "虚 Les Hollow · Évolution naturelle",
+            "desc": (
+                "Toute âme humaine qui ne trouve pas le chemin de Soul Society "
+                "finit par se consumer de l'intérieur. Le cœur se creuse, le masque "
+                "apparaît, et ce qui reste n'est plus qu'instinct et faim."
+            ),
+            "fields": [
+                ("Gillian (メノスグランデ)", "La première forme d'évolution collective. Des centaines de "
+                                             "Hollow fusionnent en un colosse aveugle, lent et massif. "
+                                             "Une conscience dominante peut émerger du magma d'âmes, "
+                                             "mais la plupart errent sans direction."),
+                ("Adjuchas (中級大虚)", "L'Adjuchas a conservé sa volonté individuelle. Plus petit, "
+                                        "plus rapide, plus vicieux que le Gillian. Il doit dévorer "
+                                        "sans relâche pour maintenir sa forme. S'il cesse, la "
+                                        "régression est définitive."),
+                ("Vasto Lorde (最上大虚)", "Le sommet de l'évolution Hollow. Un corps proche de l'humain, "
+                                           "une puissance qui rivalise avec celle d'un Capitaine. Ils sont "
+                                           "si rares que leur apparition change l'équilibre de Hueco Mundo."),
+            ],
+            "couleur": "gris_sable"
+        },
+        {
+            "titre": "未知の存在 L'Entité Inconnue",
+            "desc": (
+                "Quelque chose frappe aux Portes de l'Enfer depuis l'extérieur des "
+                "Trois Mondes. Ce n'est ni un Hollow, ni un Shinigami, ni un être "
+                "d'aucune catégorie répertoriée."
+            ),
+            "fields": [
+                ("Ce qu'on perçoit", "Les Kushanāda réagissent à sa présence par des comportements "
+                                     "inédits. Les Quincy captent ses vibrations dans le Reishi ambiant. "
+                                     "Le cristal du Reiō tremble à intervalles de plus en plus rapprochés."),
+                ("Ce qu'on ignore", "Sa nature, son origine, ses intentions. Personne ne sait "
+                                    "depuis quand elle frappe. L'Entité n'a pas de nom parce que "
+                                    "nommer quelque chose suppose de le comprendre."),
+                ("Ce qu'on craint", "Que la Fissure ne soit pas une conséquence du Konsō Reisai "
+                                    "ou de la disparition des Deux Piliers, mais un effet secondaire "
+                                    "de ce qui se passe de l'autre côté des Portes."),
+            ],
+            "couleur": "pourpre_infernal"
         },
     ]
     for data in embeds_bestiaire:
@@ -1282,7 +1327,8 @@ async def _peupler_channels_lore(guild: discord.Guild):
         "[Votre texte]\n\n"
         "APPARENCE :\n"
         "[Description physique]\n\n"
-        "APTITUDES (3 maximum selon rang) :\n"
+        "APTITUDES (selon votre budget Reiryoku) :\n"
+        "Voir le détail sur la page Aptitudes du site web.\n"
         "1.\n"
         "2.\n"
         "3.\n\n"
@@ -1329,7 +1375,8 @@ async def _peupler_channels_lore(guild: discord.Guild):
         value=(
             "Après validation, vos rôles et l'accès aux zones RP sont attribués "
             "automatiquement.\n\n"
-            f"📜 [Guide de création complet]({LORE_WEB_URL}#creation)"
+            f"📜 [Guide de création complet]({LORE_WEB_URL}#creation)\n"
+            f"🔮 [Détail des aptitudes par faction]({APTITUDES_WEB_URL})"
         ),
         inline=False
     )
@@ -1377,18 +1424,6 @@ async def _peupler_channels_lore(guild: discord.Guild):
                 "ne verraient que des millénaires plus tard."
             ),
             "couleur": "pourpre_infernal"
-        },
-        {
-            "titre": "🔴 Les Kushanāda · 倶舎那陀",
-            "desc": (
-                "Créatures titanesques aux allures de magistrats cosmiques. Personne ne "
-                "sait qui les a créés, personne ne sait ce qu'ils pensent. Ils maintiennent "
-                "l'ordre des Strates avec une neutralité absolue. Leur seul but : empêcher "
-                "quiconque de s'échapper.\n\n"
-                "Depuis la Fissure, certains Kushanāda semblent hésiter. Comme si leurs "
-                "instructions entraient en conflit avec quelque chose de nouveau."
-            ),
-            "couleur": "gris_acier"
         },
         {
             "titre": "🥨 Kenpachi Dorian · ケンパチ・ドリアン",
@@ -1469,17 +1504,77 @@ async def _peupler_channels_lore(guild: discord.Guild):
     e.set_footer(text="⸻ Infernum Aeterna · Missions ⸻")
     await poster(ch, e)
 
-    # ── 12. hierarchie-des-espada — embed initial ───────────────────────────
+    # ── 12. hierarchie-des-espada — lore + classement ────────────────────────
     ch = find_ch("hierarchie-des-espada")
     e = discord.Embed(
-        title="💠 Hiérarchie des Espada · 十刃",
+        title="💠 Hiérarchie de Las Noches · 十刃",
         description=(
-            "Le classement des Espada de Las Noches. Les positions changent "
-            "au fil des combats, des arcs et des décisions du staff."
+            "Las Noches fonctionne selon une loi unique : la puissance "
+            "détermine la place. Pas de politique, pas de vote, pas de "
+            "discours. L'ordre est maintenu parce que chacun sait ce que "
+            "l'autre peut faire."
         ),
         color=COULEURS["gris_sable"]
     )
-    e.add_field(name="Aucun Espada enregistré", value="*Le trône attend ses prétendants.*", inline=False)
+    e.add_field(
+        name="💠 Espada (十刃)",
+        value=(
+            "Les dix plus puissants Arrancar. Numérotés de 0 à 9, le "
+            "chiffre gravé dans leur chair marquant leur rang. Chacun "
+            "règne sur un secteur de Las Noches et commande ses propres "
+            "subordonnés. Leur Resurrección peut renverser l'issue d'un "
+            "conflit à elle seule."
+        ),
+        inline=False,
+    )
+    e.add_field(
+        name="◇ Fracción",
+        value=(
+            "L'entourage direct d'un Espada. Un mélange de lieutenants, "
+            "de gardes et de serviteurs loyaux. La Fracción doit sa "
+            "position à la confiance de son Espada, et cette confiance "
+            "peut être retirée à tout moment."
+        ),
+        inline=False,
+    )
+    e.add_field(
+        name="○ Números",
+        value=(
+            "Les Arrancar numérotés au-delà des dix premiers. Soldats "
+            "et combattants ordinaires de Las Noches. Certains sont "
+            "ambitieux, d'autres résignés, tous savent que leur numéro "
+            "peut changer par la force."
+        ),
+        inline=False,
+    )
+    e.add_field(
+        name="◈ Privaron Espada",
+        value=(
+            "D'anciens Espada déchus, remplacés par un adversaire plus "
+            "puissant. Ils conservent leur force mais ont perdu leur "
+            "place et le respect qui va avec. Certains attendent leur "
+            "revanche. D'autres ont cessé d'attendre."
+        ),
+        inline=False,
+    )
+    e.add_field(
+        name="👑 Rey",
+        value=(
+            "Le souverain de Hueco Mundo. Celui qui s'assoit au sommet de "
+            "Las Noches et dont la puissance ne laisse de doute à personne. "
+            "Le titre se prend par la force ou ne se prend pas."
+        ),
+        inline=False,
+    )
+    e.set_footer(text="⸻ Infernum Aeterna · Hueco Mundo ⸻")
+    await poster(ch, e)
+
+    e = discord.Embed(
+        title="📊 Classement actuel des Espada",
+        description="*Le trône attend ses prétendants.*",
+        color=COULEURS["gris_sable"]
+    )
+    e.add_field(name="Aucun Espada enregistré", value="Les positions se rempliront au fil du RP.", inline=False)
     e.set_footer(text="⸻ Infernum Aeterna · Hueco Mundo ⸻")
     await poster(ch, e)
 

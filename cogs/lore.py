@@ -48,7 +48,7 @@ GLOSSAIRE = {
     "konso":          ("魂葬", "Le rite par lequel un Shinigami frappe du manche de son Zanpakutō le front d'une âme errante pour l'envoyer à Soul Society. Un geste appris dès l'Académie, répété sans question depuis des millénaires."),
     "konso_reisai":   ("魂葬霊祭", "Le rituel secret. Douze ans après la mort d'un Capitaine, un Hollow est sacrifié devant sa tombe et son Reishi est canalisé vers l'Enfer. On enseigne aux subordonnés que c'est un passage vers le repos. Ce n'en est pas un."),
     "reio":           ("霊王", "Le Roi des Âmes. Capturé par les Cinq Ancêtres, mutilé, scellé dans un cristal. Ni vivant ni mort. Il est le verrou qui maintient les Trois Mondes séparés, et ce verrou commence à céder."),
-    "mimihagi":       ("耳禿", "Le bras droit du Reiō, arraché lors de la mutilation originelle. Divinité de la Stagnation, l'un des Deux Piliers dont la disparition a fait basculer l'équilibre vers la Fissure."),
+    "bras_droit_reio":("耳禿", "Le Bras Droit du Reiō, arraché lors de la mutilation originelle. Devenu divinité à part entière, il incarne la Stagnation — l'un des Deux Piliers dont la disparition a fait basculer l'équilibre vers la Fissure."),
     "togabito":       ("咎人", "Littéralement « personne fautive ». Pas une espèce : une condition. Des âmes envoyées en Enfer par le péché, par la purification d'un Hollow trop coupable, ou par le Konsō Reisai."),
     "mer_primordiale":("原初の海", "L'état du monde avant les mondes. Une existence indivisée où la vie et la mort ne se distinguaient pas, où les âmes existaient sans naître et disparaissaient sans mourir. L'obscurité la rongea de l'intérieur."),
     "lichtreich":     ("光帝国", "L'Empire de Lumière des Quincy, à l'époque où ils pouvaient regarder le Gotei 13 dans les yeux. Ses guerriers portaient les Schrift. Ses ruines vivent dans la mémoire de ceux qui ont survécu."),
@@ -61,6 +61,7 @@ GLOSSAIRE = {
     "las_noches":     ("虚夜宮", "Le Palais de la Nuit Creuse. Forteresse de Hueco Mundo bâtie couche après couche sur des générations, chaque conquérant y ajoutant sa strate. Des couloirs dont la logique n'appartient qu'à ceux qui les ont creusés."),
     "blut":           ("血装", "La fortification du sang, technique propre aux Quincy. Le Blut Vene rend le corps presque imperméable aux coups ; le Blut Arterie décuple la force de frappe. On ne peut activer les deux à la fois."),
     "kyokai":         ("境界", "La Frontière. Avant la Fissure, c'était un vide entre les mondes, un couloir que tout le monde traversait sans lever les yeux. Maintenant c'est un territoire. Des fragments de mondes y dérivent, les lois spirituelles s'y contredisent, et les quatre races s'y croisent sans qu'aucune ne puisse revendiquer quoi que ce soit. Chaque semaine, elle s'élargit un peu plus."),
+    "entite_inconnue":("未知の存在", "Quelque chose frappe aux Portes de l'Enfer depuis l'extérieur des Trois Mondes. Personne ne sait ce que c'est. Personne ne sait depuis quand ça dure. Les Kushanāda réagissent à sa présence, les Quincy perçoivent ses vibrations dans le Reishi, et le Reiō scellé dans son cristal n'a jamais tremblé autant. L'Entité n'a pas de nom parce que nommer quelque chose suppose de le comprendre."),
 }
 
 
@@ -197,7 +198,12 @@ FICHES_FACTION = {
              "pas la forme d'une défaite glorieuse sur un champ de bataille. Ce fut une "
              "extermination méthodique, famille par famille, village par village. Les survivants "
              "se cachèrent dans les ombres du Seireitei et fondèrent le Wandenreich, l'Empire "
-             "Invisible, nourri par le Reishi de ceux qui avaient massacré les leurs."),
+             "Invisible, nourri par le Reishi de ceux qui avaient massacré les leurs.\n\n"
+             "Aujourd'hui, le Schrift subsiste mais l'Empereur qui les gravait a disparu. "
+             "Certains Quincy héritent d'un fragment de cette puissance par le sang, d'autres "
+             "la forgent par un entraînement qui frôle le sacrifice. Obtenir un Schrift "
+             "en jeu nécessite d'atteindre le rang de Sternritter et de remplir une condition "
+             "RP validée par le staff."),
             ("Ce qu'ils voient",
              "Leur perception du Reishi leur montre quelque chose depuis la Fissure. L'énergie "
              "infernale qui se répand dans les Trois Mondes ne se disperse pas au hasard. Elle "
@@ -228,7 +234,7 @@ STRATES = [
     {
         "nom":    "Carnale · Deuxième Strate",
         "emoji":  "🟠",
-        "couleur": 0x8B2500,
+        "couleur": COULEURS["brun_cendre"],
         "desc":   ("Les Plaines Brûlantes. Des rivières de soufre, des corps qui brûlent "
                    "et se reconstituent en boucle sans fin. La violence ici est mécanique, "
                    "gratuite, infligée sans raison lisible. Ceux qui traversent n'en "
@@ -238,7 +244,7 @@ STRATES = [
     {
         "nom":    "Sulfura · Troisième Strate",
         "emoji":  "🟡",
-        "couleur": 0xB8860B,
+        "couleur": COULEURS["or_soufre"],
         "desc":   ("Les Geysers de Soufre. Vapeurs toxiques, visibilité nulle, un terrain "
                    "qui se reconfigure à chaque heure sans logique apparente. Seuls les "
                    "instincts aiguisés par des siècles de souffrance permettent de s'orienter. "
@@ -247,7 +253,7 @@ STRATES = [
     {
         "nom":    "Profundus · Quatrième Strate",
         "emoji":  "🔵",
-        "couleur": 0x1A0030,
+        "couleur": COULEURS["violet_profond"],
         "desc":   ("L'Obscurité Profonde. La pression spirituelle y est si dense qu'elle "
                    "écrase tout être dont le Reishi ne peut la soutenir. Les Kushanāda "
                    "rôdent en permanence. Très peu d'âmes y descendent. Celles qui "
@@ -257,7 +263,7 @@ STRATES = [
     {
         "nom":    "Saiōbu · Cinquième Strate",
         "emoji":  "⚫",
-        "couleur": 0x050505,
+        "couleur": COULEURS["noir_absolu"],
         "desc":   ("L'Abyssal. Le silence est total, percé seulement par des vibrations "
                    "que nulle oreille n'était faite pour capter. Les lois des Trois Mondes "
                    "ne s'appliquent plus ici. Ce qui existe à cette profondeur est antérieur "
@@ -357,10 +363,10 @@ LORE_DATA = {
         "fields": [
             ("Les fragments dispersés",
              "Ses membres arrachés vivent encore, dotés de leur propre conscience. "
-             "Mimihagi, le bras droit, incarne la Stagnation. Pernida, le bras "
-             "gauche, incarne la Progression. D'autres fragments existent sous des "
-             "formes que personne n'a encore identifiées. Son fils hérita de "
-             "l'Almighty, le don prophétique de voir et d'altérer le futur."),
+             "Le bras droit, devenu divinité à part entière, incarne la Stagnation. "
+             "Le bras gauche incarne la Progression. D'autres fragments existent "
+             "sous des formes que personne n'a encore identifiées. Son fils hérita "
+             "d'un don prophétique : voir le futur et l'altérer."),
             ("Le Verrou",
              "Tant que le Reiō existe, les Trois Mondes restent séparés. Sa mort "
              "provoquerait leur effondrement immédiat. La Fissure est peut-être le "
@@ -476,7 +482,7 @@ LORE_DATA = {
              "8 500 pts en affiche 72 250, un Commandant à 10 000 pts culmine "
              "à 100 000.\n\n"
              "En combat, l'écart de PS fixe un **palier narratif** :\n"
-             "均衡 **Équilibre** (< 2 000) · toutes les aptitudes fonctionnent\n"
+             "均衡 **Équilibre** (0–2 000) · toutes les aptitudes fonctionnent\n"
              "優勢 **Ascendant** (2 001–8 000) · les techniques de base faiblissent\n"
              "制圧 **Domination** (8 001–25 000) · seules les Maîtrises portent\n"
              "圧倒 **Écrasement** (25 001–55 000) · seule la Transcendance compte\n"

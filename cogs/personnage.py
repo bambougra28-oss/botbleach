@@ -14,9 +14,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from typing import Optional
-import json
-import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from config import COULEURS
 from cogs.construction import trouver_channel
@@ -24,18 +22,6 @@ from utils.json_store import JsonStore
 
 PERSONNAGES_FILE = "data/personnages.json"
 
-
-def charger_personnages() -> dict:
-    if not os.path.exists(PERSONNAGES_FILE):
-        return {}
-    with open(PERSONNAGES_FILE) as f:
-        return json.load(f)
-
-
-def sauvegarder_personnages(data: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(PERSONNAGES_FILE, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 RANGS_POINTS = {
@@ -167,11 +153,31 @@ class Personnage(commands.Cog):
         embed.add_field(name="Faction", value=f"{EMOJI_FACTION.get(faction, '')} {faction.capitalize()}" if faction != "—" else "—", inline=True)
         embed.add_field(name="Rang",    value=rang_label or "—", inline=True)
         embed.add_field(name="Points",  value=f"**{points:,}** pts", inline=True)
+        # Puissance Spirituelle
+        from data.aptitudes import puissance_spirituelle
+        ps = puissance_spirituelle(points)
+        embed.add_field(name="⚡ Puissance Spirituelle", value=f"**{ps}** PS", inline=True)
         embed.add_field(name="Statut",  value="✅ Validé" if valide else "⏳ En attente", inline=True)
         if barre:
             embed.add_field(name="Progression", value=barre, inline=False)
         stats = f"Combats : **{perso.get('combats_total', 0)}** total · **{perso.get('combats_gagnes', 0)}** victoires"
         embed.add_field(name="Statistiques", value=stats, inline=False)
+        # Reiryoku — aptitudes
+        try:
+            from data.aptitudes import budget_reiryoku, reiryoku_depense
+            rang_cle = perso.get("rang_cle", "")
+            apt_data = perso.get("aptitudes", {})
+            debloquees = apt_data.get("debloquees", [])
+            bonus_rei = apt_data.get("reiryoku_bonus", 0)
+            budget = budget_reiryoku(rang_cle, bonus_rei)
+            depense = reiryoku_depense(debloquees)
+            if budget > 0:
+                rei_txt = f"**{depense}** / {budget} 霊力 ⸻ {len(debloquees)} aptitude{'s' if len(debloquees) != 1 else ''}"
+                if depense > budget:
+                    rei_txt += " ⚠️ *sur-budget*"
+                embed.add_field(name="霊力 Reiryoku", value=rei_txt, inline=False)
+        except Exception:
+            pass
         if valide and perso.get("date_validation"):
             embed.add_field(name="Validé le", value=perso["date_validation"][:10], inline=True)
         embed.set_footer(text="⸻ Infernum Aeterna · Registre des Âmes ⸻")
@@ -291,11 +297,11 @@ class Personnage(commands.Cog):
             "nom_perso": nom_perso, "faction": faction,
             "rang_cle": rang, "rang_label": _label_rang(faction, rang),
             "points": points_initiaux, "valide": True,
-            "date_validation": datetime.utcnow().isoformat(),
+            "date_validation": datetime.now(timezone.utc).isoformat(),
             "notes_staff": notes or "",
         })
         perso["historique_rangs"].append({
-            "rang": rang, "date": datetime.utcnow().isoformat(), "raison": "Validation initiale"
+            "rang": rang, "date": datetime.now(timezone.utc).isoformat(), "raison": "Validation initiale"
         })
         await self._sauvegarder()
 
@@ -303,6 +309,9 @@ class Personnage(commands.Cog):
         roles_ids = charger_roles()
 
         # Retirer En Attente, ajouter faction + rang + validé
+        # NOTE : ne PAS retirer le rôle voyageur — 26 channels (PORTAIL, CHRONIQUES,
+        # ADMINISTRATION, COMMUNAUTÉ, CHRONIQUES VIVANTES) dépendent de ce rôle
+        # pour leur visibilité, même après validation du personnage.
         role_attente = interaction.guild.get_role(roles_ids.get("en_attente", 0))
         if role_attente and role_attente in membre.roles:
             await membre.remove_roles(role_attente)
@@ -332,7 +341,7 @@ class Personnage(commands.Cog):
             embed.add_field(name="Faction", value=faction.capitalize(), inline=True)
             embed.add_field(name="Rang",    value=_label_rang(faction, rang) or rang, inline=True)
             embed.set_author(name=membre.display_name, icon_url=membre.display_avatar.url)
-            embed.set_footer(text=f"Validé le {datetime.utcnow().strftime('%d/%m/%Y')}")
+            embed.set_footer(text=f"Validé le {datetime.now(timezone.utc).strftime('%d/%m/%Y')}")
             await ch_fiches.send(embed=embed)
 
         # Notifier le joueur en DM
@@ -406,7 +415,7 @@ class Personnage(commands.Cog):
         perso["rang_cle"]   = rang
         perso["rang_label"] = _label_rang(faction, rang) or rang
         perso["historique_rangs"].append({
-            "rang": rang, "date": datetime.utcnow().isoformat(), "raison": raison
+            "rang": rang, "date": datetime.now(timezone.utc).isoformat(), "raison": raison
         })
         await self._sauvegarder()
 
@@ -484,13 +493,17 @@ class Personnage(commands.Cog):
         titre = "🏆 Classement Global" if faction == "tous" else f"🏆 Classement — {EMOJI_FACTION.get(faction, '')} {faction.capitalize()}"
         embed = discord.Embed(title=titre, color=COULEURS["or_ancien"])
 
+        from data.aptitudes import puissance_spirituelle
+
         medailles = ["🥇", "🥈", "🥉"] + ["▸"] * 7
         lignes = []
         for i, p in enumerate(top):
             emoji_f = EMOJI_FACTION.get(p.get("faction", ""), "")
+            pts = p.get("points", 0)
+            ps = puissance_spirituelle(pts)
             lignes.append(
                 f"{medailles[i]} **{p['nom_perso']}** {emoji_f}\n"
-                f"  {p.get('rang_label', '—')} · **{p.get('points', 0):,}** pts"
+                f"  {p.get('rang_label', '—')} · **{pts:,}** pts · ⚡ {ps} PS"
             )
 
         embed.description = "\n".join(lignes)
@@ -626,6 +639,146 @@ class Personnage(commands.Cog):
         if len(resultats) > 8:
             embed.set_footer(text=f"… et {len(resultats) - 8} autre(s). Affinez votre recherche.")
         await interaction.response.send_message(embed=embed)
+
+    # ══════════════════════════════════════════════════════════════════════════
+    #  RELATIONS INTER-PERSONNAGES
+    # ══════════════════════════════════════════════════════════════════════════
+
+    TYPES_RELATION = {
+        "rival":        "⚔️ Rival",
+        "allie":        "🤝 Allié",
+        "mentor":       "📖 Mentor",
+        "disciple":     "🎓 Disciple",
+        "ennemi_jure":  "💀 Ennemi juré",
+        "lien_sang":    "🩸 Lien de sang",
+        "camarade":     "🌸 Camarade",
+        "amour":        "💜 Lien d'âme",
+    }
+
+    @app_commands.command(name="relation-declarer", description="Déclare une relation RP avec un autre personnage.")
+    @app_commands.describe(
+        membre="Le joueur avec qui déclarer la relation",
+        type_relation="Type de relation",
+        description="Description de la relation (optionnel)"
+    )
+    @app_commands.choices(type_relation=[
+        app_commands.Choice(name=label, value=cle)
+        for cle, label in {
+            "rival": "⚔️ Rival", "allie": "🤝 Allié", "mentor": "📖 Mentor",
+            "disciple": "🎓 Disciple", "ennemi_jure": "💀 Ennemi juré",
+            "lien_sang": "🩸 Lien de sang", "camarade": "🌸 Camarade", "amour": "💜 Lien d'âme",
+        }.items()
+    ])
+    async def relation_declarer(
+        self, interaction: discord.Interaction,
+        membre: discord.Member, type_relation: str,
+        description: Optional[str] = None,
+    ):
+        uid = str(interaction.user.id)
+        uid_cible = str(membre.id)
+
+        if uid == uid_cible:
+            await interaction.response.send_message("❌ Vous ne pouvez pas déclarer une relation avec vous-même.", ephemeral=True)
+            return
+        if uid not in self.personnages or not self.personnages[uid].get("valide"):
+            await interaction.response.send_message("❌ Vous n'avez pas de personnage validé.", ephemeral=True)
+            return
+        if uid_cible not in self.personnages or not self.personnages[uid_cible].get("valide"):
+            await interaction.response.send_message("❌ Ce membre n'a pas de personnage validé.", ephemeral=True)
+            return
+
+        perso = self.personnages[uid]
+        perso_cible = self.personnages[uid_cible]
+
+        # Initialiser la liste de relations si absente
+        if "relations" not in perso:
+            perso["relations"] = []
+
+        # Vérifier si la relation existe déjà
+        for rel in perso["relations"]:
+            if rel.get("cible_id") == membre.id and rel.get("type") == type_relation:
+                await interaction.response.send_message("❌ Cette relation existe déjà.", ephemeral=True)
+                return
+
+        # Limiter à 10 relations
+        if len(perso["relations"]) >= 10:
+            await interaction.response.send_message("❌ Maximum 10 relations par personnage.", ephemeral=True)
+            return
+
+        label = self.TYPES_RELATION.get(type_relation, type_relation)
+        perso["relations"].append({
+            "cible_id": membre.id,
+            "cible_nom": perso_cible.get("nom_perso", membre.display_name),
+            "type": type_relation,
+            "label": label,
+            "description": description or "",
+            "date": datetime.now(timezone.utc).isoformat(),
+        })
+        await self._sauvegarder()
+
+        embed = discord.Embed(
+            title=f"{label} — Lien Déclaré",
+            description=(
+                f"**{perso['nom_perso']}** a déclaré une relation avec **{perso_cible['nom_perso']}**.\n\n"
+                + (f"*{description}*" if description else "")
+            ),
+            color=COULEURS["or_ancien"]
+        )
+        embed.set_footer(text="⸻ Infernum Aeterna · Relations ⸻")
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="relations", description="Affiche les relations d'un personnage.")
+    @app_commands.describe(membre="Le membre (défaut : vous)")
+    async def relations(self, interaction: discord.Interaction, membre: Optional[discord.Member] = None):
+        cible = membre or interaction.user
+        uid = str(cible.id)
+
+        if uid not in self.personnages or not self.personnages[uid].get("valide"):
+            await interaction.response.send_message("❌ Aucun personnage validé.", ephemeral=True)
+            return
+
+        perso = self.personnages[uid]
+        rels = perso.get("relations", [])
+
+        if not rels:
+            await interaction.response.send_message(
+                f"**{perso['nom_perso']}** n'a aucune relation déclarée.", ephemeral=True
+            )
+            return
+
+        embed = discord.Embed(
+            title=f"🔗 Relations de {perso['nom_perso']}",
+            color=COULEURS["or_ancien"]
+        )
+        for rel in rels[:10]:
+            val = f"Avec **{rel.get('cible_nom', '?')}**"
+            if rel.get("description"):
+                val += f"\n*{rel['description'][:100]}*"
+            embed.add_field(name=rel.get("label", "?"), value=val, inline=True)
+        embed.set_footer(text="⸻ Infernum Aeterna · Relations ⸻")
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="relation-retirer", description="Retire une relation avec un personnage.")
+    @app_commands.describe(membre="Le joueur dont retirer la relation")
+    async def relation_retirer(self, interaction: discord.Interaction, membre: discord.Member):
+        uid = str(interaction.user.id)
+        if uid not in self.personnages:
+            await interaction.response.send_message("❌ Aucun personnage.", ephemeral=True)
+            return
+
+        perso = self.personnages[uid]
+        rels = perso.get("relations", [])
+        nouvelles = [r for r in rels if r.get("cible_id") != membre.id]
+
+        if len(nouvelles) == len(rels):
+            await interaction.response.send_message("❌ Aucune relation trouvée avec ce membre.", ephemeral=True)
+            return
+
+        perso["relations"] = nouvelles
+        await self._sauvegarder()
+        await interaction.response.send_message(
+            f"✅ Relation(s) avec **{membre.display_name}** retirée(s).", ephemeral=True
+        )
 
     # ── Vérification montée en rang ────────────────────────────────────────────
     async def _verifier_montee_rang(self, interaction, membre, perso):

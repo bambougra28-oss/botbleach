@@ -45,11 +45,11 @@ class JsonStore:
 
     async def save(self):
         async with self._lock:
-            await asyncio.get_event_loop().run_in_executor(None, self._save_sync)
+            await asyncio.get_running_loop().run_in_executor(None, self._save_sync)
 
     async def load(self):
         async with self._lock:
-            self._data = await asyncio.get_event_loop().run_in_executor(None, self._load_sync)
+            self._data = await asyncio.get_running_loop().run_in_executor(None, self._load_sync)
         return self._data
 
     def __getitem__(self, key):

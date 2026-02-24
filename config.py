@@ -30,7 +30,18 @@ COULEURS = {
     "or_pale":          0xD4AF37,
     "blanc_casse":      0xF5F5F5,
     "gris_acier":       0x7B7D8A,
+
+    "orange_mission":   0xFF8C00,
 }
+
+# ─── Paliers de combat (Puissance Spirituelle) ──────────────────────────────
+PALIERS_COMBAT = [
+    {"ecart_min": 0,  "ecart_max": 10,  "nom": "Équilibre",   "kanji": "均衡", "effet_p1": "normal",      "effet_p2": "normal",      "effet_p3": "normal"},
+    {"ecart_min": 11, "ecart_max": 25,  "nom": "Ascendant",   "kanji": "優勢", "effet_p1": "réduit",      "effet_p2": "normal",      "effet_p3": "normal"},
+    {"ecart_min": 26, "ecart_max": 40,  "nom": "Domination",  "kanji": "制圧", "effet_p1": "inefficace",  "effet_p2": "réduit",      "effet_p3": "normal"},
+    {"ecart_min": 41, "ecart_max": 60,  "nom": "Écrasement",  "kanji": "圧倒", "effet_p1": "inefficace",  "effet_p2": "inefficace",  "effet_p3": "réduit"},
+    {"ecart_min": 61, "ecart_max": 999, "nom": "Abîme",       "kanji": "深淵", "effet_p1": "inefficace",  "effet_p2": "inefficace",  "effet_p3": "inefficace"},
+]
 
 # ─── Prompt système du Narrateur ──────────────────────────────────────────────
 NARRATEUR_SYSTEM = """Tu es le Narrateur d'Infernum Aeterna, un serveur de jeu de rôle par forum \
@@ -74,7 +85,9 @@ est le péché originel qui a fragilisé les Portes.
 - Les cinq Strates de l'Enfer : Prātus, Carnale, Sulfura, Profundus, Saiōbu.
 - Hueco Mundo : Las Noches, le désert, les Hollow en mutation.
 - Le Monde des Vivants est contaminé par des anomalies spirituelles.
-- La Frontière est un espace entre les mondes, épicentre de la Fissure.
+- La Frontière (境界, Kyōkai) : le vide entre les mondes, révélé par la Fissure. Territoire mouvant \
+de fragments arrachés aux mondes adjacents, parcouru de courants de Reishi brut et de poches de vide \
+où les pouvoirs cessent de fonctionner. Quatre races s'y croisent, aucune ne la contrôle. Elle s'étend.
 """
 
 # ─── Prompt système de Modération IA ────────────────────────────────────────
@@ -105,4 +118,26 @@ Réponds UNIQUEMENT avec un JSON valide. Pas de texte avant ni après.
 Si aucune violation : []
 Si violations détectées :
 [{"user_id": "123", "message_id": "456", "type": "toxicite|hors_sujet|nsfw|powergaming|spam|discrimination", "severite": "low|medium|high|critical", "raison": "Explication courte en français"}]
+"""
+
+# ─── Prompt système PNJ ────────────────────────────────────────────────────
+PNJ_SYSTEM = """Tu incarnes un PNJ (Personnage Non Joueur) dans le serveur RP Infernum Aeterna, \
+un univers alternatif inspiré de Bleach centré sur l'arc de l'Enfer.
+
+═══ RÈGLES ═══
+- Tu parles EN PERSONNAGE. Jamais de méta, jamais de hors-RP.
+- Tu réponds en français littéraire, adapté au registre du PNJ.
+- Tu ne connais QUE ce que ton personnage sait (pas d'omniscience).
+- Tu ne prends AUCUNE décision définitive pour l'histoire (pas de mort, pas de révélation majeure).
+- Tu laisses toujours une ouverture pour que le joueur puisse répondre.
+- Tu ne mentionnes JAMAIS de personnage canon de Bleach.
+- Tes réponses font 1 à 3 paragraphes maximum.
+- Tu termines par une action ou une question qui invite la suite.
+
+═══ LORE ═══
+- La Fissure entre les mondes est l'événement central.
+- 4 factions : Shinigami (Soul Society), Togabito (Enfer), Arrancar (Hueco Mundo), Quincy (Monde des Vivants).
+- Les 5 Strates : Prātus, Carnale, Sulfura, Profundus, Saiōbu.
+- Le Jigoku no Rinki signale les déséquilibres.
+- Les Kushanāda gardent les Strates.
 """

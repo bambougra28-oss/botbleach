@@ -10,11 +10,12 @@ from discord import app_commands
 import asyncio
 import json
 import os
+import re
 import logging
 from typing import Optional
 
 from config import COULEURS
-from data.structure_serveur import ROLES, CATEGORIES
+from data.structure_serveur import ROLES, CATEGORIES, FORUM_TAGS_RP
 
 log = logging.getLogger("infernum")
 
@@ -88,47 +89,28 @@ class Construction(commands.Cog):
             ephemeral=True
         )
         guild = interaction.guild
-        log = []
+        warnings = []
 
-        # ── 1. Nettoyer les rôles existants (hors @everyone et bots) ──────────
-        roles_a_garder = {"@everyone"}
-        for role in guild.roles:
-            if role.is_bot_managed() or role.name in roles_a_garder or role.name == "@everyone":
-                continue
-            try:
-                await role.delete(reason="Setup Infernum Aeterna")
-                await asyncio.sleep(0.3)
-            except discord.Forbidden:
-                log.append(f"⚠️ Rôle non supprimable : {role.name}")
+        # ── 1+2. Synchroniser les rôles (réutilise les existants) ────────────
+        log.info("[SETUP] Phase 1 — Synchronisation des rôles…")
+        r = await self._sync_roles_impl(guild)
+        log.info("[SETUP] Rôles : %d créé(s), %d mis à jour, %d inchangé(s), %d obsolète(s) supprimé(s)",
+                 r["crees"], r["maj"], r["ignores"], r["supprimes"])
 
-        # ── 2. Créer les rôles ─────────────────────────────────────────────────
-        roles_map = {}
-        for role_def in sorted(ROLES, key=lambda r: r["position"], reverse=True):
-            try:
-                role = await guild.create_role(
-                    name=role_def["nom"],
-                    color=discord.Color(role_def["couleur"]),
-                    hoist=role_def.get("hoist", False),
-                    mentionable=role_def.get("mentionable", False),
-                    reason="Setup Infernum Aeterna"
-                )
-                roles_map[role_def["cle"]] = role
-                await asyncio.sleep(0.3)
-            except Exception as e:
-                log.append(f"❌ Rôle {role_def['nom']} : {e}")
-
-        sauvegarder_roles({k: v.id for k, v in roles_map.items()})
+        roles_map = _build_roles_map(guild)
 
         # ── 3. Supprimer TOUS les channels existants ───────────────────────────
-        # On le fait silencieusement — plus de followup après ici
+        log.info("[SETUP] Phase 3 — Suppression des channels existants…")
         for channel in list(guild.channels):
             try:
                 await channel.delete(reason="Setup Infernum Aeterna")
-                await asyncio.sleep(0.2)
-            except discord.Forbidden:
-                log.append(f"⚠️ Channel non supprimable : {channel.name}")
+                await asyncio.sleep(0.5)
+            except Exception as e:
+                warnings.append(f"⚠️ Channel non supprimable : {channel.name}")
+                log.warning("[SETUP] Channel non supprimable %s : %s", channel.name, e)
 
         # ── 4. Créer catégories et channels ───────────────────────────────────
+        log.info("[SETUP] Phase 4 — Création des catégories et channels…")
         role_everyone = guild.default_role
         channel_staff = None  # On le capture pour poster le résumé
         channels_map = {}     # Collecte des IDs pour channels_ids.json
@@ -141,23 +123,32 @@ class Construction(commands.Cog):
                     overwrites=perms_cat,
                     reason="Setup Infernum Aeterna"
                 )
+                log.info("[SETUP]   Catégorie : %s", cat_def["nom"])
             except Exception as e:
-                log.append(f"❌ Catégorie {cat_def['nom']} : {e}")
+                warnings.append(f"❌ Catégorie {cat_def['nom']} : {e}")
+                log.error("[SETUP] Catégorie %s : %s", cat_def['nom'], e)
                 continue
 
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(0.5)
 
             for ch_def in cat_def.get("channels", []):
                 try:
                     overrides = _construire_permissions_channel(ch_def, cat_def, roles_map, role_everyone)
 
                     if ch_def.get("type") == "forum":
+                        # Construire les tags pour les forums RP
+                        tags_kwargs = {}
+                        if ch_def.get("forum_tags"):
+                            tags_kwargs["available_tags"] = [
+                                discord.ForumTag(name=t["nom"]) for t in FORUM_TAGS_RP
+                            ]
                         channel = await guild.create_forum(
                             name=ch_def["nom"],
                             category=categorie,
                             topic=ch_def.get("sujet", ""),
                             overwrites=overrides,
-                            reason="Setup Infernum Aeterna"
+                            reason="Setup Infernum Aeterna",
+                            **tags_kwargs
                         )
                     else:
                         channel = await guild.create_text_channel(
@@ -167,7 +158,7 @@ class Construction(commands.Cog):
                             overwrites=overrides,
                             reason="Setup Infernum Aeterna"
                         )
-                    await asyncio.sleep(0.25)
+                    await asyncio.sleep(0.5)
                     await _envoyer_message_initial(channel, ch_def, roles_map)
 
                     # Enregistrer l'ID du channel (clé = nom nettoyé)
@@ -179,28 +170,36 @@ class Construction(commands.Cog):
                         channel_staff = channel
 
                 except Exception as e:
-                    log.append(f"❌ Channel {ch_def['nom']} : {e}")
+                    warnings.append(f"❌ Channel {ch_def['nom']} : {e}")
+                    log.error("[SETUP] Channel %s : %s", ch_def['nom'], e, exc_info=True)
 
         # ── 4b. Sauvegarder les IDs des channels ─────────────────────────────
         sauvegarder_channels(channels_map)
+        log.info("[SETUP] %d channels créés, IDs sauvegardés", len(channels_map))
 
         # ── 5. Peupler les channels lore & administration ────────────────────
-        await _peupler_channels_lore(guild)
+        log.info("[SETUP] Phase 5 — Peuplement du lore…")
+        try:
+            await _peupler_channels_lore(guild)
+            log.info("[SETUP] Lore peuplé avec succès")
+        except Exception as e:
+            warnings.append(f"❌ Peuplement lore : {e}")
+            log.error("[SETUP] Peuplement lore : %s", e, exc_info=True)
 
         # ── Résumé — posté dans le canal staff nouvellement créé ──────────────
         embed = discord.Embed(
             title="⛩️ Infernum Aeterna — Construction terminée",
             description=(
-                f"**{len(roles_map)}** rôles créés\n"
+                f"**{len(roles_map)}** rôles synchronisés ({r['crees']} créé(s), {r['maj']} mis à jour)\n"
                 f"**{sum(len(c['channels']) for c in CATEGORIES)}** channels créés\n"
                 f"**{len(CATEGORIES)}** catégories créées"
             ),
             color=COULEURS["or_ancien"]
         )
-        if log:
+        if warnings:
             embed.add_field(
                 name="⚠️ Avertissements",
-                value="\n".join(log[:10]) + ("\n…" if len(log) > 10 else ""),
+                value="\n".join(warnings[:10]) + ("\n…" if len(warnings) > 10 else ""),
                 inline=False
             )
         embed.set_footer(text="La Fissure s'est ouverte. Le monde tremble.")
@@ -225,7 +224,7 @@ class Construction(commands.Cog):
         for channel in guild.channels:
             try:
                 await channel.delete(reason="Purge Infernum Aeterna")
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(0.5)
             except discord.Forbidden:
                 pass
         await interaction.followup.send("✅ Serveur purgé.", ephemeral=True)
@@ -276,12 +275,17 @@ class Construction(commands.Cog):
         """Synchronise les rôles du serveur avec ROLES dans structure_serveur.py.
         Crée les manquants, met à jour les existants (nom, couleur, hoist, mentionable),
         supprime les rôles obsolètes qui étaient dans roles_ids.json mais plus dans ROLES.
+
+        Délai de 5s entre chaque appel API rôle — Discord rate-limit sévèrement
+        cet endpoint. discord.py gère les 429 en interne (retry silencieux).
         """
         roles_ids = charger_roles()
         cles_attendues = {r["cle"] for r in ROLES}
         crees, maj, ignores, supprimes = 0, 0, 0, 0
+        total = len(ROLES)
+        ROLE_DELAY = 5  # secondes entre chaque appel API rôle
 
-        for role_def in sorted(ROLES, key=lambda r: r["position"], reverse=True):
+        for idx, role_def in enumerate(sorted(ROLES, key=lambda r: r["position"], reverse=True), 1):
             cle = role_def["cle"]
             nom_attendu = role_def["nom"]
             couleur_attendue = role_def["couleur"]
@@ -308,6 +312,7 @@ class Construction(commands.Cog):
                     or existant.mentionable != mention_attendue
                 )
                 if besoin_maj:
+                    log.info("sync-roles [%d/%d] MAJ en cours : %s …", idx, total, nom_attendu)
                     try:
                         await existant.edit(
                             name=nom_attendu,
@@ -317,14 +322,16 @@ class Construction(commands.Cog):
                             reason="Actualisation Infernum Aeterna"
                         )
                         maj += 1
-                        await asyncio.sleep(0.3)
+                        log.info("sync-roles [%d/%d] MAJ OK : %s", idx, total, nom_attendu)
                     except Exception as e:
                         log.error("sync-roles: erreur MAJ %s : %s", nom_attendu, e)
+                    await asyncio.sleep(ROLE_DELAY)
                 else:
                     ignores += 1
                 continue
 
             # Rôle inexistant → créer
+            log.info("sync-roles [%d/%d] Création en cours : %s …", idx, total, nom_attendu)
             try:
                 role = await guild.create_role(
                     name=nom_attendu,
@@ -335,25 +342,56 @@ class Construction(commands.Cog):
                 )
                 roles_ids[cle] = role.id
                 crees += 1
-                await asyncio.sleep(0.3)
+                log.info("sync-roles [%d/%d] CRÉÉ : %s", idx, total, nom_attendu)
             except Exception as e:
                 log.error("sync-roles: erreur création %s : %s", nom_attendu, e)
+            await asyncio.sleep(ROLE_DELAY)
 
         # Supprimer les rôles obsolètes (dans roles_ids.json mais plus dans ROLES)
         cles_obsoletes = set(roles_ids.keys()) - cles_attendues
         for cle_obs in cles_obsoletes:
             role_obs = guild.get_role(roles_ids[cle_obs])
             if role_obs:
+                log.info("sync-roles: suppression obsolète : %s …", cle_obs)
                 try:
                     await role_obs.delete(reason="Rôle obsolète — Actualisation Infernum Aeterna")
                     supprimes += 1
-                    await asyncio.sleep(0.3)
                 except Exception as e:
                     log.error("sync-roles: erreur suppression %s : %s", cle_obs, e)
+                await asyncio.sleep(ROLE_DELAY)
             del roles_ids[cle_obs]
 
         sauvegarder_roles(roles_ids)
+        log.info("sync-roles terminé : %d créé(s), %d MAJ, %d inchangé(s), %d supprimé(s)",
+                 crees, maj, ignores, supprimes)
         return {"crees": crees, "maj": maj, "ignores": ignores, "supprimes": supprimes}
+
+    # ── /sync-permissions ─────────────────────────────────────────────────────
+    @app_commands.command(
+        name="sync-permissions",
+        description="[ADMIN] Resynchronise les permissions de tous les channels selon la structure définie."
+    )
+    @app_commands.default_permissions(administrator=True)
+    async def sync_permissions(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        guild = interaction.guild
+        resultats = await _sync_permissions_impl(guild)
+        embed = discord.Embed(
+            title="🔒 Synchronisation des permissions terminée",
+            description=(
+                f"**{resultats['categories']}** catégorie(s) mise(s) à jour\n"
+                f"**{resultats['channels']}** channel(s) mis à jour"
+            ),
+            color=COULEURS["or_ancien"]
+        )
+        if resultats["warnings"]:
+            embed.add_field(
+                name="⚠️ Avertissements",
+                value="\n".join(resultats["warnings"][:10]),
+                inline=False
+            )
+        embed.set_footer(text="⸻ Infernum Aeterna ⸻")
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
     # ── /actualiser ──────────────────────────────────────────────────────────
     @app_commands.command(
@@ -364,8 +402,9 @@ class Construction(commands.Cog):
         cible="Quoi actualiser (défaut : tout)",
     )
     @app_commands.choices(cible=[
-        app_commands.Choice(name="Tout (rôles + channels + lore)", value="tout"),
+        app_commands.Choice(name="Tout (rôles + permissions + channels + lore)", value="tout"),
         app_commands.Choice(name="Rôles uniquement", value="roles"),
+        app_commands.Choice(name="Permissions uniquement", value="permissions"),
         app_commands.Choice(name="Channels (scan IDs)", value="channels"),
         app_commands.Choice(name="Lore uniquement", value="lore"),
     ])
@@ -383,7 +422,15 @@ class Construction(commands.Cog):
                 f"{r['ignores']} inchangé(s), {r['supprimes']} obsolète(s) supprimé(s)"
             )
 
-        # ── 2. Channels (scan IDs) ──────────────────────────────────────────
+        # ── 2. Permissions ─────────────────────────────────────────────────
+        if cible in ("tout", "permissions"):
+            r = await _sync_permissions_impl(guild)
+            rapport.append(
+                f"**Permissions** : {r['categories']} catégorie(s), {r['channels']} channel(s) mis à jour"
+                + (f" ({len(r['warnings'])} avertissement(s))" if r['warnings'] else "")
+            )
+
+        # ── 3. Channels (scan IDs) ──────────────────────────────────────────
         if cible in ("tout", "channels"):
             mapping = {}
             for ch in guild.text_channels:
@@ -397,11 +444,14 @@ class Construction(commands.Cog):
             sauvegarder_channels(mapping)
             rapport.append(f"**Channels** : {len(mapping)} channel(s) indexé(s)")
 
-        # ── 3. Lore ─────────────────────────────────────────────────────────
+        # ── 4. Lore ─────────────────────────────────────────────────────────
         if cible in ("tout", "lore"):
             cles_lore = [
-                "infernum-aeterna", "les-quatre-factions", "geographie",
-                "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche"
+                "fissure-du-monde", "infernum-aeterna", "les-quatre-factions", "geographie",
+                "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche",
+                "figures-de-legende", "etat-de-la-fissure", "tableau-des-missions",
+                "hierarchie-des-espada", "veille-de-la-fissure", "etat-de-la-frontiere",
+                "incidents-repertories", "progression", "objectifs-narratifs", "esprits-perdus"
             ]
             nettoyees = 0
             for cle in cles_lore:
@@ -446,7 +496,7 @@ class Construction(commands.Cog):
 
         # Nettoyer les anciens messages du bot dans les channels lore
         cles_lore = [
-            "infernum-aeterna", "les-quatre-factions", "geographie",
+            "fissure-du-monde", "infernum-aeterna", "les-quatre-factions", "geographie",
             "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche"
         ]
         for cle in cles_lore:
@@ -472,6 +522,77 @@ class Construction(commands.Cog):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  HELPERS — ROLES MAP & SYNC PERMISSIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _build_roles_map(guild):
+    """Construit le mapping {cle_role: discord.Role} depuis roles_ids.json."""
+    roles_ids = charger_roles()
+    roles_map = {}
+    for role_def in ROLES:
+        rid = roles_ids.get(role_def["cle"])
+        if rid:
+            role = guild.get_role(rid)
+            if role:
+                roles_map[role_def["cle"]] = role
+    return roles_map
+
+
+async def _sync_permissions_impl(guild):
+    """Resynchronise les permissions de toutes les catégories et channels existants
+    selon la structure définie dans structure_serveur.py.
+    Retourne un dict {categories, channels, warnings}.
+    """
+    roles_map = _build_roles_map(guild)
+    everyone = guild.default_role
+    cat_count, ch_count = 0, 0
+    warnings = []
+
+    for cat_def in CATEGORIES:
+        # Trouver la catégorie par substring
+        cat_nom = cat_def["nom"]
+        categorie = None
+        for cat in guild.categories:
+            if cat_nom.lower() in cat.name.lower() or cat.name.lower() in cat_nom.lower():
+                categorie = cat
+                break
+        if not categorie:
+            warnings.append(f"Catégorie introuvable : {cat_nom}")
+            continue
+
+        # Appliquer les permissions catégorie
+        perms_cat = _construire_permissions_categorie(cat_def, roles_map, everyone)
+        try:
+            await categorie.edit(overwrites=perms_cat)
+            cat_count += 1
+        except Exception as e:
+            warnings.append(f"Erreur catégorie {cat_nom} : {e}")
+        await asyncio.sleep(0.5)
+
+        # Parcourir les channels de cette catégorie
+        for ch_def in cat_def.get("channels", []):
+            cle_def = _cle_channel(ch_def["nom"])
+            channel = None
+            for ch in categorie.channels:
+                if _cle_channel(ch.name) == cle_def:
+                    channel = ch
+                    break
+            if not channel:
+                warnings.append(f"Channel introuvable : {ch_def['nom']}")
+                continue
+
+            perms_ch = _construire_permissions_channel(ch_def, cat_def, roles_map, everyone)
+            try:
+                await channel.edit(overwrites=perms_ch)
+                ch_count += 1
+            except Exception as e:
+                warnings.append(f"Erreur channel {ch_def['nom']} : {e}")
+            await asyncio.sleep(0.5)
+
+    return {"categories": cat_count, "channels": ch_count, "warnings": warnings}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  HELPERS — PERMISSIONS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -479,9 +600,17 @@ def _construire_permissions_categorie(cat_def, roles_map, role_everyone):
     """Construit le dict d'overwrites pour une catégorie."""
     perms = {}
     cat_perms = cat_def.get("permissions", {})
+    visible_a = cat_def.get("visible_a")
 
-    # @everyone
-    if cat_perms.get("everyone_view", True):
+    if visible_a:
+        # Catégorie gatée par un rôle (voyageur, personnage_valide, etc.)
+        perms[role_everyone] = discord.PermissionOverwrite(view_channel=False)
+        if visible_a in roles_map:
+            perms[roles_map[visible_a]] = discord.PermissionOverwrite(
+                view_channel=True,
+                send_messages=cat_perms.get("everyone_send", False)
+            )
+    elif cat_perms.get("everyone_view", True):
         perms[role_everyone] = discord.PermissionOverwrite(
             view_channel=True,
             send_messages=cat_perms.get("everyone_send", False)
@@ -489,8 +618,8 @@ def _construire_permissions_categorie(cat_def, roles_map, role_everyone):
     else:
         perms[role_everyone] = discord.PermissionOverwrite(view_channel=False)
 
-    # Staff toujours accès
-    for cle_staff in ("architecte", "gardien_des_portes"):
+    # Les 4 rôles staff ont toujours accès complet
+    for cle_staff in ("architecte", "gardien_des_portes", "emissaire", "chroniqueur"):
         if cle_staff in roles_map:
             perms[roles_map[cle_staff]] = discord.PermissionOverwrite(
                 view_channel=True, send_messages=True, manage_messages=True
@@ -500,47 +629,115 @@ def _construire_permissions_categorie(cat_def, roles_map, role_everyone):
 
 
 def _construire_permissions_channel(ch_def, cat_def, roles_map, role_everyone):
-    """Construit le dict d'overwrites pour un channel."""
+    """Construit le dict d'overwrites pour un channel.
+
+    Logique de permissions :
+      1. Base @everyone — hérite de la catégorie (visible_a ou everyone_view)
+      2. visible_a channel-level — override plus restrictif que la catégorie
+      3. lecture_seule — personne n'écrit sauf staff
+      4. evenement — caché par défaut, visible manuellement par le staff
+      5. faction_write — UNE faction écrit, personnage_valide voit en lecture
+      6. cross_faction — tous les personnages validés écrivent
+      7. rank_write — seuls certains rangs écrivent
+      8. Staff override — les 4 rôles staff ont accès complet
+    """
     perms = {}
     cat_perms = cat_def.get("permissions", {})
 
-    # Base everyone depuis la catégorie
-    if cat_perms.get("everyone_view", True):
+    # ── 1. Base @everyone ─────────────────────────────────────────────────
+    cat_visible_a = cat_def.get("visible_a")
+    ch_visible_a = ch_def.get("visible_a")
+
+    if ch_visible_a or cat_visible_a:
+        # Channel ou catégorie gatée par un rôle
+        perms[role_everyone] = discord.PermissionOverwrite(view_channel=False)
+        gate_role = ch_visible_a or cat_visible_a
+        if gate_role in roles_map:
+            # ecriture_gate force send=True sur le rôle gate même si la catégorie
+            # est en lecture seule (ex: soumission-de-fiche, esprits-perdus)
+            if ch_def.get("ecriture_gate"):
+                can_send = not ch_def.get("lecture_seule", False)
+            else:
+                can_send = (not ch_def.get("lecture_seule", False)
+                            and cat_perms.get("everyone_send", False))
+            perms[roles_map[gate_role]] = discord.PermissionOverwrite(
+                view_channel=True,
+                send_messages=can_send
+            )
+    elif not cat_perms.get("everyone_view", True):
+        # Catégorie staff-only (ex: STAFF — INVISIBLE)
+        perms[role_everyone] = discord.PermissionOverwrite(view_channel=False)
+    else:
         perms[role_everyone] = discord.PermissionOverwrite(
             view_channel=True,
-            send_messages=ch_def.get("lecture_seule", False) is False and cat_perms.get("everyone_send", False)
+            send_messages=not ch_def.get("lecture_seule", False)
+                          and cat_perms.get("everyone_send", False)
         )
-    else:
-        perms[role_everyone] = discord.PermissionOverwrite(view_channel=False)
 
-    # Channels lecture seule
-    if ch_def.get("lecture_seule", False):
-        perms[role_everyone] = discord.PermissionOverwrite(view_channel=True, send_messages=False)
+    # ── 2. Lecture seule ──────────────────────────────────────────────────
+    if ch_def.get("lecture_seule"):
+        if not (cat_visible_a or ch_visible_a):
+            # Catégorie non gatée : tout le monde voit, personne n'écrit
+            perms[role_everyone] = discord.PermissionOverwrite(
+                view_channel=True, send_messages=False
+            )
+        # Si gatée, la visibilité est déjà restreinte et send_messages=False ci-dessus
 
-    # Channels de faction
-    if "factions" in ch_def:
-        perms[role_everyone] = discord.PermissionOverwrite(view_channel=True, send_messages=False)
-        for cle_faction in ch_def["factions"]:
-            if cle_faction in roles_map:
-                perms[roles_map[cle_faction]] = discord.PermissionOverwrite(
-                    view_channel=True, send_messages=True
-                )
+    # ── 3. Événement (caché par défaut) ───────────────────────────────────
+    if ch_def.get("evenement"):
+        # Tout masquer sauf staff — le staff rendra visible manuellement
+        perms = {role_everyone: discord.PermissionOverwrite(view_channel=False)}
 
-    # Staff override
-    for cle_staff in ("architecte", "gardien_des_portes"):
-        if cle_staff in roles_map:
-            perms[roles_map[cle_staff]] = discord.PermissionOverwrite(
-                view_channel=True, send_messages=True, manage_messages=True, manage_threads=True
+    # ── 4. faction_write — UNE faction spécifique écrit ───────────────────
+    faction = ch_def.get("faction_write")
+    if faction:
+        if faction in roles_map:
+            perms[roles_map[faction]] = discord.PermissionOverwrite(
+                view_channel=True, send_messages=True
+            )
+        # personnage_valide peut voir mais pas écrire (touristes RP)
+        pv = roles_map.get("personnage_valide")
+        if pv:
+            perms[pv] = discord.PermissionOverwrite(
+                view_channel=True, send_messages=False
             )
 
-    # Catégorie staff-only
-    if not cat_perms.get("everyone_view", True):
-        perms[role_everyone] = discord.PermissionOverwrite(view_channel=False)
-        for cle_staff in ("architecte", "gardien_des_portes", "emissaire", "chroniqueur"):
-            if cle_staff in roles_map:
-                perms[roles_map[cle_staff]] = discord.PermissionOverwrite(
+    # ── 5. cross_faction — tous les personnages validés écrivent ──────────
+    if ch_def.get("cross_faction"):
+        pv = roles_map.get("personnage_valide")
+        if pv:
+            perms[pv] = discord.PermissionOverwrite(
+                view_channel=True, send_messages=True
+            )
+
+    # ── 6. rank_write — seuls certains rangs écrivent ─────────────────────
+    ranks = ch_def.get("rank_write")
+    if ranks:
+        for rank_key in ranks:
+            if rank_key in roles_map:
+                perms[roles_map[rank_key]] = discord.PermissionOverwrite(
                     view_channel=True, send_messages=True
                 )
+
+    # ── 6b. faction_view — visibilité restreinte à une faction ──────────
+    # Remplace le gate personnage_valide par le rôle de faction (lecture seule)
+    # Les autres factions ne voient plus le channel du tout.
+    faction_view = ch_def.get("faction_view")
+    if faction_view and faction_view in roles_map:
+        pv = roles_map.get("personnage_valide")
+        if pv and pv in perms:
+            del perms[pv]  # retirer le gate générique
+        perms[roles_map[faction_view]] = discord.PermissionOverwrite(
+            view_channel=True, send_messages=False
+        )
+
+    # ── 7. Staff override — les 4 rôles ──────────────────────────────────
+    for cle_staff in ("architecte", "gardien_des_portes", "emissaire", "chroniqueur"):
+        if cle_staff in roles_map:
+            perms[roles_map[cle_staff]] = discord.PermissionOverwrite(
+                view_channel=True, send_messages=True,
+                manage_messages=True, manage_threads=True
+            )
 
     return perms
 
@@ -548,35 +745,80 @@ def _construire_permissions_channel(ch_def, cat_def, roles_map, role_everyone):
 async def _envoyer_message_initial(channel, ch_def, roles_map):
     """Envoie un message épinglé selon le type de channel."""
     try:
-        if ch_def.get("boutons_faction"):
-            await _envoyer_boutons_faction(channel, roles_map)
+        if ch_def.get("boutons_faction") or ch_def.get("presentation_factions"):
+            await _envoyer_presentation_factions(channel, roles_map)
         elif ch_def.get("combat"):
             await _envoyer_bouton_combat(channel, ch_def)
         elif ch_def.get("abonnements"):
             await _envoyer_boutons_abonnements(channel, roles_map)
         elif ch_def.get("valide_perso"):
             await _envoyer_instructions_fiche(channel)
-    except Exception:
-        pass
+        # Note : les forums RP avec scene_launcher reçoivent le bouton
+        # via le cog Scenes dans setup_hook (BoutonScene persistant)
+    except Exception as e:
+        log.error("[SETUP] Message initial %s : %s", ch_def.get("nom", "?"), e, exc_info=True)
 
 
-async def _envoyer_boutons_faction(channel, roles_map):
+async def _envoyer_presentation_factions(channel, roles_map):
+    """Poste la présentation narrative des factions (lecture seule, sans boutons)."""
+    from cogs.lore import LORE_WEB_URL
     embed = discord.Embed(
-        title="⸻ Choisir son Destin ⸻",
+        title="🎭 Les Quatre Destins — 運命を選べ",
         description=(
-            "Chaque âme appartient à un monde.\n"
-            "Choisissez votre faction pour accéder aux zones correspondantes.\n\n"
-            "「 Vous pourrez changer de faction avant validation de votre fiche. 」"
+            "Quatre chemins s'ouvrent devant vous. Quatre vérités inconciliables.\n\n"
+            "Nul ne choisit sa faction par hasard — c'est elle qui vous appelle, "
+            "à travers le voile des mondes, comme un murmure que vous êtes "
+            "le seul à entendre.\n\n"
+            "Lisez. Ressentez. Puis rendez-vous dans `📋・modele-de-fiche` "
+            "pour créer votre personnage — votre faction y sera indiquée. "
+            "Après validation par le staff, vos rôles vous seront attribués."
         ),
         color=COULEURS["or_ancien"]
     )
-    view = BoutonsFaction()
-    msg = await channel.send(embed=embed, view=view)
+    embed.add_field(
+        name="死神 Shinigami — Les Gardiens",
+        value=(
+            "Soldats du Seireitei, liés par le devoir et le poids d'un secret millénaire. "
+            "Leur lame porte un nom. Leur honneur porte des fissures."
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="咎人 Togabito — Les Damnés",
+        value=(
+            "Âmes enchaînées aux Strates de l'Enfer, forgées par la souffrance. "
+            "Certains y voient une prison. D'autres, un trône à conquérir."
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="破面 Arrancar — Les Masques Brisés",
+        value=(
+            "Hollow ayant arraché leur masque pour toucher quelque chose de plus humain. "
+            "Las Noches tremble sous le poids de leur faim et de leur orgueil."
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="滅却師 Quincy — Les Survivants",
+        value=(
+            "Derniers héritiers d'un empire décimé, cachés dans l'ombre du Monde des Vivants. "
+            "Le Reishi chante dans leur sang — et le sang n'oublie jamais."
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="📜 En savoir plus",
+        value=f"[Lire le lore complet des factions]({LORE_WEB_URL}#creation)",
+        inline=False
+    )
+    embed.set_footer(text="⸻ Infernum Aeterna · Le Destin ⸻")
+    msg = await channel.send(embed=embed)
     await msg.pin()
 
 
 async def _envoyer_bouton_combat(channel, ch_def):
-    faction = ch_def.get("faction_combat", "tous")
+    faction = ch_def.get("faction_write", "tous")
     embed = discord.Embed(
         title="⚔️ Initier un Combat",
         description=(
@@ -640,12 +882,56 @@ async def _peupler_channels_lore(guild: discord.Guild):
         try:
             msg = await channel.send(embed=embed)
             await msg.pin()
-            await asyncio.sleep(0.4)
+            await asyncio.sleep(0.3)
         except Exception as e:
-            print(f"[Lore Setup] {getattr(channel, 'name', '?')} : {e}")
+            log.error("[LORE] %s : %s", getattr(channel, 'name', '?'), e)
 
     # ── 0. Lien web lore ──────────────────────────────────────────────────────
     from cogs.lore import LORE_WEB_URL, _ajouter_lien_web
+
+    # ── 0b. fissure-du-monde — embed statique de bienvenue ──────────────────
+    ch_fissure = find_ch("fissure-du-monde")
+    if ch_fissure:
+        e_bienvenue = discord.Embed(
+            title="🩸 Infernum Aeterna — 地獄の門",
+            description=(
+                "Les Portes de l'Enfer se sont ouvertes. La Fissure s'élargit.\n\n"
+                "Bienvenue dans **Infernum Aeterna** — un serveur de jeu de rôle "
+                "par forum dans un univers alternatif inspiré de Bleach, "
+                "où quatre factions s'affrontent au bord de l'abîme. "
+                "Ici, chaque mot pèse, chaque choix résonne, "
+                "et chaque personnage écrit sa propre légende.\n\n"
+                "Trois étapes vous séparent du champ de bataille."
+            ),
+            color=COULEURS["pourpre_infernal"]
+        )
+        e_bienvenue.add_field(
+            name="⚖️ Étape 1 — Le Pacte",
+            value="Rendez-vous dans `⚖️・pacte-des-âmes` et prêtez serment pour accéder au serveur.",
+            inline=False
+        )
+        e_bienvenue.add_field(
+            name="🎭 Étape 2 — Découvrir les Factions",
+            value="Explorez `🎭・choisir-son-destin` pour découvrir les quatre factions et trouver celle qui résonne avec votre âme.",
+            inline=False
+        )
+        e_bienvenue.add_field(
+            name="📋 Étape 3 — Forger son Identité",
+            value="Créez votre personnage via `📋・modele-de-fiche` et soumettez-le dans `📥・soumission-de-fiche`. Le staff validera votre fiche et vous attribuera vos rôles.",
+            inline=False
+        )
+        e_bienvenue.add_field(
+            name="📜 Lore complet",
+            value=f"[Ouvrir les Chroniques des Quatre Races]({LORE_WEB_URL})",
+            inline=False
+        )
+        e_bienvenue.set_footer(text="⸻ Infernum Aeterna · La Fissure s'élargit ⸻")
+        msg_b = await ch_fissure.send(embed=e_bienvenue)
+        try:
+            await msg_b.pin()
+        except Exception:
+            pass
+        await asyncio.sleep(0.3)
 
     # ── 1. infernum-aeterna — embed lien web + 5 embeds lore fondateur ──────
     ch = find_ch("infernum-aeterna")
@@ -726,8 +1012,10 @@ async def _peupler_channels_lore(guild: discord.Guild):
             "depuis l'ouverture de la Fissure.\n\n"
             "**Monde des Vivants** — Karakura et ses alentours. "
             "Portails actifs détectés. Contamination spirituelle progressive.\n\n"
-            "**La Frontière** — Espace entre les mondes. "
-            "Épicentre de la Fissure. Territoire sans loi."
+            "**La Frontière (境界)** — Le vide entre les mondes que personne ne "
+            "regardait, révélé par la Fissure. Territoire mouvant de fragments arrachés "
+            "aux mondes adjacents, parcouru de courants de Reishi brut. Quatre races s'y "
+            "croisent. Aucune ne la contrôle. Elle s'étend."
         ),
         color=COULEURS["gris_acier"]
     )
@@ -768,6 +1056,30 @@ async def _peupler_channels_lore(guild: discord.Guild):
     e.set_footer(text="⸻ Infernum Aeterna · Système ⸻")
     await poster(ch, e)
 
+    # ── 5b. systeme-et-competences — embeds aptitudes par faction ────────────
+    try:
+        from data.aptitudes import VOIES_PAR_FACTION
+        from data.aptitudes.constants import EMOJI_FACTION as APT_EMOJI, COULEURS_FACTION, EMOJI_PALIER, NOM_PALIER
+        for faction, voies in VOIES_PAR_FACTION.items():
+            emoji_f = APT_EMOJI.get(faction, "")
+            for voie in voies:
+                e = discord.Embed(
+                    title=f"{emoji_f} {voie['kanji']} {voie['nom']} — {voie['sous_titre']}",
+                    description=voie["description"],
+                    color=COULEURS_FACTION.get(faction, COULEURS["or_ancien"]),
+                )
+                for apt in voie["aptitudes"]:
+                    desc_courte = apt["description"].split(".")[0] + "." if "." in apt["description"] else apt["description"][:120]
+                    e.add_field(
+                        name=f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} {apt['nom']} ({apt['kanji']}) — {apt['cout']}霊力",
+                        value=desc_courte,
+                        inline=False,
+                    )
+                e.set_footer(text=f"⸻ Infernum Aeterna · {faction.capitalize()} · Aptitudes ⸻")
+                await poster(ch, e)
+    except Exception as ex:
+        log.warning("[LORE] Embeds aptitudes non postés : %s", ex)
+
     # ── 6. bestiaire-infernal — 3 embeds ─────────────────────────────────────
     ch = find_ch("bestiaire")
     embeds_bestiaire = [
@@ -789,7 +1101,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
             "couleur": "gris_acier"
         },
         {
-            "titre": "地獄の淋気 — Le Jigoku no Rinki",
+            "titre": "地獄の燐気 — Le Jigoku no Rinki",
             "desc": (
                 "Sphères noires de Reishi corrompu suintant des murs de l'Enfer depuis la Fissure. "
                 "Contact prolongé dissout progressivement l'identité spirituelle."
@@ -829,35 +1141,118 @@ async def _peupler_channels_lore(guild: discord.Guild):
         e.set_footer(text="⸻ Infernum Aeterna · Bestiaire ⸻")
         await poster(ch, e)
 
-    # ── 7. pacte-des-ames — 1 embed ──────────────────────────────────────────
+    # ── 7. pacte-des-ames — 3 embeds + bouton Prêter Serment ─────────────────
     ch = find_ch("pacte")
-    e = discord.Embed(
-        title="⚖️ Le Pacte des Âmes",
+
+    # Embed 1 — Introduction narrative
+    e_intro = discord.Embed(
+        title="⚖️ Le Pacte des Âmes — 魂の誓約",
         description=(
-            "En entrant dans **Infernum Aeterna**, chaque âme prête les serments suivants.\n\u200b"
+            "Avant que les Portes ne s'ouvrent davantage, avant que votre nom "
+            "ne s'inscrive dans les chroniques — il y a ceci.\n\n"
+            "Le Pacte des Âmes n'est pas un règlement. C'est un serment que chaque "
+            "âme traversant la Fissure prononce en silence, un accord tacite entre "
+            "ceux qui choisissent de bâtir ensemble un récit plus grand qu'eux-mêmes.\n\n"
+            "Lisez ces mots. Ils sont la fondation sur laquelle repose chaque scène, "
+            "chaque combat, chaque murmure échangé entre les mondes."
         ),
         color=COULEURS["or_ancien"]
     )
-    serments = [
-        ("① Respect narratif",     "Je respecte le fil narratif de chaque joueur sans l'interrompre sans accord."),
-        ("② Consentement",         "Je n'impose aucune action à un personnage sans le consentement de son joueur."),
-        ("③ Transparence",         "J'informe le staff avant toute mort narrative ou séquence traumatisante."),
-        ("④ Cohérence lore",       "Je reste en accord avec le lore du serveur et consulte en cas de doute."),
-        ("⑤ Séparation IC/HorRP",  "Je n'utilise pas d'informations hors-RP dans le jeu (no méta-gaming)."),
-        ("⑥ Signalement",          "Je signale tout manquement au staff plutôt que d'y répondre seul."),
-        ("⑦ Accueil",              "J'accueille les nouveaux joueurs avec la même patience qu'on m'a accordée."),
-        ("⑧ Espace partagé",       "Je ne monopolise pas les zones narratives importantes."),
-        ("⑨ Respect des décisions", "J'accepte les décisions du staff même en désaccord, puis j'en débats par écrit."),
-        ("⑩ Contribution",         "Je contribue activement à faire de ce serveur une expérience mémorable."),
-    ]
-    for nom, texte in serments:
-        e.add_field(name=nom, value=texte, inline=False)
-    e.add_field(name="\u200b", value="*「 Ces serments ne sont pas des règles. Ils sont la fondation. 」*", inline=False)
-    e.set_footer(text="⸻ Infernum Aeterna · Le Pacte ⸻")
-    await poster(ch, e)
+    e_intro.set_footer(text="⸻ Infernum Aeterna · Le Pacte ⸻")
+    await poster(ch, e_intro)
+
+    # Embed 2 — Les Dix Serments (partie 1 : 5 premiers)
+    e_serments1 = discord.Embed(
+        title="Les Dix Serments — I",
+        color=COULEURS["or_ancien"]
+    )
+    e_serments1.add_field(
+        name="𝐈 · Le Souffle d'Autrui",
+        value="Je respecte le fil narratif de chaque joueur. Je n'interromps ni ne détourne une scène sans l'accord de ses auteurs.",
+        inline=False
+    )
+    e_serments1.add_field(
+        name="𝐈𝐈 · La Main Retenue",
+        value="Je n'impose aucune action, blessure ou conséquence au personnage d'un autre joueur sans son consentement explicite.",
+        inline=False
+    )
+    e_serments1.add_field(
+        name="𝐈𝐈𝐈 · Le Voile du Savoir",
+        value="Ce que je sais et ce que mon personnage sait sont deux vérités distinctes. Le méta-gaming n'a pas sa place entre ces murs.",
+        inline=False
+    )
+    e_serments1.add_field(
+        name="𝐈𝐕 · La Parole du Canon",
+        value="Je reste en accord avec le lore du serveur. En cas de doute, je consulte le staff avant d'agir.",
+        inline=False
+    )
+    e_serments1.add_field(
+        name="𝐕 · L'Espace Partagé",
+        value="Je ne monopolise ni les zones narratives importantes, ni les événements en cours. Chaque âme mérite sa place dans le récit.",
+        inline=False
+    )
+    e_serments1.set_footer(text="⸻ Infernum Aeterna · Le Pacte ⸻")
+    await poster(ch, e_serments1)
+
+    # Embed 3 — Les Dix Serments (partie 2 : 5 derniers)
+    e_serments2 = discord.Embed(
+        title="Les Dix Serments — II",
+        color=COULEURS["or_ancien"]
+    )
+    e_serments2.add_field(
+        name="𝐕𝐈 · Le Seuil de la Mort",
+        value="J'informe le staff avant toute mort narrative, séquence sensible ou événement irréversible.",
+        inline=False
+    )
+    e_serments2.add_field(
+        name="𝐕𝐈𝐈 · La Justice Silencieuse",
+        value="Face à un manquement, je signale plutôt que de rendre justice seul. Aucune modération ne m'appartient.",
+        inline=False
+    )
+    e_serments2.add_field(
+        name="𝐕𝐈𝐈𝐈 · La Colère Contenue",
+        value="J'accepte les décisions du staff, quitte à en débattre ensuite par écrit — jamais dans la colère du moment.",
+        inline=False
+    )
+    e_serments2.add_field(
+        name="𝐈𝐗 · Le Seuil Ouvert",
+        value="J'accueille les nouveaux avec la patience qu'on m'a accordée. Chaque âme qui traverse la Fissure mérite un guide.",
+        inline=False
+    )
+    e_serments2.add_field(
+        name="𝐗 · La Fondation",
+        value=(
+            "Je contribue à faire de ce serveur une expérience qui mérite "
+            "d'être racontée — par mes écrits, mon respect, et ma présence.\n\n"
+            "*「 Ces serments ne sont pas des règles. Ils sont la fondation. 」*"
+        ),
+        inline=False
+    )
+    e_serments2.set_footer(text="⸻ Infernum Aeterna · Le Pacte ⸻")
+    await poster(ch, e_serments2)
+
+    # Embed 3 — Confirmation + bouton
+    e_confirm = discord.Embed(
+        description=(
+            "En pressant le sceau ci-dessous, vous acceptez le Pacte des Âmes "
+            "et accédez au reste du serveur.\n\n"
+            "*「 Tout commencement est un serment. 」*"
+        ),
+        color=COULEURS["or_ancien"]
+    )
+    e_confirm.set_footer(text="⸻ Infernum Aeterna · Le Pacte ⸻")
+    if ch:
+        view = BoutonPacte()
+        msg = await ch.send(embed=e_confirm, view=view)
+        try:
+            await msg.pin()
+        except Exception:
+            pass
+        await asyncio.sleep(0.3)
 
     # ── 8. modele-de-fiche — 2 embeds ────────────────────────────────────────
     ch = find_ch("modele-de-fiche")
+
     modele = (
         "```\n"
         "═══════════════════════════════\n"
@@ -880,66 +1275,329 @@ async def _peupler_channels_lore(guild: discord.Guild):
         "═══════════════════════════════\n"
         "```"
     )
-    e1 = discord.Embed(title="📋 Modèle de Fiche Personnage", description=modele, color=COULEURS["blanc_seireitei"])
+    e1 = discord.Embed(
+        title="📋 Forger son Identité — 魂の形",
+        description=(
+            "Chaque âme qui traverse la Fissure porte un nom, une histoire, "
+            "une raison d'exister dans ce monde brisé. Votre fiche est le premier "
+            "souffle de votre personnage — le moment où il cesse d'être une idée "
+            "et commence à vivre.\n\n"
+            "Copiez le modèle ci-dessous, prenez le temps de le remplir, "
+            "puis soumettez-le. Le staff lira chaque mot.\n\u200b"
+        ),
+        color=COULEURS["blanc_seireitei"]
+    )
     e1.set_footer(text="⸻ Infernum Aeterna · Administration ⸻")
     await poster(ch, e1)
 
-    e2 = discord.Embed(title="📥 Comment soumettre votre fiche", color=COULEURS["or_pale"])
-    e2.add_field(name="Étape 1", value="Copiez le modèle ci-dessus dans un éditeur de texte.", inline=False)
-    e2.add_field(name="Étape 2", value="Remplissez chaque section. Minimum 300 mots pour l'Histoire.", inline=False)
-    e2.add_field(name="Étape 3", value="Rendez-vous dans `📥・soumission-de-fiche`.", inline=False)
-    e2.add_field(name="Étape 4", value="Tapez `/fiche-soumettre` et collez votre fiche dans le formulaire.", inline=False)
-    e2.add_field(name="Délai", value="Le staff valide sous 48h. Vous recevrez une notification en DM.", inline=False)
-    e2.add_field(name="Après validation", value="Rôle faction + accès aux zones RP attribués automatiquement.", inline=False)
+    e_modele = discord.Embed(description=modele, color=COULEURS["blanc_seireitei"])
+    e_modele.set_footer(text="⸻ Infernum Aeterna · Administration ⸻")
+    await poster(ch, e_modele)
+
+    e2 = discord.Embed(title="📥 Le Chemin vers la Validation", color=COULEURS["or_pale"])
+    e2.add_field(
+        name="Préparer",
+        value="Copiez le modèle ci-dessus et remplissez chaque section. Minimum **300 mots** pour l'Histoire — c'est le socle de votre personnage.",
+        inline=False
+    )
+    e2.add_field(
+        name="Soumettre",
+        value="Rendez-vous dans `📥・soumission-de-fiche` et tapez `/fiche-soumettre` pour ouvrir le formulaire.",
+        inline=False
+    )
+    e2.add_field(
+        name="Attendre",
+        value="Le staff valide sous **48 heures**. Vous recevrez une notification en message privé.",
+        inline=False
+    )
+    e2.add_field(
+        name="Entrer dans le récit",
+        value=(
+            "Après validation, votre rôle de faction et l'accès aux zones RP "
+            "vous seront attribués automatiquement.\n\n"
+            f"📜 [Consulter le guide de création complet]({LORE_WEB_URL}#creation)"
+        ),
+        inline=False
+    )
     e2.set_footer(text="⸻ Infernum Aeterna · Administration ⸻")
     await poster(ch, e2)
+
+    # ── 9. figures-de-legende — personnages originaux du lore ───────────────
+    ch = find_ch("figures-de-legende")
+    figures = [
+        {
+            "titre": "👑 Kōshin Jūrōmaru — 光信樹郎丸",
+            "desc": (
+                "Capitaine-Commandant fondateur du Gotei 13. Son Zanpakutō de type feu "
+                "était l'aîné et le plus puissant de cette catégorie. Il réunit treize "
+                "guerriers d'une efficacité terrifiante et imposa un ordre à Soul Society "
+                "non par la persuasion, mais par la force — district après district.\n\n"
+                "Il mourut de vieillesse après des millénaires d'existence, ce qui était "
+                "presque sans précédent pour un être de sa puissance. Son corps fut honoré "
+                "par le Konsō Reisai. Ce qu'il ignorait — ce que tous ignoraient — "
+                "c'est ce que ce rituel impliquait véritablement."
+            ),
+            "couleur": "or_ancien"
+        },
+        {
+            "titre": "⚔️ Tōka Shibari — 灯華柴張",
+            "desc": (
+                "Première à porter le titre non officiel de Kenpachi. Son Zanpakutō "
+                "existait en état de libération permanente — son lien avec son âme était "
+                "si total que la séparation entre les deux n'avait jamais eu lieu.\n\n"
+                "Elle tomba au combat, ce qui était la seule façon qu'elle aurait accepté "
+                "de partir. Les chroniques la décrivent comme une force de la nature — "
+                "aussi impitoyable que le Capitaine-Commandant lui-même, mais portée par "
+                "une fureur plus intime."
+            ),
+            "couleur": "rouge_chaine"
+        },
+        {
+            "titre": "🔮 Renjō Mikazuchi — 蓮生三日国",
+            "desc": (
+                "Le plus mystérieux des trois Capitaines fondateurs. Il abritait apparemment "
+                "quelque chose d'autre en lui — une entité spirituelle d'une nature inconnue "
+                "que même ses pairs ne comprenaient pas.\n\n"
+                "Il mourut dans un état de paix sereine qui contrastait avec toute la violence "
+                "de l'époque. Son sourire, disent les chroniques, ne s'est jamais effacé — "
+                "comme s'il avait compris quelque chose que les autres ne verraient que "
+                "des millénaires plus tard."
+            ),
+            "couleur": "pourpre_infernal"
+        },
+        {
+            "titre": "🔴 Les Kushanāda — 倶舎那陀",
+            "desc": (
+                "Créatures titanesques aux allures de magistrats cosmiques. "
+                "Nul ne sait qui les a créés. Nul ne sait ce qu'ils pensent. "
+                "Ils maintiennent l'ordre des Strates avec une neutralité absolue "
+                "— leur seul but : empêcher quiconque de s'échapper.\n\n"
+                "Depuis l'ouverture de la Fissure, certains Kushanāda semblent hésiter. "
+                "Comme si leurs instructions entraient en conflit avec quelque chose de nouveau."
+            ),
+            "couleur": "gris_acier"
+        },
+    ]
+    for fig in figures:
+        e = discord.Embed(
+            title=fig["titre"],
+            description=fig["desc"],
+            color=COULEURS[fig["couleur"]]
+        )
+        e.set_footer(text="⸻ Infernum Aeterna · Légendes ⸻")
+        await poster(ch, e)
+
+    # ── 10. etat-de-la-fissure — embed initial ──────────────────────────────
+    ch = find_ch("etat-de-la-fissure")
+    e = discord.Embed(
+        title="⛓️ État de la Fissure — 裂け目の状態",
+        description=(
+            "La Fissure entre les mondes est actuellement **stable** — pour l'instant.\n\n"
+            "Ce channel sera mis à jour automatiquement après chaque événement majeur. "
+            "L'état de la Fissure influence l'atmosphère de toutes les zones de RP."
+        ),
+        color=COULEURS["pourpre_infernal"]
+    )
+    e.add_field(name="Niveau actuel", value="🟢 **1 — Stable**", inline=True)
+    e.add_field(name="Dernier changement", value="Initialisation du serveur", inline=True)
+    e.set_footer(text="⸻ Infernum Aeterna · Fissure ⸻")
+    await poster(ch, e)
+
+    # ── 11. tableau-des-missions — embed initial ────────────────────────────
+    ch = find_ch("tableau-des-missions")
+    e = discord.Embed(
+        title="📌 Tableau des Missions — 任務表",
+        description=(
+            "Les missions actives apparaissent ici, publiées par le staff.\n\n"
+            "Chaque mission précise sa difficulté, les factions concernées, "
+            "et les récompenses narratives à la clé. "
+            "Consultez régulièrement ce tableau pour trouver votre prochaine aventure."
+        ),
+        color=COULEURS["blanc_seireitei"]
+    )
+    e.add_field(name="Aucune mission active", value="*Le calme précède toujours la tempête.*", inline=False)
+    e.set_footer(text="⸻ Infernum Aeterna · Missions ⸻")
+    await poster(ch, e)
+
+    # ── 12. hierarchie-des-espada — embed initial ───────────────────────────
+    ch = find_ch("hierarchie-des-espada")
+    e = discord.Embed(
+        title="💠 Hiérarchie des Espada — 十刃",
+        description=(
+            "Le classement actuel des Espada de Las Noches.\n\n"
+            "Les positions évoluent en fonction des combats, des arcs narratifs "
+            "et des décisions du staff. Ce canal est mis à jour après chaque changement."
+        ),
+        color=COULEURS["gris_sable"]
+    )
+    e.add_field(name="Aucun Espada enregistré", value="*Le trône attend ses prétendants.*", inline=False)
+    e.set_footer(text="⸻ Infernum Aeterna · Hueco Mundo ⸻")
+    await poster(ch, e)
+
+    # ── 13. veille-de-la-fissure (Quincy) — embed initial ──────────────────
+    ch = find_ch("veille-de-la-fissure")
+    e = discord.Embed(
+        title="📌 Veille de la Fissure — 裂け目の監視",
+        description=(
+            "Les Quincy surveillent la contamination spirituelle depuis leur refuge.\n\n"
+            "Ce canal documente les anomalies détectées par les capteurs de Reishi, "
+            "les mouvements suspects aux abords de la Fissure, et les alertes "
+            "transmises par la chaîne de commandement survivante."
+        ),
+        color=COULEURS["bleu_abyssal"]
+    )
+    e.add_field(name="Statut actuel", value="🔵 Surveillance passive — aucune anomalie signalée.", inline=False)
+    e.set_footer(text="⸻ Infernum Aeterna · Quincy ⸻")
+    await poster(ch, e)
+
+    # ── 14. etat-de-la-frontiere — embed initial ────────────────────────────
+    ch = find_ch("etat-de-la-frontiere")
+    e = discord.Embed(
+        title="📌 État de la Frontière — 境界の状態",
+        description=(
+            "Personne ne s'y arrêtait. Un vide entre les mondes, rien d'autre — "
+            "un couloir qu'on emprunte sans regarder les murs. Puis la Fissure "
+            "a déchiré les Portes, et le couloir s'est élargi jusqu'à devenir "
+            "un lieu.\n\n"
+            "Le Kyōkai (境界). La Frontière. Pas de ciel, pas de sol fixe — des "
+            "fragments de mondes qui dérivent dans un vide gris parcouru de veines "
+            "lumineuses. Les courants de Reishi brut y désintègrent les imprudents. "
+            "Le Jigoku no Rinki y flotte en nuages noirs, plus dense ici qu'ailleurs.\n\n"
+            "Aucune faction ne la contrôle. Toutes y sont présentes. Elle s'étend."
+        ),
+        color=COULEURS["gris_acier"]
+    )
+    e.add_field(
+        name="Statut actuel",
+        value="⚪ Frontière instable — passages détectés.",
+        inline=False
+    )
+    e.set_footer(text="⸻ Infernum Aeterna · Frontière ⸻")
+    await poster(ch, e)
+
+    # ── 15. incidents-repertories — embed initial ───────────────────────────
+    ch = find_ch("incidents-repertories")
+    e = discord.Embed(
+        title="📌 Incidents Répertoriés — 事件記録",
+        description=(
+            "Liste des anomalies spirituelles détectées dans le Monde des Vivants.\n\n"
+            "Portails instables, apparitions de Hollow, fluctuations de Reishi — "
+            "tout incident est consigné ici par le staff ou le bot narrateur."
+        ),
+        color=COULEURS["gris_acier"]
+    )
+    e.add_field(name="Aucun incident actif", value="*Le monde des vivants dort encore — pour combien de temps ?*", inline=False)
+    e.set_footer(text="⸻ Infernum Aeterna · Monde des Vivants ⸻")
+    await poster(ch, e)
+
+    # ── 16. progression — embed explicatif ──────────────────────────────────
+    ch = find_ch("progression")
+    e = discord.Embed(
+        title="📈 Progression — 成長の道",
+        description=(
+            "Ce canal affiche les montées de rang, les gains de points "
+            "et les aptitudes débloquées par les personnages.\n\n"
+            "Chaque évolution est publiée automatiquement par le bot "
+            "après validation par le staff. Consultez `/classement` "
+            "pour voir le tableau complet."
+        ),
+        color=COULEURS["or_pale"]
+    )
+    e.set_footer(text="⸻ Infernum Aeterna · Administration ⸻")
+    await poster(ch, e)
+
+    # ── 17. objectifs-narratifs — embed explicatif ──────────────────────────
+    ch = find_ch("objectifs-narratifs")
+    e = discord.Embed(
+        title="🎯 Objectifs Narratifs — 物語の目標",
+        description=(
+            "Les conditions pour débloquer les aptitudes spéciales, "
+            "les montées de rang et les événements personnels.\n\n"
+            "Le staff publie ici les objectifs de chaque personnage "
+            "après validation de sa fiche. Chaque objectif accompli "
+            "est une étape vers la légende."
+        ),
+        color=COULEURS["or_pale"]
+    )
+    e.add_field(
+        name="Comment ça fonctionne",
+        value=(
+            "**1.** Votre fiche est validée → le staff publie vos objectifs ici.\n"
+            "**2.** Accomplissez-les en RP → signalez-le au staff.\n"
+            "**3.** Validation → montée de rang ou aptitude débloquée."
+        ),
+        inline=False
+    )
+    e.set_footer(text="⸻ Infernum Aeterna · Administration ⸻")
+    await poster(ch, e)
+
+    # ── 18. esprits-perdus (FAQ) — embed d'accueil ─────────────────────────
+    ch = find_ch("esprits-perdus")
+    e = discord.Embed(
+        title="❓ Esprits Perdus — FAQ — 迷える魂",
+        description=(
+            "Vous êtes perdus ? C'est normal — la Fissure désoriente même "
+            "les plus aguerris.\n\n"
+            "Posez vos questions ici. Le staff ou la communauté vous répondra. "
+            "Les réponses fréquentes seront épinglées pour les prochains voyageurs."
+        ),
+        color=COULEURS["bleu_abyssal"]
+    )
+    e.add_field(
+        name="Questions fréquentes",
+        value=(
+            "**Comment créer un personnage ?** → Voir `📋・modele-de-fiche`\n"
+            "**Comment choisir une faction ?** → Voir `🎭・choisir-son-destin`\n"
+            "**Où se trouve le lore ?** → Voir `📖・infernum-aeterna` ou la page web\n"
+            "**Comment lancer un combat ?** → Bouton ⚔️ dans les salles de combat"
+        ),
+        inline=False
+    )
+    e.set_footer(text="⸻ Infernum Aeterna · Portail ⸻")
+    await poster(ch, e)
+
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  VUES (boutons persistants)
 # ══════════════════════════════════════════════════════════════════════════════
 
-class BoutonsFaction(discord.ui.View):
+class BoutonPacte(discord.ui.View):
+    """Bouton persistant 'Prêter Serment' — assigne le rôle voyageur."""
     def __init__(self):
         super().__init__(timeout=None)
-        factions = [
-            ("死神 Shinigami", "shinigami", discord.ButtonStyle.secondary),
-            ("咎人 Togabito",  "togabito",  discord.ButtonStyle.danger),
-            ("破面 Arrancar",  "arrancar",  discord.ButtonStyle.secondary),
-            ("滅却師 Quincy",  "quincy",    discord.ButtonStyle.primary),
-        ]
-        for label, cle, style in factions:
-            btn = discord.ui.Button(label=label, style=style, custom_id=f"faction_{cle}")
-            btn.callback = self._make_callback(cle)
-            self.add_item(btn)
 
-    def _make_callback(self, cle):
-        async def callback(interaction: discord.Interaction):
-            roles_ids = charger_roles()
-            guild = interaction.guild
-            role_id = roles_ids.get(cle)
-            if not role_id:
-                await interaction.response.send_message("❌ Rôle introuvable.", ephemeral=True)
-                return
-            role = guild.get_role(role_id)
-            if not role:
-                await interaction.response.send_message("❌ Rôle introuvable sur ce serveur.", ephemeral=True)
-                return
-            member = interaction.user
-            factions_cles = ["shinigami", "togabito", "arrancar", "quincy"]
-            roles_a_retirer = [
-                guild.get_role(roles_ids[c])
-                for c in factions_cles
-                if c in roles_ids and guild.get_role(roles_ids[c]) in member.roles
-            ]
-            roles_a_retirer = [r for r in roles_a_retirer if r]
-            if roles_a_retirer:
-                await member.remove_roles(*roles_a_retirer, reason="Changement de faction")
-            await member.add_roles(role, reason=f"Faction choisie : {cle}")
+    @discord.ui.button(label="⚖️ Prêter Serment", style=discord.ButtonStyle.success, custom_id="pacte_serment")
+    async def preter_serment(self, interaction: discord.Interaction, button: discord.ui.Button):
+        roles_ids = charger_roles()
+        guild = interaction.guild
+        member = interaction.user
+
+        role_id = roles_ids.get("voyageur")
+        if not role_id:
+            await interaction.response.send_message("❌ Rôle introuvable. Contactez le staff.", ephemeral=True)
+            return
+        role = guild.get_role(role_id)
+        if not role:
+            await interaction.response.send_message("❌ Rôle introuvable sur ce serveur.", ephemeral=True)
+            return
+
+        if role in member.roles:
             await interaction.response.send_message(
-                f"⚔️ Vous avez rejoint la faction **{role.name}**.", ephemeral=True
+                "*Vous avez déjà prêté serment. Les Portes vous sont ouvertes.*",
+                ephemeral=True
             )
-        return callback
+            return
+
+        await member.add_roles(role, reason="Pacte des Âmes accepté")
+        await interaction.response.send_message(
+            "**Le Pacte est scellé.**\n\n"
+            "*Les Portes s'entrouvrent. De nouveaux channels apparaissent devant vous.*\n\n"
+            "Découvrez les factions dans `🎭・choisir-son-destin`, puis forgez "
+            "votre personnage dans `📋・modele-de-fiche`.\n\n"
+            "「 Tout commencement est un serment. 」",
+            ephemeral=True
+        )
 
 
 class BoutonCombat(discord.ui.View):
@@ -1022,7 +1680,6 @@ def _cle_channel(nom: str) -> str:
     """Transforme un nom de channel Discord en clé normalisée pour channels_ids.json.
     Ex: '📖・infernum-aeterna' → 'infernum-aeterna'
     """
-    import re
     # Retirer emojis et séparateur ・
     cleaned = re.sub(r"[^\w\s-]", "", nom).strip().lstrip("・").strip()
     # Prendre la partie après le dernier espace ou ・ si c'est un emoji suivi de texte

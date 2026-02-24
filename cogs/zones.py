@@ -14,8 +14,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from typing import Optional
-import json
-import os
 from datetime import datetime, timezone
 
 from config import COULEURS
@@ -33,18 +31,6 @@ CATEGORIES_CIBLES = {
     "quincy":       "SURVIVANTS QUINCY",
 }
 
-
-def _charger() -> dict:
-    if not os.path.exists(ZONES_FILE):
-        return {"zones": []}
-    with open(ZONES_FILE) as f:
-        return json.load(f)
-
-
-def _sauvegarder(data: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(ZONES_FILE, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 class Zones(commands.Cog):
@@ -109,13 +95,11 @@ class Zones(commands.Cog):
         everyone = guild.default_role
         overwrites = {}
 
-        if prive:
-            overwrites[everyone] = discord.PermissionOverwrite(view_channel=False)
-        else:
-            overwrites[everyone] = discord.PermissionOverwrite(view_channel=True, send_messages=False)
+        # @everyone toujours masqué — l'accès passe par personnage_valide ou factions
+        overwrites[everyone] = discord.PermissionOverwrite(view_channel=False)
 
         # Staff toujours accès complet
-        for cle_staff in ("architecte", "gardien_des_portes", "emissaire"):
+        for cle_staff in ("architecte", "gardien_des_portes", "emissaire", "chroniqueur"):
             rid = roles_ids.get(cle_staff)
             if rid:
                 role = guild.get_role(rid)
@@ -134,6 +118,15 @@ class Zones(commands.Cog):
                     if role:
                         overwrites[role] = discord.PermissionOverwrite(
                             view_channel=True, send_messages=True
+                        )
+            # Fallback lecture seule pour personnage_valide (cohérent avec les channels statiques)
+            if not prive:
+                rid_valide = roles_ids.get("personnage_valide")
+                if rid_valide:
+                    role_valide = guild.get_role(rid_valide)
+                    if role_valide:
+                        overwrites[role_valide] = discord.PermissionOverwrite(
+                            view_channel=True, send_messages=False
                         )
         else:
             rid_valide = roles_ids.get("personnage_valide")

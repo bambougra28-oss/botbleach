@@ -64,7 +64,11 @@ class Moderation(commands.Cog):
         self.data = self._store.data
         # Assurer la structure minimale
         for cle in DEFAULT_DATA:
-            self.data.setdefault(cle, DEFAULT_DATA[cle] if isinstance(DEFAULT_DATA[cle], dict) else DEFAULT_DATA[cle].copy() if isinstance(DEFAULT_DATA[cle], list) else DEFAULT_DATA[cle])
+            val = DEFAULT_DATA[cle]
+            if isinstance(val, (dict, list)):
+                self.data.setdefault(cle, val.copy())
+            else:
+                self.data.setdefault(cle, val)
 
         # Client Anthropic (Haiku) — séparé du Narrateur
         self._client = None
@@ -359,7 +363,7 @@ class Moderation(commands.Cog):
 
         try:
             async with self._semaphore:
-                loop = asyncio.get_event_loop()
+                loop = asyncio.get_running_loop()
                 response = await asyncio.wait_for(
                     loop.run_in_executor(
                         None,

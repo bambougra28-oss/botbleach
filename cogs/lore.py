@@ -44,7 +44,7 @@ GLOSSAIRE = {
     "resurreccion":   ("帰刃", "Libération de la puissance Hollow d'un Arrancar. Retrouve temporairement sa forme Hollow originelle — un acte de dépouillement autant que de déchaînement."),
     "jigokusari":     ("地獄鎖", "Chaînes spirituelles de l'Enfer. Issues de la chair même de ce monde, elles s'enroulent autour des âmes damnées et les contraignent dans un cycle de mort et de résurrection."),
     "kushanada":      ("倶舎那陀", "Gardiens massifs de l'Enfer. Créatures colossales à quatre membres dont la seule fonction apparente est de dévorer et de punir, sans relâche, sans fatigue."),
-    "jigoku_no_rinki":("地獄の淋気", "Sphères noires phosphorescentes apparues depuis la Fissure. Marqueur visible du déséquilibre infernal qui s'infiltre dans les Trois Mondes."),
+    "jigoku_no_rinki":("地獄の燐気", "Sphères noires phosphorescentes apparues depuis la Fissure. Marqueur visible du déséquilibre infernal qui s'infiltre dans les Trois Mondes."),
     "konso":          ("魂葬", "Rite des Shinigami pour guider les âmes humaines vers Soul Society en frappant leur front du manche du Zanpakutō. Un geste simple dont nul ne questionne la portée."),
     "konso_reisai":   ("魂葬霊祭", "Cérémonie secrète : douze ans après la mort d'un Capitaine, son Reishi est canalisé vers l'Enfer. Un mensonge bienveillant qui a duré des millénaires."),
     "reio":           ("霊王", "Roi des Âmes. Mutilé et scellé dans un cristal par les Cinq Grandes Maisons. Verrou cosmique maintenant les Trois Mondes — ni vivant, ni mort, simplement nécessaire."),
@@ -60,6 +60,7 @@ GLOSSAIRE = {
     "schrift":        ("聖文字", "Lettre sacrée gravée dans l'âme d'un Quincy par l'Empereur. Transforme une capacité individuelle en puissance incommensurable — un don et une chaîne."),
     "las_noches":     ("虚夜宮", "Le Palais de la Nuit Creuse. Forteresse de Hueco Mundo bâtie couche après couche par des générations d'Arrancar, chaque époque y laissant sa marque."),
     "blut":           ("血装", "Fortification spirituelle du sang, technique défensive Quincy. Le Blut Vene rend le corps quasi imperméable aux blessures ; le Blut Arterie décuple la puissance offensive."),
+    "kyokai":         ("境界", "La Frontière. Le vide entre les mondes que personne ne regardait, révélé par la Fissure. Ni Soul Society, ni Hueco Mundo, ni Enfer — un territoire mouvant où les lois spirituelles se contredisent et où les quatre races se croisent sans qu'aucune ne puisse revendiquer le terrain. Elle s'étend."),
 }
 
 
@@ -435,14 +436,27 @@ LORE_DATA = {
              "Automatique à chaque seuil franchi. Le staff est notifié. "
              "Déclenche une narration épique dans `#journal-de-l-enfer`. "
              "Nouveaux rôles et accès aux zones plus profondes débloqués."),
-            ("Aptitudes",
-             "À chaque rang, vous pouvez décrire de nouvelles aptitudes dans votre fiche. "
-             "Le nombre maximum dépend du rang. Toute aptitude hors-norme doit être "
-             "validée par le staff avant usage en RP."),
+            ("Aptitudes — Système Reiryoku (霊力)",
+             "Chaque rang accorde un budget de **Reiryoku** (霊力) à répartir dans les "
+             "**Voies** de votre faction (4 Voies, 20 aptitudes par faction). "
+             "Trois paliers : **Éveil** (1 霊力), **Maîtrise** (2 霊力), **Transcendance** (3 霊力). "
+             "Le Palier 3 est réservé aux rangs élevés. "
+             "Commandes : `/aptitudes` (dashboard), `/voie` (arbre), `/aptitude-debloquer`."),
             ("Mort narrative",
              "Possible avec accord des deux joueurs + validation staff. "
              "Le personnage peut « mourir » narrativement et renaître avec un nouveau "
              "contexte, ou rejouer depuis le début avec ses acquis lore."),
+            ("⚡ Puissance Spirituelle (PS)",
+             "Chaque personnage possède une **Puissance Spirituelle** (PS) calculée à "
+             "partir de ses points de progression : **PS = Points ÷ 100** (minimum 1). "
+             "En combat, l'écart de PS entre deux combattants détermine un **palier** :\n"
+             "• **均衡 Équilibre** (0-10) — toutes aptitudes fonctionnent normalement\n"
+             "• **優勢 Ascendant** (11-25) — P1 du plus faible réduit\n"
+             "• **制圧 Domination** (26-40) — P1 inefficace, P2 réduit\n"
+             "• **圧倒 Écrasement** (41-60) — P1/P2 inefficaces, P3 réduit\n"
+             "• **深淵 Abîme** (61+) — toutes aptitudes inefficaces\n"
+             "Ces paliers sont des **guides narratifs** — le MJ les utilise pour "
+             "pondérer les effets des techniques en combat."),
         ],
     },
     "gotei": {
@@ -535,6 +549,129 @@ LORE_DATA = {
              "l'intérieur. Aucun des deux camps n'a le tableau complet seul."),
         ],
     },
+    "frontiere": {
+        "titre":  "🌀 La Frontière — 境界 Kyōkai",
+        "couleur": COULEURS["gris_acier"],
+        "web_fragment": "prologue",
+        "description": (
+            "Personne ne s'y arrêtait. Les Shinigami la traversaient par le Senkaimon, "
+            "les Quincy la perçaient par l'ombre, les Hollow la déchiraient par leurs "
+            "Garganta — un vide entre les mondes, rien d'autre. Un couloir qu'on emprunte "
+            "sans regarder les murs.\n\n"
+            "Puis la Fissure a déchiré les Portes de l'Enfer. Le couloir s'est élargi. "
+            "Les murs se sont éloignés, puis ils ont disparu. Ce qui n'était qu'un rien "
+            "entre deux quelque chose est devenu un lieu — vaste, mouvant, respirable. "
+            "Les plus anciennes archives de la Garde Royale avaient un mot pour cet espace : "
+            "Kyōkai (境界). La Frontière.\n\n"
+            "Elle n'a pas été créée. Elle a été révélée."
+        ),
+        "fields": [
+            ("Ce qu'on y voit",
+             "Pas de ciel. Au-dessus, un vide gris traversé de veines lumineuses qui "
+             "pulsent au rythme de marées que personne ne comprend. Le sol est un patchwork "
+             "— des dalles blanches arrachées au Seireitei, du sable de quartz de Hueco "
+             "Mundo, de la roche calcinée des Strates, de l'asphalte fissuré du Monde des "
+             "Vivants. Ces fragments dérivent, se heurtent, fusionnent. La topographie d'une "
+             "semaine n'est jamais celle de la suivante. Ceux qui tentent de cartographier "
+             "la Frontière finissent par comprendre que c'est elle qui les cartographie."),
+            ("Ce qui y tue",
+             "Les courants de Reishi. Des torrents d'énergie brute qui traversent sans "
+             "prévenir et désintègrent tout corps spirituel insuffisamment dense. Les poches "
+             "de vide — des zones de silence absolu où un Shinigami perd son Shikai, où un "
+             "Quincy ne sent plus un seul fil de Reishi sous ses doigts. Et partout, flottant "
+             "en nuages noirs phosphorescents, le Jigoku no Rinki. Plus dense ici qu'ailleurs. "
+             "Plus proche de sa source."),
+            ("Ceux qui s'y croisent",
+             "Les patrouilles Shinigami arrivent par le Dangai, nerveuses, sur-armées. Les "
+             "Togabito y émergent par la Fissure — c'est leur premier souffle hors de l'Enfer, "
+             "et certains restent à genoux pendant des heures, incapables de croire que la "
+             "douleur a cessé. Les Arrancar s'y égarent volontairement, attirés par une "
+             "résonance que leur vide intérieur reconnaît sans pouvoir la nommer. Les Quincy "
+             "y lisent les flux contaminés et dessinent des cartes que personne d'autre ne "
+             "sait déchiffrer. Aucune faction ne contrôle la Frontière. Aucune ne la comprend."),
+            ("Ce qui inquiète",
+             "Elle s'étend. Chaque semaine, les fragments qui y dérivent sont un peu plus "
+             "nombreux, arrachés un peu plus profondément aux mondes adjacents. Ce qui "
+             "inquiète les esprits les plus lucides n'est pas que la Fissure grandisse. "
+             "C'est que la Frontière remplace les mondes eux-mêmes — que l'espace entre "
+             "les choses devienne la seule chose qui reste. Les plus anciens Togabito, ceux "
+             "qui ont traversé les cinq Strates et vu ce qui existe en dessous, disent que "
+             "la Frontière leur rappelle quelque chose. Quelque chose d'avant. Quelque chose "
+             "qui ressemble à ce qu'on appelle la Mer Primordiale."),
+        ],
+    },
+    "chronologie": {
+        "titre":  "📜 Chronologie — Les Sept Ères",
+        "couleur": COULEURS["or_ancien"],
+        "web_fragment": "prologue",
+        "description": (
+            "Le temps ne s'écoule pas de la même façon dans les Trois Mondes. "
+            "Soul Society ne compte pas les années comme le Monde des Vivants, "
+            "et l'Enfer ne compte rien du tout. Ce qui suit n'est pas une chronologie "
+            "au sens strict — c'est une succession de ruptures. Chacune a changé la "
+            "nature de ce qui existait avant elle. Aucune n'a été réparée."
+        ),
+        "fields": [
+            ("Ère I — La Mer Primordiale",
+             "Avant les mondes. Un état indivisé où la vie et la mort n'étaient "
+             "pas distinctes. L'obscurité rongeait les âmes de l'intérieur. Un "
+             "être émergea pour la combattre — celui qu'on nommerait plus tard "
+             "le Reiō. Cinq êtres puissants l'observèrent, le capturèrent, lui "
+             "arrachèrent les membres, le scellèrent dans un cristal. Il ne "
+             "résista pas. De sa puissance mutilée, ils créèrent Soul Society, "
+             "le Monde des Vivants, Hueco Mundo. L'Enfer, lui, existait déjà."),
+            ("Ère II — Le Chaos Originel",
+             "Les premiers millions d'années. Soul Society sans loi, gouvernée "
+             "par la force brute. Les Hollow dévoraient le Monde des Vivants "
+             "sans régulation. Dans les Strates, les premières âmes damnées "
+             "découvraient les Kushanāda et les Jigokusari sans guide ni "
+             "explication. À Hueco Mundo, les Hollow se dévoraient entre eux "
+             "— Gillian, Adjuchas, Vasto Lorde. Les plus rares brisèrent "
+             "leur masque et devinrent Arrancar. Las Noches commença à "
+             "s'élever, couche après couche, génération après génération."),
+            ("Ère III — La Fondation du Gotei",
+             "Kōshin Jūrōmaru réunit treize guerriers redoutables et imposa "
+             "un ordre à Soul Society par la force, district après district. "
+             "Ce n'étaient pas des gardiens — c'étaient des tueurs qui avaient "
+             "compris que seule l'organisation pouvait mettre fin au chaos. "
+             "Tōka Shibari, première Kenpachi. Renjō Mikazuchi, le plus "
+             "mystérieux. Le Konsō Reisai fut formalisé dans les premières "
+             "générations — le secret des Capitaines envoyés en Enfer commença "
+             "à s'accumuler. La dette naquit ici."),
+            ("Ère IV — La Guerre de Lumière (~1 000 ans avant)",
+             "Le Lichtreich — Empire de Lumière des Quincy — défia le Gotei. "
+             "Leur Empereur, fils du Reiō, portait une puissance prophétique "
+             "que nul ne comprenait encore. La guerre fut totale. L'Empereur "
+             "tomba face au Fondateur. Après la victoire, le Gotei se transforma "
+             "— la Shin'ō Academy fut fondée, la brutalité céda la place à "
+             "l'institution. Quelque chose de plus noble. Quelque chose de "
+             "plus vulnérable."),
+            ("Ère V — Les Siècles de Silence",
+             "Le génocide des Quincy — discret, méthodique, famille après "
+             "famille. Les survivants créèrent le Wandenreich dans les ombres "
+             "du Seireitei, nourris du Reishi de l'ennemi. Pendant ce temps, "
+             "les Capitaines continuaient de mourir et d'être envoyés en Enfer. "
+             "Certains y ont évolué en entités d'une puissance qui dépasse "
+             "tout ce que les Trois Mondes ont produit. La dette s'accumula "
+             "en silence pendant des millénaires."),
+            ("Ère VI — La Grande Guerre et la Révélation",
+             "Le Wandenreich frappa Soul Society. La guerre bouleversa tout. "
+             "Les Deux Piliers Maudits — fragments du Reiō qui maintenaient "
+             "involontairement l'équilibre entre l'Enfer et les Trois Mondes "
+             "— disparurent. Simultanément, ou presque. Après le silence des "
+             "armes, la vérité du Konsō Reisai fut révélée aux Capitaines. "
+             "Ce qu'ils en firent divisa profondément le haut commandement."),
+            ("Ère VII — La Fissure (maintenant)",
+             "Sans les Deux Piliers, la balance s'est rompue. Les Portes de "
+             "l'Enfer se sont fissurées. Le Jigoku no Rinki déborde dans les "
+             "Trois Mondes. Les Jigokusari se relâchent. Les Kushanāda "
+             "hésitent. Et entre les mondes, un vide que personne ne regardait "
+             "s'est élargi jusqu'à devenir un territoire — la Frontière. "
+             "Quatre races s'y croisent sans se comprendre. La Frontière "
+             "s'étend. Quelque chose se meut dans l'énergie infernale, avec "
+             "une direction, une logique, une intention. Le temps presse."),
+        ],
+    },
     "creation": {
         "titre":  "📝 Guide de Création de Personnage",
         "couleur": COULEURS["gris_acier"],
@@ -589,6 +726,8 @@ class Lore(commands.Cog):
         app_commands.Choice(name="Le Konsō Reisai — Le Secret",            value="konso_reisai"),
         app_commands.Choice(name="Le Gotei 13 — Des Tueurs aux Gardiens",  value="gotei"),
         app_commands.Choice(name="Les Cinq Strates de l'Enfer",            value="strates_lore"),
+        app_commands.Choice(name="La Frontière — 境界 Kyōkai",              value="frontiere"),
+        app_commands.Choice(name="Chronologie — Les Sept Ères",            value="chronologie"),
         app_commands.Choice(name="Tensions Inter-Factions",                value="tensions"),
         app_commands.Choice(name="Guide de Création de Personnage",        value="creation"),
         app_commands.Choice(name="Système de Combat & Points",             value="systeme"),

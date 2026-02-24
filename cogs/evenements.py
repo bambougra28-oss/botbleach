@@ -18,8 +18,6 @@ from discord import app_commands
 from typing import Optional
 import anthropic
 import asyncio
-import json
-import os
 import logging
 from datetime import datetime, timezone
 
@@ -40,18 +38,6 @@ NIVEAUX_FISSURE = {
     5: ("Apocalypse", 0x8B0000, "Les Portes de l'Enfer sont ouvertes. Les Trois Mondes vacillent."),
 }
 
-
-def _charger() -> dict:
-    if not os.path.exists(EVENEMENTS_FILE):
-        return {"arc_actuel": None, "arcs_archives": [], "fissure_niveau": 2, "portails_actifs": []}
-    with open(EVENEMENTS_FILE) as f:
-        return json.load(f)
-
-
-def _sauvegarder(data: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(EVENEMENTS_FILE, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 class Evenements(commands.Cog):
@@ -92,7 +78,7 @@ class Evenements(commands.Cog):
             "- Tous les personnages mentionnés dans les événements sont des OC."
         )
         async with self._semaphore:
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             response = await asyncio.wait_for(
                 loop.run_in_executor(
                     None,
@@ -441,6 +427,252 @@ class Evenements(commands.Cog):
 
         embed.set_footer(text=f"⸻ Mis à jour le {datetime.now(timezone.utc).strftime('%d/%m/%Y à %H:%M')} UTC ⸻")
         await interaction.response.send_message(embed=embed)
+
+
+    # ══════════════════════════════════════════════════════════════════════════
+    #  ÉVÉNEMENTS PROGRAMMÉS
+    # ══════════════════════════════════════════════════════════════════════════
+
+    @app_commands.command(name="evenement-planifier", description="[STAFF] Planifie un événement avec date et inscription.")
+    @app_commands.describe(
+        titre="Titre de l'événement",
+        description="Description narrative",
+        date_heure="Date et heure (format : JJ/MM/YYYY HH:MM)",
+        factions="Factions concernées (vide = toutes)",
+    )
+    @app_commands.choices(factions=[
+        app_commands.Choice(name="Toutes les factions", value="toutes"),
+        app_commands.Choice(name="Shinigami", value="shinigami"),
+        app_commands.Choice(name="Togabito", value="togabito"),
+        app_commands.Choice(name="Arrancar", value="arrancar"),
+        app_commands.Choice(name="Quincy", value="quincy"),
+    ])
+    @app_commands.default_permissions(manage_messages=True)
+    async def evenement_planifier(
+        self, interaction: discord.Interaction,
+        titre: str, description: str, date_heure: str,
+        factions: str = "toutes",
+    ):
+        # Parser la date
+        try:
+            dt = datetime.strptime(date_heure, "%d/%m/%Y %H:%M").replace(tzinfo=timezone.utc)
+        except ValueError:
+            await interaction.response.send_message(
+                "❌ Format de date invalide. Utilisez : `JJ/MM/YYYY HH:MM`", ephemeral=True
+            )
+            return
+
+        if dt <= datetime.now(timezone.utc):
+            await interaction.response.send_message("❌ La date doit être dans le futur.", ephemeral=True)
+            return
+
+        evt_id = f"EVT-{len(self.data.get('evenements_programmes', [])) + 1:03d}"
+        evt = {
+            "id": evt_id,
+            "titre": titre,
+            "description": description,
+            "date": dt.isoformat(),
+            "factions": factions,
+            "inscrits": [],
+            "rappel_24h": False,
+            "rappel_1h": False,
+            "createur_id": interaction.user.id,
+        }
+        self.data.setdefault("evenements_programmes", []).append(evt)
+        await self._save()
+
+        # Construire l'embed
+        delta = dt - datetime.now(timezone.utc)
+        jours = delta.days
+        heures = delta.seconds // 3600
+
+        embed = discord.Embed(
+            title=f"📅 {titre}",
+            description=description,
+            color=COULEURS["pourpre_infernal"]
+        )
+        embed.add_field(
+            name="📆 Date",
+            value=f"**{dt.strftime('%d/%m/%Y à %H:%M')}** UTC\n*Dans {jours}j {heures}h*",
+            inline=True
+        )
+        embed.add_field(
+            name="⚔️ Factions",
+            value=factions.capitalize() if factions != "toutes" else "Toutes les factions",
+            inline=True
+        )
+        embed.add_field(name="👥 Inscrits", value="0", inline=True)
+        embed.add_field(
+            name="📝 Inscription",
+            value="Cliquez sur le bouton ci-dessous pour vous inscrire.",
+            inline=False
+        )
+        embed.set_footer(text=f"⸻ Infernum Aeterna · {evt_id} ⸻")
+
+        # Poster dans calendrier-des-arcs avec bouton d'inscription
+        ch = trouver_channel(interaction.guild, "calendrier-des-arcs")
+        if ch:
+            view = BoutonInscription(evt_id)
+            msg = await ch.send(embed=embed, view=view)
+            evt["message_id"] = msg.id
+            evt["channel_id"] = ch.id
+            await self._save()
+
+        await interaction.response.send_message(
+            f"✅ Événement **{titre}** planifié pour le {dt.strftime('%d/%m/%Y à %H:%M')} UTC.",
+            ephemeral=True
+        )
+
+    @app_commands.command(name="evenements-liste", description="Affiche les événements programmés à venir.")
+    async def evenements_liste(self, interaction: discord.Interaction):
+        now = datetime.now(timezone.utc)
+        evts = [
+            e for e in self.data.get("evenements_programmes", [])
+            if datetime.fromisoformat(e["date"]) > now
+        ]
+        evts.sort(key=lambda e: e["date"])
+
+        if not evts:
+            await interaction.response.send_message("Aucun événement programmé.", ephemeral=True)
+            return
+
+        embed = discord.Embed(
+            title="📅 Événements à Venir",
+            color=COULEURS["or_ancien"]
+        )
+        for e in evts[:10]:
+            dt = datetime.fromisoformat(e["date"])
+            delta = dt - now
+            embed.add_field(
+                name=f"{'⚔️' if e.get('factions') != 'toutes' else '🌐'} {e['titre']}",
+                value=(
+                    f"📆 {dt.strftime('%d/%m/%Y %H:%M')} UTC · *{delta.days}j {delta.seconds // 3600}h*\n"
+                    f"👥 {len(e.get('inscrits', []))} inscrit(s)"
+                ),
+                inline=False
+            )
+        embed.set_footer(text="⸻ Infernum Aeterna · Calendrier ⸻")
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="evenement-inscrire", description="S'inscrire à un événement programmé.")
+    @app_commands.describe(evenement_id="ID de l'événement (ex: EVT-001)")
+    async def evenement_inscrire(self, interaction: discord.Interaction, evenement_id: str):
+        evts = self.data.get("evenements_programmes", [])
+        evt = next((e for e in evts if e["id"] == evenement_id.upper()), None)
+
+        if not evt:
+            await interaction.response.send_message("❌ Événement introuvable.", ephemeral=True)
+            return
+
+        uid = interaction.user.id
+        if uid in evt.get("inscrits", []):
+            evt["inscrits"].remove(uid)
+            await self._save()
+            await interaction.response.send_message("✅ Inscription retirée.", ephemeral=True)
+            return
+
+        evt.setdefault("inscrits", []).append(uid)
+        await self._save()
+        await interaction.response.send_message(
+            f"✅ Inscrit à **{evt['titre']}** ! Vous serez notifié avant l'événement.",
+            ephemeral=True
+        )
+
+    # ── Boucle de rappels ────────────────────────────────────────────────────
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not hasattr(self, '_rappel_task_started'):
+            self._rappel_task_started = True
+            self.bot.loop.create_task(self._boucle_rappels())
+
+    async def _boucle_rappels(self):
+        """Vérifie toutes les 5 minutes si un événement nécessite un rappel."""
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            try:
+                now = datetime.now(timezone.utc)
+                guild = self.bot.get_guild(self.bot.guild_id) if self.bot.guild_id else None
+                if guild:
+                    for evt in self.data.get("evenements_programmes", []):
+                        dt = datetime.fromisoformat(evt["date"])
+                        delta = (dt - now).total_seconds()
+
+                        # Rappel 24h
+                        if 0 < delta <= 86400 and not evt.get("rappel_24h"):
+                            evt["rappel_24h"] = True
+                            await self._envoyer_rappel(guild, evt, "24 heures")
+                            await self._save()
+
+                        # Rappel 1h
+                        if 0 < delta <= 3600 and not evt.get("rappel_1h"):
+                            evt["rappel_1h"] = True
+                            await self._envoyer_rappel(guild, evt, "1 heure")
+                            await self._save()
+            except Exception as e:
+                log.error("Erreur boucle rappels : %s", e)
+            await asyncio.sleep(300)  # 5 minutes
+
+    async def _envoyer_rappel(self, guild, evt, delai: str):
+        """Envoie un rappel pour un événement dans flash-evenements et en DM aux inscrits."""
+        ch = trouver_channel(guild, "flash-evenements")
+        if ch:
+            mentions = " ".join(f"<@{uid}>" for uid in evt.get("inscrits", [])[:20])
+            embed = discord.Embed(
+                title=f"⏰ Rappel — {evt['titre']}",
+                description=f"L'événement commence dans **{delai}** !\n\n{mentions}",
+                color=COULEURS["pourpre_infernal"]
+            )
+            embed.set_footer(text=f"⸻ Infernum Aeterna · {evt['id']} ⸻")
+            await ch.send(embed=embed)
+
+        # DM aux inscrits
+        for uid in evt.get("inscrits", []):
+            member = guild.get_member(uid)
+            if member:
+                try:
+                    await member.send(
+                        embed=discord.Embed(
+                            title=f"⏰ Rappel — {evt['titre']}",
+                            description=f"L'événement commence dans **{delai}** !",
+                            color=COULEURS["pourpre_infernal"]
+                        )
+                    )
+                except discord.Forbidden:
+                    pass
+
+
+class BoutonInscription(discord.ui.View):
+    """Bouton d'inscription à un événement programmé."""
+    def __init__(self, evt_id: str):
+        super().__init__(timeout=None)
+        self.evt_id = evt_id
+
+    @discord.ui.button(label="📝 S'inscrire / Se désinscrire", style=discord.ButtonStyle.primary, custom_id="evt_inscription")
+    async def toggle_inscription(self, interaction: discord.Interaction, button: discord.ui.Button):
+        cog = interaction.client.cogs.get("Evenements")
+        if not cog:
+            await interaction.response.send_message("❌ Module événements indisponible.", ephemeral=True)
+            return
+
+        evts = cog.data.get("evenements_programmes", [])
+        # Trouver l'événement associé à ce message
+        evt = next((e for e in evts if e.get("message_id") == interaction.message.id), None)
+        if not evt:
+            await interaction.response.send_message("❌ Événement introuvable.", ephemeral=True)
+            return
+
+        uid = interaction.user.id
+        if uid in evt.get("inscrits", []):
+            evt["inscrits"].remove(uid)
+            await cog._save()
+            await interaction.response.send_message("✅ Inscription retirée.", ephemeral=True)
+        else:
+            evt.setdefault("inscrits", []).append(uid)
+            await cog._save()
+            await interaction.response.send_message(
+                f"✅ Inscrit à **{evt['titre']}** ! Rappels automatiques activés.",
+                ephemeral=True
+            )
 
 
 async def setup(bot):

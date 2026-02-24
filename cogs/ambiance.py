@@ -17,8 +17,6 @@ from discord import app_commands
 from typing import Optional
 import anthropic
 import asyncio
-import json
-import os
 import random
 import logging
 from datetime import datetime, timezone
@@ -92,18 +90,6 @@ def _detecter_zone(channel_name: str) -> str:
     return "defaut"
 
 
-def _charger() -> dict:
-    if not os.path.exists(AMBIANCE_FILE):
-        return {}
-    with open(AMBIANCE_FILE) as f:
-        return json.load(f)
-
-
-def _sauvegarder(data: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(AMBIANCE_FILE, "w") as f:
-        json.dump(data, f, indent=2)
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  COG
@@ -149,7 +135,7 @@ class Ambiance(commands.Cog):
             "- Uniquement de la description sensorielle et atmosphérique."
         )
         async with self._semaphore:
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             response = await asyncio.wait_for(
                 loop.run_in_executor(
                     None,

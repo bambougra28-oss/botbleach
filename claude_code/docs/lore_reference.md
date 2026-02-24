@@ -13,10 +13,10 @@ Format : `"cle": ("kanji", "définition")`
 | shikai | 始解 | 1ère libération Zanpakutō |
 | bankai | 卍解 | Libération finale |
 | hollow | 虚 | Âme corrompue |
-| resurreccion | 鬼道解放 | Libération Arrancar |
+| resurreccion | 帰刃 | Libération Arrancar |
 | jigokusari | 地獄鎖 | Chaînes de l'Enfer |
 | kushanada | 倶舎那陀 | Gardiens de l'Enfer |
-| jigoku_no_rinki | 地獄の淋気 | Énergie infernale |
+| jigoku_no_rinki | 地獄の燐気 | Énergie infernale |
 | konso | 魂葬 | Enterrement de l'âme |
 | konso_reisai | 魂葬霊祭 | Rituel secret Capitaines |
 | reio | 霊王 | Roi des Âmes |

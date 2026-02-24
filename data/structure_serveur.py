@@ -60,6 +60,7 @@ ROLES = [
     # ── Rôles fonctionnels ────────────────────────────────────────────────────
     {"cle": "personnage_valide",  "nom": "✅ Personnage Validé",     "couleur": 0x57F287, "hoist": False, "mentionable": False, "position": 20},
     {"cle": "en_attente",         "nom": "⏳ En Attente",            "couleur": 0xFEE75C, "hoist": False, "mentionable": False, "position": 19},
+    {"cle": "voyageur",            "nom": "🌀 Voyageur",              "couleur": 0x7B7D8A, "hoist": False, "mentionable": False, "position": 19},
     {"cle": "observateur",        "nom": "👁️ Observateur",           "couleur": 0x5865F2, "hoist": False, "mentionable": False, "position": 18},
     {"cle": "evenement_actif",    "nom": "🎲 Événement Actif",       "couleur": 0xEB459E, "hoist": False, "mentionable": True,  "position": 17},
     {"cle": "abonne_annonces",    "nom": "📣 Annonces",              "couleur": 0x5865F2, "hoist": False, "mentionable": True,  "position": 16},
@@ -83,9 +84,15 @@ def _staff_only():
     """Shorthand : invisible pour tout le monde, visible pour le staff."""
     return {"everyone_view": False, "everyone_send": False}
 
-def _faction_write(factions: list):
-    """Shorthand : les factions listées peuvent écrire."""
-    return {"everyone_view": True, "everyone_send": False, "factions_ecrivant": factions}
+# ── Tags prédéfinis pour les forums RP ────────────────────────────────────────
+FORUM_TAGS_RP = [
+    {"nom": "🟢 En cours",  "emoji": "🟢"},
+    {"nom": "🔴 Terminé",   "emoji": "🔴"},
+    {"nom": "⚔️ Combat",    "emoji": "⚔️"},
+    {"nom": "👤 Solo",       "emoji": "👤"},
+    {"nom": "🔓 Ouvert",    "emoji": "🔓"},
+    {"nom": "🔒 Fermé",     "emoji": "🔒"},
+]
 
 
 CATEGORIES = [
@@ -96,10 +103,10 @@ CATEGORIES = [
         "channels": [
             {"nom": "🩸・fissure-du-monde",    "type": "text", "sujet": "Bienvenue dans Infernum Aeterna.", "lecture_seule": True},
             {"nom": "⚖️・pacte-des-âmes",      "type": "text", "sujet": "Règles du serveur rédigées sous forme de serments.", "lecture_seule": True},
-            {"nom": "📣・voix-du-seireitei",   "type": "text", "sujet": "Annonces officielles du staff.", "lecture_seule": True, "role_ecrivant": "gardien_des_portes"},
-            {"nom": "🎭・choisir-son-destin",  "type": "text", "sujet": "Sélection de faction via boutons.", "lecture_seule": True, "boutons_faction": True},
-            {"nom": "🔔・abonnements",         "type": "text", "sujet": "Gestion des rôles de notification.", "lecture_seule": False, "abonnements": True},
-            {"nom": "❓・esprits-perdus",      "type": "text", "sujet": "Foire aux questions — réponses en fils épinglés.", "lecture_seule": True},
+            {"nom": "📣・voix-du-seireitei",   "type": "text", "sujet": "Annonces officielles du staff.", "lecture_seule": True, "visible_a": "voyageur"},
+            {"nom": "🎭・choisir-son-destin",  "type": "text", "sujet": "Sélection de faction via boutons.", "lecture_seule": True, "boutons_faction": True, "visible_a": "voyageur"},
+            {"nom": "🔔・abonnements",         "type": "text", "sujet": "Gestion des rôles de notification.", "lecture_seule": False, "abonnements": True, "visible_a": "voyageur"},
+            {"nom": "❓・esprits-perdus",      "type": "text", "sujet": "Foire aux questions — réponses en fils épinglés.", "lecture_seule": False, "visible_a": "voyageur", "ecriture_gate": True},
         ]
     },
 
@@ -107,6 +114,7 @@ CATEGORIES = [
     {
         "nom": "〔 ⸰ CHRONIQUES ⸰ 〕",
         "permissions": _lecture_seule(),
+        "visible_a": "voyageur",
         "channels": [
             {"nom": "📖・infernum-aeterna",    "type": "text", "sujet": "Lore fondateur — la Mer Primordiale, le Péché Originel, la Fissure.", "lecture_seule": True},
             {"nom": "⚜️・les-quatre-factions", "type": "text", "sujet": "Histoire et philosophie de chaque faction.", "lecture_seule": True},
@@ -122,12 +130,14 @@ CATEGORIES = [
     {
         "nom": "〔 ⸰ ADMINISTRATION ⸰ 〕",
         "permissions": _lecture_seule(),
+        "visible_a": "voyageur",
         "channels": [
             {"nom": "📋・modele-de-fiche",     "type": "text", "sujet": "Modèle de fiche personnage avec bouton de soumission.", "lecture_seule": True},
             {"nom": "✅・fiches-validees",     "type": "text", "sujet": "Archives publiques — un fil par personnage validé.", "lecture_seule": True},
             {"nom": "📈・progression",         "type": "text", "sujet": "Suivi public des points, rangs et aptitudes.", "lecture_seule": True},
             {"nom": "🎯・objectifs-narratifs", "type": "text", "sujet": "Conditions pour débloquer aptitudes spéciales.", "lecture_seule": True},
-            {"nom": "📥・soumission-de-fiche", "type": "text", "sujet": "Déposez votre fiche ici pour validation.", "lecture_seule": False, "valide_perso": True},
+            {"nom": "📥・soumission-de-fiche", "type": "text", "sujet": "Déposez votre fiche ici pour validation.", "lecture_seule": False, "valide_perso": True, "ecriture_gate": True},
+
         ]
     },
 
@@ -135,6 +145,7 @@ CATEGORIES = [
     {
         "nom": "〔 ⸰ COMMUNAUTÉ ⸰ 〕",
         "permissions": {"everyone_view": True, "everyone_send": True},
+        "visible_a": "voyageur",
         "channels": [
             {"nom": "💬・entre-deux-mondes",   "type": "text", "sujet": "Discussion générale hors-RP."},
             {"nom": "🌸・présentations",       "type": "text", "sujet": "Présentez-vous à la communauté."},
@@ -149,85 +160,95 @@ CATEGORIES = [
     # ──────────────────────────────────────────────────────────────────────────
     {
         "nom": "〔 死神 SOUL SOCIETY 〕",
-        "permissions": {"everyone_view": True, "everyone_send": False},
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
         "channels": [
             {"nom": "📌・tableau-des-missions",  "type": "text", "sujet": "Missions actives — mis à jour par le staff.", "lecture_seule": True},
-            {"nom": "🏛️・le-seireitei",         "type": "text", "sujet": "Cœur de Soul Society — RP principal.", "factions": ["shinigami", "personnage_valide"]},
-            {"nom": "⚔️・salles-de-combat",     "type": "text", "sujet": "Bouton de création de fil de combat.", "combat": True, "faction_combat": "shinigami"},
-            {"nom": "🗼・grandes-divisions",     "type": "text", "sujet": "Salle inter-divisions.", "factions": ["shinigami", "personnage_valide"]},
-            {"nom": "🔒・salle-du-conseil",     "type": "text", "sujet": "Accès Capitaines et Vice-Capitaines uniquement.", "factions": ["sotaicho", "taicho", "fukutaicho"]},
-            {"nom": "📍・zones-libres",         "type": "text", "sujet": "[DYNAMIQUE] Zones temporaires créées par le staff.", "lecture_seule": True},
-            {"nom": "📚・archives-de-division", "type": "forum", "sujet": "Historique et traditions des divisions."},
+            {"nom": "🏛️・le-seireitei",         "type": "forum", "sujet": "Cœur de Soul Society — créez vos scènes RP ici.", "faction_write": "shinigami", "scene_launcher": True, "forum_tags": True},
+            {"nom": "⚔️・salles-de-combat",     "type": "text", "sujet": "Bouton de création de fil de combat.", "combat": True, "faction_write": "shinigami"},
+            {"nom": "🗼・grandes-divisions",     "type": "forum", "sujet": "Salle inter-divisions — scènes et interactions.", "faction_write": "shinigami", "scene_launcher": True, "forum_tags": True},
+            {"nom": "🔒・salle-du-conseil",     "type": "text", "sujet": "Accès Capitaines et Vice-Capitaines uniquement.", "rank_write": ["sotaicho", "taicho", "fukutaicho"], "faction_view": "shinigami"},
+            {"nom": "📚・archives-de-division", "type": "forum", "sujet": "Historique et traditions des divisions.", "faction_write": "shinigami"},
         ]
     },
 
     # ──────────────────────────────────────────────────────────────────────────
     {
         "nom": "〔 破面 HUECO MUNDO 〕",
-        "permissions": {"everyone_view": True, "everyone_send": False},
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
         "channels": [
             {"nom": "📌・hierarchie-des-espada",   "type": "text", "sujet": "Roster Espada actuel.", "lecture_seule": True},
-            {"nom": "🌙・las-noches-salle-du-trone","type": "text", "sujet": "Salle du trône — accès Espada.", "factions": ["espada"]},
-            {"nom": "🏜️・desert-de-las-noches",    "type": "text", "sujet": "Grand désert — RP principal Arrancar.", "factions": ["arrancar", "personnage_valide"]},
-            {"nom": "💠・salles-de-combat",        "type": "text", "sujet": "Bouton de création de fil de combat.", "combat": True, "faction_combat": "arrancar"},
-            {"nom": "⚠️・zones-de-contamination",  "type": "text", "sujet": "Scènes de contamination au Jigoku no Rinki.", "factions": ["arrancar", "personnage_valide"]},
-            {"nom": "📍・zones-libres",            "type": "text", "sujet": "[DYNAMIQUE] Zones temporaires.", "lecture_seule": True},
+            {"nom": "🌙・las-noches-salle-du-trone","type": "text", "sujet": "Salle du trône — accès Espada.", "rank_write": ["rey", "espada"], "faction_view": "arrancar"},
+            {"nom": "🏜️・desert-de-las-noches",    "type": "forum", "sujet": "Grand désert — scènes RP Arrancar.", "faction_write": "arrancar", "scene_launcher": True, "forum_tags": True},
+            {"nom": "💠・salles-de-combat",        "type": "text", "sujet": "Bouton de création de fil de combat.", "combat": True, "faction_write": "arrancar"},
+            {"nom": "⚠️・zones-de-contamination",  "type": "forum", "sujet": "Scènes de contamination au Jigoku no Rinki.", "faction_write": "arrancar", "forum_tags": True},
         ]
     },
 
     # ──────────────────────────────────────────────────────────────────────────
     {
         "nom": "〔 ⛓️ LES STRATES — L'ENFER 〕",
-        "permissions": {"everyone_view": True, "everyone_send": False},
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
         "channels": [
             {"nom": "📌・etat-de-la-fissure",      "type": "text", "sujet": "État actuel de la Fissure — mis à jour après événements majeurs.", "lecture_seule": True},
-            {"nom": "🔴・pratus-premier-niveau",   "type": "text", "sujet": "Première Strate — le Vestibule des Damnés.", "factions": ["togabito", "personnage_valide"]},
-            {"nom": "🟠・carnale-deuxieme-niveau",  "type": "text", "sujet": "Deuxième Strate — les Plaines Brûlantes.", "factions": ["togabito", "personnage_valide"]},
-            {"nom": "🟡・sulfura-troisieme-niveau", "type": "text", "sujet": "Troisième Strate — les Geysers de Soufre.", "factions": ["togabito", "personnage_valide"]},
-            {"nom": "🔵・profundus-quatrieme-niveau","type": "text", "sujet": "Quatrième Strate — validation staff requise.", "factions": ["togabito", "gokuo", "ko_togabito", "tan_togabito"]},
-            {"nom": "⚫・saiobu-abyssal",          "type": "text", "sujet": "Cinquième Strate — réservé aux événements majeurs.", "factions": ["gardien_des_portes", "architecte"]},
-            {"nom": "⚔️・combats-en-enfer",        "type": "text", "sujet": "Bouton de création de fil de combat infernal.", "combat": True, "faction_combat": "togabito"},
-            {"nom": "📍・zones-libres",            "type": "text", "sujet": "[DYNAMIQUE] Zones infernales temporaires.", "lecture_seule": True},
-            {"nom": "🧠・les-chaines-philosophie", "type": "text", "sujet": "Monologues intérieurs et développement de personnage Togabito.", "factions": ["togabito", "personnage_valide"]},
+            {"nom": "🔴・pratus-premier-niveau",   "type": "forum", "sujet": "Première Strate — le Vestibule des Damnés.", "faction_write": "togabito", "scene_launcher": True, "forum_tags": True},
+            {"nom": "🟠・carnale-deuxieme-niveau",  "type": "forum", "sujet": "Deuxième Strate — les Plaines Brûlantes.", "faction_write": "togabito", "scene_launcher": True, "forum_tags": True},
+            {"nom": "🟡・sulfura-troisieme-niveau", "type": "forum", "sujet": "Troisième Strate — les Geysers de Soufre.", "faction_write": "togabito", "scene_launcher": True, "forum_tags": True},
+            {"nom": "🔵・profundus-quatrieme-niveau","type": "forum", "sujet": "Quatrième Strate — validation staff requise.", "rank_write": ["gokuo", "ko_togabito", "tan_togabito"], "forum_tags": True},
+            {"nom": "⚫・saiobu-abyssal",          "type": "text", "sujet": "Cinquième Strate — réservé aux événements majeurs.", "evenement": True},
+            {"nom": "⚔️・combats-en-enfer",        "type": "text", "sujet": "Bouton de création de fil de combat infernal.", "combat": True, "faction_write": "togabito"},
+            {"nom": "🧠・les-chaines-philosophie", "type": "forum", "sujet": "Monologues intérieurs et développement de personnage Togabito.", "faction_write": "togabito", "forum_tags": True},
         ]
     },
 
     # ──────────────────────────────────────────────────────────────────────────
     {
         "nom": "〔 滅却師 SURVIVANTS QUINCY 〕",
-        "permissions": {"everyone_view": True, "everyone_send": False},
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
         "channels": [
             {"nom": "📌・veille-de-la-fissure",   "type": "text", "sujet": "Surveillance de la contamination — vision unique des Quincy.", "lecture_seule": True},
-            {"nom": "🏚️・le-refuge",              "type": "text", "sujet": "Repaire clandestin des survivants.", "factions": ["quincy", "personnage_valide"]},
-            {"nom": "🏹・salles-de-combat",       "type": "text", "sujet": "Bouton de création de fil de combat.", "combat": True, "faction_combat": "quincy"},
-            {"nom": "📍・zones-libres",           "type": "text", "sujet": "[DYNAMIQUE] Zones temporaires.", "lecture_seule": True},
+            {"nom": "🏚️・le-refuge",              "type": "forum", "sujet": "Repaire clandestin des survivants — scènes RP.", "faction_write": "quincy", "scene_launcher": True, "forum_tags": True},
+            {"nom": "🏹・salles-de-combat",       "type": "text", "sujet": "Bouton de création de fil de combat.", "combat": True, "faction_write": "quincy"},
         ]
     },
 
     # ──────────────────────────────────────────────────────────────────────────
     {
         "nom": "〔 🌍 MONDE DES VIVANTS 〕",
-        "permissions": {"everyone_view": True, "everyone_send": False},
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
         "channels": [
             {"nom": "📌・incidents-repertories",  "type": "text", "sujet": "Liste des anomalies actives signalées.", "lecture_seule": True},
-            {"nom": "🏙️・ville-principale",       "type": "text", "sujet": "Zone urbaine — toutes factions.", "factions": ["personnage_valide"]},
-            {"nom": "🌲・zones-isolees",          "type": "text", "sujet": "Zones naturelles isolées.", "factions": ["personnage_valide"]},
+            {"nom": "🏙️・ville-principale",       "type": "forum", "sujet": "Zone urbaine — scènes RP toutes factions.", "cross_faction": True, "scene_launcher": True, "forum_tags": True},
+            {"nom": "🌲・zones-isolees",          "type": "forum", "sujet": "Zones naturelles isolées — scènes RP.", "cross_faction": True, "scene_launcher": True, "forum_tags": True},
             {"nom": "🕳️・portails-actifs",        "type": "text", "sujet": "[ÉVÉNEMENT] Actif uniquement lors d'ouvertures de portail.", "evenement": True},
-            {"nom": "⚔️・confrontations",         "type": "text", "sujet": "Conflits inter-factions dans le Monde des Vivants.", "combat": True, "faction_combat": "tous"},
-            {"nom": "📍・zones-libres",           "type": "text", "sujet": "[DYNAMIQUE] Zones temporaires.", "lecture_seule": True},
+            {"nom": "⚔️・confrontations",         "type": "text", "sujet": "Conflits inter-factions dans le Monde des Vivants.", "combat": True, "cross_faction": True},
         ]
     },
 
     # ──────────────────────────────────────────────────────────────────────────
     {
         "nom": "〔 ⚔️ LA FRONTIÈRE 〕",
-        "permissions": {"everyone_view": True, "everyone_send": False},
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
         "channels": [
             {"nom": "📌・etat-de-la-frontiere",    "type": "text", "sujet": "Situation mise à jour après chaque événement majeur.", "lecture_seule": True},
-            {"nom": "🌑・no-mans-land",            "type": "text", "sujet": "Territoire entre les mondes — toutes factions.", "factions": ["personnage_valide"]},
-            {"nom": "🔴・la-fissure-principale",   "type": "text", "sujet": "L'épicentre — canal RP le plus intense du serveur.", "factions": ["personnage_valide"]},
-            {"nom": "⚔️・combats-de-frontiere",   "type": "text", "sujet": "Affrontements aux abords de la Fissure.", "combat": True, "faction_combat": "tous"},
-            {"nom": "📍・zones-libres",           "type": "text", "sujet": "[DYNAMIQUE] Zones frontalières temporaires.", "lecture_seule": True},
+            {"nom": "🌑・no-mans-land",            "type": "forum", "sujet": "Territoire entre les mondes — scènes RP toutes factions.", "cross_faction": True, "scene_launcher": True, "forum_tags": True},
+            {"nom": "🔴・la-fissure-principale",   "type": "forum", "sujet": "L'épicentre — scènes RP les plus intenses du serveur.", "cross_faction": True, "scene_launcher": True, "forum_tags": True},
+            {"nom": "⚔️・combats-de-frontiere",   "type": "text", "sujet": "Affrontements aux abords de la Fissure.", "combat": True, "cross_faction": True},
+        ]
+    },
+
+    # ──────────────────────────────────────────────────────────────────────────
+    {
+        "nom": "〔 📔 JOURNAUX DES ÂMES 〕",
+        "permissions": {"everyone_view": False, "everyone_send": False},
+        "visible_a": "personnage_valide",
+        "channels": [
+            {"nom": "📔・journaux-des-ames",      "type": "forum", "sujet": "Journal personnel de chaque personnage — monologues, réflexions, événements clés.", "cross_faction": True},
         ]
     },
 
@@ -235,6 +256,7 @@ CATEGORIES = [
     {
         "nom": "〔 📣 CHRONIQUES VIVANTES 〕",
         "permissions": _lecture_seule(),
+        "visible_a": "voyageur",
         "channels": [
             {"nom": "✍️・journal-de-l-enfer",     "type": "text", "sujet": "Narrations épiques des événements majeurs — bot uniquement.", "lecture_seule": True, "narrateur": True},
             {"nom": "⚡・flash-evenements",       "type": "text", "sujet": "Alertes courtes d'événements — bot uniquement.", "lecture_seule": True, "narrateur": True},

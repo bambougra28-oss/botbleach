@@ -12,7 +12,7 @@ import discord
 from discord.ext import commands, tasks
 from discord import app_commands
 from typing import Optional
-import json, os, asyncio, re
+import asyncio, re
 from datetime import datetime, timezone, timedelta
 
 from config import COULEURS
@@ -20,18 +20,6 @@ from utils.json_store import JsonStore
 
 COMBATS_FILE = "data/combats_actifs.json"
 
-
-def charger_combats() -> dict:
-    if not os.path.exists(COMBATS_FILE):
-        return {}
-    with open(COMBATS_FILE) as f:
-        return json.load(f)
-
-
-def sauvegarder_combats(combats: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(COMBATS_FILE, "w") as f:
-        json.dump(combats, f, indent=2, ensure_ascii=False)
 
 
 class Combat(commands.Cog):
@@ -146,6 +134,17 @@ class Combat(commands.Cog):
             )
             return
 
+        # Calcul Puissance Spirituelle
+        from data.aptitudes import puissance_spirituelle, palier_combat
+        cog_perso = self.bot.cogs.get("Personnage")
+        ps_init, ps_adv = 1, 1
+        if cog_perso:
+            perso_init = cog_perso.personnages.get(str(initiateur.id), {})
+            perso_adv = cog_perso.personnages.get(str(adversaire.id), {})
+            ps_init = puissance_spirituelle(perso_init.get("points", 0))
+            ps_adv = puissance_spirituelle(perso_adv.get("points", 0))
+        palier = palier_combat(ps_init, ps_adv)
+
         combat_id = str(thread.id)
         self.combats_actifs[combat_id] = {
             "titre":           titre,
@@ -160,8 +159,20 @@ class Combat(commands.Cog):
             "thread_id":       thread.id,
             "debut":           datetime.now(timezone.utc).isoformat(),
             "evenements":      [],
+            "ps_initiateur":   ps_init,
+            "ps_adversaire":   ps_adv,
+            "palier":          palier["nom"],
         }
         await self._store.save()
+
+        # Texte palier pour l'embed
+        ecart = abs(ps_init - ps_adv)
+        palier_txt = (
+            f"**{initiateur.display_name}** : {ps_init} PS · "
+            f"**{adversaire.display_name}** : {ps_adv} PS\n"
+            f"Palier : {palier['kanji']} **{palier['nom']}** (écart {ecart})\n"
+            f"├ P1 : {palier['effet_p1']} · P2 : {palier['effet_p2']} · P3 : {palier['effet_p3']}"
+        )
 
         embed = discord.Embed(
             title=f"⚔️ {titre}",
@@ -175,6 +186,7 @@ class Combat(commands.Cog):
         )
         embed.add_field(name="📊 Tour",    value="0 — Pré-combat",  inline=True)
         embed.add_field(name="📌 Statut",  value="⚔️ Actif",        inline=True)
+        embed.add_field(name="⚡ Puissance Spirituelle", value=palier_txt, inline=False)
         embed.set_footer(text="Utilisez /tour pour signaler votre tour · /clore-combat pour terminer")
 
         view = ViewCombatActif(combat_id)
@@ -372,8 +384,8 @@ class ViewCombatActif(discord.ui.View):
 
     @discord.ui.button(label="📋 Infos Combat", style=discord.ButtonStyle.secondary, custom_id="infos_combat")
     async def infos(self, interaction: discord.Interaction, button: discord.ui.Button):
-        combats = charger_combats()
-        combat  = combats.get(str(interaction.channel.id))
+        cog_combat = interaction.client.cogs.get("Combat")
+        combat = cog_combat.combats_actifs.get(str(interaction.channel.id)) if cog_combat else None
         if not combat:
             await interaction.response.send_message("Aucune donnée.", ephemeral=True)
             return
@@ -394,15 +406,14 @@ class ViewDemandeNarration(discord.ui.View):
 
     @discord.ui.button(label="✍️ Narrer ce combat", style=discord.ButtonStyle.primary)
     async def narrer(self, interaction: discord.Interaction, button: discord.ui.Button):
-        button.disabled = True
-        await interaction.message.edit(view=self)
-
         cog_narrateur = interaction.client.cogs.get("Narrateur")
         if not cog_narrateur:
             await interaction.response.send_message("❌ Narrateur indisponible.", ephemeral=True)
             return
 
         await interaction.response.defer()
+        button.disabled = True
+        await interaction.message.edit(view=self)
         resume = (
             f"Combat : {self.combat['titre']}\n"
             f"Combattants : {self.combat['initiateur_nom']} vs {self.combat['adversaire_nom']}\n"
@@ -426,8 +437,7 @@ class ViewDemandeNarration(discord.ui.View):
     @discord.ui.button(label="❌ Non merci", style=discord.ButtonStyle.secondary)
     async def annuler(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.stop()
-        await interaction.message.edit(content="Narration ignorée.", view=None)
-        await interaction.response.defer()
+        await interaction.response.edit_message(content="Narration ignorée.", view=None)
 
 
 async def setup(bot):

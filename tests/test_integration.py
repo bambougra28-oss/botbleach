@@ -133,18 +133,24 @@ def test_cles_roles_coherentes():
 
     cles_roles = {r["cle"] for r in ROLES}
 
-    # Collecter toutes les clés référencées dans les channels
+    # Collecter toutes les clés de rôles référencées dans les channels
     cles_utilisees = set()
     for cat in CATEGORIES:
+        # visible_a au niveau catégorie
+        va_cat = cat.get("visible_a")
+        if va_cat:
+            cles_utilisees.add(va_cat)
         for ch in cat.get("channels", []):
-            for key in ["factions", "role_ecrivant"]:
+            # faction_write (string), rank_write (list), visible_a (string)
+            for key in ["faction_write", "visible_a"]:
                 val = ch.get(key)
-                if isinstance(val, list):
-                    cles_utilisees.update(val)
-                elif isinstance(val, str):
+                if isinstance(val, str):
                     cles_utilisees.add(val)
+            rw = ch.get("rank_write")
+            if isinstance(rw, list):
+                cles_utilisees.update(rw)
 
-    inconnues = cles_utilisees - cles_roles - {"personnage_valide", "tous"}
+    inconnues = cles_utilisees - cles_roles
     assert not inconnues, f"Clés inconnues dans CATEGORIES : {inconnues}"
 
 
@@ -203,17 +209,30 @@ def test_json_store_class():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_construction_exports():
-    """Vérifie que construction.py exporte les fonctions utilitaires attendues."""
+    """Vérifie que construction.py exporte les fonctions utilitaires et views attendues."""
     _mock_discord()
     import importlib
     mod = importlib.import_module("cogs.construction")
     for fn_name in ["charger_roles", "charger_channels", "sauvegarder_channels", "trouver_channel"]:
         assert hasattr(mod, fn_name), f"cogs.construction manque l'export : {fn_name}"
+    for cls_name in ["BoutonPacte", "BoutonCombat", "BoutonsAbonnements"]:
+        assert hasattr(mod, cls_name), f"cogs.construction manque la view : {cls_name}"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  8. Factions valides cohérentes
 # ══════════════════════════════════════════════════════════════════════════════
+
+def test_role_voyageur_existe():
+    """Le rôle voyageur doit exister pour le gating du Pacte des Âmes."""
+    from data.structure_serveur import ROLES
+    cles = {r["cle"] for r in ROLES}
+    assert "voyageur" in cles, "Rôle 'voyageur' absent de ROLES"
+    # Vérifier qu'il est positionné entre observateur et personnage_valide
+    pos = {r["cle"]: r["position"] for r in ROLES}
+    assert pos["voyageur"] > pos["observateur"], "voyageur doit être au-dessus d'observateur"
+    assert pos["voyageur"] <= pos["personnage_valide"], "voyageur doit être en-dessous ou égal à personnage_valide"
+
 
 def test_factions_coherentes():
     """Les factions dans RANGS_POINTS doivent correspondre à celles dans structure_serveur ROLES."""
@@ -261,3 +280,408 @@ def test_moderation_config_keys():
     assert "MODERATION_SYSTEM" in g_config, "MODERATION_SYSTEM absent de config.py"
     assert "OWNER_ID" in g_config, "OWNER_ID absent de config.py"
     assert "rouge_moderation" in g_config.get("COULEURS", {}), "rouge_moderation absent de COULEURS"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  10. Nouveaux cogs — fichiers et imports
+# ══════════════════════════════════════════════════════════════════════════════
+
+def test_nouveaux_cogs_fichiers():
+    """Vérifie que les 6 nouveaux cogs existent."""
+    cogs = [
+        "cogs/scenes.py", "cogs/missions.py",
+        "cogs/pnj.py", "cogs/territoire.py", "cogs/journal.py",
+    ]
+    manquants = [f for f in cogs if not os.path.exists(f)]
+    assert not manquants, f"Nouveaux cogs manquants : {manquants}"
+
+
+def test_nouveaux_cogs_imports():
+    """Vérifie que les 6 nouveaux cogs s'importent sans erreur."""
+    _mock_discord()
+    import importlib
+    cogs = ["scenes", "missions", "pnj", "territoire", "journal"]
+    for cog in cogs:
+        mod = importlib.import_module(f"cogs.{cog}")
+        assert hasattr(mod, "setup"), f"cogs.{cog} manque la fonction setup()"
+
+
+def test_scenes_exports():
+    """Vérifie que scenes.py exporte BoutonScene (view persistante) et Scenes."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.scenes")
+    assert hasattr(mod, "BoutonScene"), "BoutonScene absent de scenes.py"
+    assert hasattr(mod, "Scenes"), "Classe Scenes absente de scenes.py"
+    assert hasattr(mod, "ZONES_RP"), "ZONES_RP absent de scenes.py"
+
+
+def test_missions_structure():
+    """Vérifie la structure de missions.py."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.missions")
+    assert hasattr(mod, "Missions"), "Classe Missions absente"
+    assert hasattr(mod, "COULEURS_DIFFICULTE"), "COULEURS_DIFFICULTE absent"
+    # Vérifier les 4 niveaux de difficulté
+    assert set(mod.COULEURS_DIFFICULTE.keys()) == {"facile", "normale", "difficile", "legendaire"}
+
+
+
+def test_pnj_catalogue():
+    """Vérifie le catalogue des PNJ."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.pnj")
+    assert hasattr(mod, "PNJ"), "Classe PNJ absente"
+    assert hasattr(mod, "PNJ_CATALOGUE"), "PNJ_CATALOGUE absent"
+    assert len(mod.PNJ_CATALOGUE) >= 7, f"Catalogue PNJ trop petit : {len(mod.PNJ_CATALOGUE)}"
+    for cle, data in mod.PNJ_CATALOGUE.items():
+        for champ in ("nom", "description", "personnalite", "emoji", "couleur"):
+            assert champ in data, f"PNJ '{cle}' manque le champ '{champ}'"
+
+
+def test_territoire_zones():
+    """Vérifie les zones contestées du territoire."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.territoire")
+    assert hasattr(mod, "Territoire"), "Classe Territoire absente"
+    assert hasattr(mod, "ZONES_CONTESTEES"), "ZONES_CONTESTEES absent"
+    assert len(mod.ZONES_CONTESTEES) >= 5, f"Trop peu de zones : {len(mod.ZONES_CONTESTEES)}"
+    assert set(mod.FACTIONS) == {"shinigami", "togabito", "arrancar", "quincy"}
+
+
+def test_journal_types_evenement():
+    """Vérifie les types d'événements du journal."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.journal")
+    assert hasattr(mod, "Journal"), "Classe Journal absente"
+    assert hasattr(mod, "TYPES_EVENEMENT"), "TYPES_EVENEMENT absent"
+    types_attendus = {"validation", "rang", "combat", "mission", "mort", "custom"}
+    assert types_attendus <= set(mod.TYPES_EVENEMENT.keys()), (
+        f"Types manquants : {types_attendus - set(mod.TYPES_EVENEMENT.keys())}"
+    )
+
+
+def test_config_pnj_system():
+    """Vérifie que PNJ_SYSTEM existe dans config.py."""
+    _mock_discord()
+    sys.modules.setdefault("dotenv", m.MagicMock())
+    g_config = {}
+    with open("config.py", encoding="utf-8") as f:
+        exec(f.read(), g_config)
+    assert "PNJ_SYSTEM" in g_config, "PNJ_SYSTEM absent de config.py"
+    assert len(g_config["PNJ_SYSTEM"]) > 100, "PNJ_SYSTEM trop court"
+
+
+def test_config_couleurs_nouvelles():
+    """Vérifie les nouvelles couleurs ajoutées pour les nouveaux systèmes."""
+    _mock_discord()
+    sys.modules.setdefault("dotenv", m.MagicMock())
+    g_config = {}
+    with open("config.py", encoding="utf-8") as f:
+        exec(f.read(), g_config)
+    couleurs = g_config.get("COULEURS", {})
+    for cle in ("orange_mission",):
+        assert cle in couleurs, f"Couleur '{cle}' manquante dans COULEURS"
+
+
+def test_main_charge_nouveaux_cogs():
+    """Vérifie que main.py référence les 6 nouveaux cogs."""
+    with open("main.py", encoding="utf-8") as f:
+        contenu = f.read()
+    nouveaux = ["cogs.scenes", "cogs.missions",
+                "cogs.pnj", "cogs.territoire", "cogs.journal"]
+    for cog in nouveaux:
+        assert cog in contenu, f"main.py ne charge pas {cog}"
+
+
+def test_structure_forums_rp():
+    """Vérifie que les zones RP sont bien en format forum."""
+    from data.structure_serveur import CATEGORIES
+    forums_trouves = 0
+    for cat in CATEGORIES:
+        for ch in cat.get("channels", []):
+            if ch.get("type") == "forum":
+                forums_trouves += 1
+    assert forums_trouves >= 10, f"Trop peu de forums RP : {forums_trouves} (attendu >= 10)"
+
+
+def test_structure_journaux_categorie():
+    """Vérifie que la catégorie JOURNAUX DES ÂMES existe."""
+    from data.structure_serveur import CATEGORIES
+    noms_cats = [c["nom"] for c in CATEGORIES]
+    journal_cat = [n for n in noms_cats if "JOURNAUX" in n.upper()]
+    assert journal_cat, f"Catégorie JOURNAUX absente. Catégories : {noms_cats}"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  11. Système d'Aptitudes (Reiryoku)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def test_aptitudes_constants():
+    """Vérifie les constantes du système Reiryoku."""
+    from data.aptitudes.constants import REIRYOKU_PAR_RANG, RANGS_P3, COUT_PALIER
+    # Budget Reiryoku existe pour toutes les factions
+    assert len(REIRYOKU_PAR_RANG) >= 25, f"Trop peu de rangs dans REIRYOKU_PAR_RANG : {len(REIRYOKU_PAR_RANG)}"
+    # Budget max = 24
+    assert max(REIRYOKU_PAR_RANG.values()) == 24
+    # Budget min = 3
+    assert min(REIRYOKU_PAR_RANG.values()) == 3
+    # P3 restrictions pour les 4 factions
+    assert set(RANGS_P3.keys()) == {"shinigami", "togabito", "arrancar", "quincy"}
+    # Coûts par palier
+    assert COUT_PALIER == {1: 1, 2: 2, 3: 3}
+
+
+def test_aptitudes_data_completeness():
+    """Vérifie la complétude des données d'aptitudes (132 aptitudes, 16 Voies)."""
+    from data.aptitudes import VOIES_PAR_FACTION, APTITUDES_INDEX, VOIES_INDEX
+    # 4 factions
+    assert set(VOIES_PAR_FACTION.keys()) == {"shinigami", "togabito", "arrancar", "quincy"}
+    # 4 Voies par faction = 16 Voies
+    for faction, voies in VOIES_PAR_FACTION.items():
+        assert len(voies) == 4, f"{faction} a {len(voies)} Voies (attendu 4)"
+    assert len(VOIES_INDEX) == 16, f"{len(VOIES_INDEX)} Voies (attendu 16)"
+    # 7-9 aptitudes par Voie = 132 aptitudes
+    assert len(APTITUDES_INDEX) == 133, f"{len(APTITUDES_INDEX)} aptitudes (attendu 133)"
+
+
+def test_aptitudes_structure():
+    """Vérifie la structure de chaque aptitude."""
+    from data.aptitudes import APTITUDES_INDEX
+    champs_requis = {"id", "nom", "kanji", "palier", "cout", "prereqs", "rang_min", "description"}
+    for apt_id, apt in APTITUDES_INDEX.items():
+        manquants = champs_requis - set(apt.keys())
+        assert not manquants, f"Aptitude {apt_id} manque : {manquants}"
+        assert apt["palier"] in (1, 2, 3), f"{apt_id} : palier invalide {apt['palier']}"
+        assert apt["cout"] == apt["palier"], f"{apt_id} : coût {apt['cout']} != palier {apt['palier']}"
+        assert len(apt["description"]) >= 50, f"{apt_id} : description trop courte"
+
+
+def test_aptitudes_voie_structure():
+    """Vérifie la structure de chaque Voie."""
+    from data.aptitudes import VOIES_INDEX
+    champs_requis = {"id", "nom", "kanji", "sous_titre", "faction", "couleur", "description", "aptitudes"}
+    for voie_id, voie in VOIES_INDEX.items():
+        manquants = champs_requis - set(voie.keys())
+        assert not manquants, f"Voie {voie_id} manque : {manquants}"
+        # 7-9 aptitudes par Voie : 3 P1 + 2-4 P2 + 2-3 P3
+        apts = voie["aptitudes"]
+        assert 7 <= len(apts) <= 10, f"Voie {voie_id} a {len(apts)} aptitudes (attendu 7-10)"
+        paliers = [a["palier"] for a in apts]
+        assert paliers.count(1) == 3, f"Voie {voie_id} : {paliers.count(1)} P1 (attendu 3)"
+        assert 2 <= paliers.count(2) <= 4, f"Voie {voie_id} : {paliers.count(2)} P2 (attendu 2-4)"
+        assert 2 <= paliers.count(3) <= 3, f"Voie {voie_id} : {paliers.count(3)} P3 (attendu 2-3)"
+
+
+def test_aptitudes_prereqs_valides():
+    """Vérifie que tous les prérequis référencent des aptitudes existantes et sont de la même faction."""
+    from data.aptitudes import APTITUDES_INDEX, APTITUDE_VOIE
+    # Liste des aptitudes cross-voie autorisées (Shunkō nécessite Eishōhaki du Kidō)
+    CROSS_VOIE_AUTORISEES = {"shin_hak_p3b"}
+    for apt_id, apt in APTITUDES_INDEX.items():
+        for prereq_id in apt.get("prereqs", []):
+            assert prereq_id in APTITUDES_INDEX, (
+                f"{apt_id} a un prérequis inconnu : {prereq_id}"
+            )
+            # Le prérequis doit être de la même faction
+            voie_apt = APTITUDE_VOIE[apt_id]
+            voie_prereq = APTITUDE_VOIE[prereq_id]
+            assert voie_apt["faction"] == voie_prereq["faction"], (
+                f"{apt_id} prereq {prereq_id} est dans une faction différente"
+            )
+            # Le prérequis doit être dans la même Voie (sauf cross-voie autorisées)
+            if apt_id not in CROSS_VOIE_AUTORISEES:
+                assert voie_apt["id"] == voie_prereq["id"], (
+                    f"{apt_id} prereq {prereq_id} est dans une Voie différente"
+                )
+
+
+def test_aptitudes_ids_uniques():
+    """Vérifie que tous les IDs d'aptitudes et de Voies sont uniques."""
+    from data.aptitudes import APTITUDES_INDEX, VOIES_INDEX
+    # Pas de doublons (les dicts garantissent déjà ça, mais vérifions les données sources)
+    from data.aptitudes.shinigami import VOIES_SHINIGAMI
+    from data.aptitudes.togabito import VOIES_TOGABITO
+    from data.aptitudes.arrancar import VOIES_ARRANCAR
+    from data.aptitudes.quincy import VOIES_QUINCY
+    all_ids = []
+    for voies in [VOIES_SHINIGAMI, VOIES_TOGABITO, VOIES_ARRANCAR, VOIES_QUINCY]:
+        for voie in voies:
+            for apt in voie["aptitudes"]:
+                all_ids.append(apt["id"])
+    assert len(all_ids) == len(set(all_ids)), f"IDs d'aptitudes en doublon : {len(all_ids)} vs {len(set(all_ids))}"
+
+
+def test_aptitudes_peut_debloquer():
+    """Teste la logique de déblocage."""
+    from data.aptitudes import peut_debloquer, peut_retirer
+    # P1 débloquable sans prérequis (Jinzen pour Shinigami)
+    ok, raison = peut_debloquer("shin_zan_p1a", [], "yonseki", "shinigami")
+    assert ok, f"P1 devrait être débloquable : {raison}"
+    # P2 non débloquable sans P1
+    ok, raison = peut_debloquer("shin_zan_p2a", [], "yonseki", "shinigami")
+    assert not ok, "P2 ne devrait pas être débloquable sans P1"
+    # P2 débloquable avec P1
+    ok, raison = peut_debloquer("shin_zan_p2a", ["shin_zan_p1a"], "yonseki", "shinigami")
+    assert ok, f"P2 devrait être débloquable avec P1 : {raison}"
+    # P3 non débloquable pour rang trop bas (IDs mis à jour v2)
+    ok, raison = peut_debloquer("shin_zan_p3a", ["shin_zan_p1a", "shin_zan_p1b", "shin_zan_p2a", "shin_zan_p2b"], "yonseki", "shinigami")
+    assert not ok, "P3 ne devrait pas être débloquable pour un yonseki"
+    # P3 débloquable pour fukutaicho
+    ok, raison = peut_debloquer("shin_zan_p3a", ["shin_zan_p1a", "shin_zan_p1b", "shin_zan_p2a", "shin_zan_p2b"], "fukutaicho", "shinigami")
+    assert ok, f"P3 devrait être débloquable pour un fukutaicho : {raison}"
+    # Mauvaise faction
+    ok, raison = peut_debloquer("shin_zan_p1a", [], "zainin", "togabito")
+    assert not ok, "Ne devrait pas pouvoir débloquer une aptitude d'une autre faction"
+
+
+def test_aptitudes_peut_retirer():
+    """Teste la logique de retrait."""
+    from data.aptitudes import peut_retirer
+    # Retrait simple
+    ok, raison = peut_retirer("shin_zan_p1a", ["shin_zan_p1a"])
+    assert ok, f"Devrait pouvoir retirer : {raison}"
+    # Retrait bloqué par dépendance
+    ok, raison = peut_retirer("shin_zan_p1a", ["shin_zan_p1a", "shin_zan_p2a"])
+    assert not ok, "Ne devrait pas pouvoir retirer P1 si P2 en dépend"
+
+
+def test_aptitudes_budget_calcul():
+    """Teste les calculs de budget."""
+    from data.aptitudes import budget_reiryoku, reiryoku_depense, est_sur_budget
+    # Budget d'un capitaine
+    assert budget_reiryoku("taicho") == 22
+    # Budget avec bonus
+    assert budget_reiryoku("taicho", 2) == 24
+    # Dépense
+    assert reiryoku_depense(["shin_zan_p1a", "shin_zan_p1b", "shin_zan_p2a"]) == 4  # 1+1+2
+    # Sur-budget
+    assert not est_sur_budget(["shin_zan_p1a"], "taicho")
+    # Inconnu = 0 budget
+    assert budget_reiryoku("rang_inexistant") == 0
+
+
+def test_aptitudes_p3_rang_min():
+    """Vérifie que toutes les aptitudes P3 ont un rang_min."""
+    from data.aptitudes import APTITUDES_INDEX
+    for apt_id, apt in APTITUDES_INDEX.items():
+        if apt["palier"] == 3:
+            assert apt.get("rang_min"), f"P3 {apt_id} n'a pas de rang_min"
+
+
+def test_aptitudes_cog_fichier():
+    """Vérifie que le cog aptitudes existe."""
+    assert os.path.exists("cogs/aptitudes.py"), "cogs/aptitudes.py manquant"
+
+
+def test_aptitudes_cog_import():
+    """Vérifie que le cog aptitudes s'importe."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.aptitudes")
+    assert hasattr(mod, "Aptitudes"), "Classe Aptitudes absente"
+    assert hasattr(mod, "setup"), "Fonction setup() absente"
+
+
+def test_main_charge_aptitudes():
+    """Vérifie que main.py charge le cog aptitudes."""
+    with open("main.py", encoding="utf-8") as f:
+        contenu = f.read()
+    assert "cogs.aptitudes" in contenu, "main.py ne charge pas cogs.aptitudes"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  12. Puissance Spirituelle & Paliers de Combat
+# ══════════════════════════════════════════════════════════════════════════════
+
+def test_puissance_spirituelle_calcul():
+    """Vérifie PS = points // 100, minimum 1."""
+    from data.aptitudes import puissance_spirituelle
+    assert puissance_spirituelle(500) == 5
+    assert puissance_spirituelle(10000) == 100
+    assert puissance_spirituelle(0) == 1   # min 1
+    assert puissance_spirituelle(50) == 1  # min 1
+    assert puissance_spirituelle(1200) == 12
+    assert puissance_spirituelle(99) == 1  # min 1
+
+
+def test_palier_combat_equilibre():
+    """Écart 0-10 = Équilibre."""
+    from data.aptitudes import palier_combat
+    palier = palier_combat(50, 55)
+    assert palier["nom"] == "Équilibre"
+    assert palier["kanji"] == "均衡"
+    assert palier["effet_p1"] == "normal"
+
+
+def test_palier_combat_abime():
+    """Écart 61+ = Abîme."""
+    from data.aptitudes import palier_combat
+    palier = palier_combat(10, 90)
+    assert palier["nom"] == "Abîme"
+    assert palier["effet_p3"] == "inefficace"
+
+
+def test_paliers_combat_config():
+    """Vérifie que PALIERS_COMBAT est une liste de 5 dicts correctement structurés."""
+    _mock_discord()
+    sys.modules.setdefault("dotenv", m.MagicMock())
+    g_config = {}
+    with open("config.py", encoding="utf-8") as f:
+        exec(f.read(), g_config)
+    paliers = g_config["PALIERS_COMBAT"]
+    assert isinstance(paliers, list)
+    assert len(paliers) == 5
+    champs = {"ecart_min", "ecart_max", "nom", "kanji", "effet_p1", "effet_p2", "effet_p3"}
+    for p in paliers:
+        assert champs <= set(p.keys()), f"Palier {p.get('nom', '?')} manque des champs"
+
+
+def test_kido_joi_p3_existe():
+    """Vérifie que shin_kid_p3c (Kidō Jōi) existe dans l'index."""
+    from data.aptitudes import APTITUDES_INDEX
+    assert "shin_kid_p3c" in APTITUDES_INDEX, "shin_kid_p3c absent de l'index"
+    apt = APTITUDES_INDEX["shin_kid_p3c"]
+    assert apt["palier"] == 3
+    assert apt["nom"] == "Kidō Jōi"
+    assert "shin_kid_p2c" in apt["prereqs"]
+    assert "shin_kid_p2d" in apt["prereqs"]
+
+
+def test_pnj_catalogue_ps():
+    """Vérifie que chaque PNJ a un champ ps entier > 0."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.pnj")
+    for cle, data in mod.PNJ_CATALOGUE.items():
+        assert "ps" in data, f"PNJ '{cle}' n'a pas de champ 'ps'"
+        assert isinstance(data["ps"], int), f"PNJ '{cle}' ps n'est pas un int"
+        assert data["ps"] > 0, f"PNJ '{cle}' ps doit être > 0"
+
+
+def test_aptitudes_zero_personnage_canon():
+    """Vérifie qu'aucun personnage canon Bleach n'apparaît dans les descriptions."""
+    from data.aptitudes import APTITUDES_INDEX, VOIES_INDEX
+    # Noms de personnages canon à vérifier
+    personnages_canon = [
+        "yamamoto", "aizen", "ichigo", "byakuya", "yoruichi", "urahara",
+        "kenpachi zaraki", "unohana", "shunsui", "ukitake", "toshiro",
+        "grimmjow", "ulquiorra", "nelliel", "starrk", "barragan",
+        "uryu", "ryuken", "jugram", "yhwach", "haschwalth",
+    ]
+    for apt_id, apt in APTITUDES_INDEX.items():
+        desc_lower = apt["description"].lower()
+        for nom in personnages_canon:
+            assert nom not in desc_lower, (
+                f"Personnage canon '{nom}' trouvé dans {apt_id}"
+            )
+    for voie_id, voie in VOIES_INDEX.items():
+        desc_lower = voie["description"].lower()
+        for nom in personnages_canon:
+            assert nom not in desc_lower, (
+                f"Personnage canon '{nom}' trouvé dans Voie {voie_id}"
+            )

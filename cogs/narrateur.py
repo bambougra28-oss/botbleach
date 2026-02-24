@@ -144,7 +144,7 @@ class Narrateur(commands.Cog):
         prompt += f"\n\n{instructions.get(longueur, instructions['normale'])}"
 
         async with self._semaphore:
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             response = await asyncio.wait_for(
                 loop.run_in_executor(
                     None,

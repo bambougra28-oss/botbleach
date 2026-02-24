@@ -160,7 +160,7 @@ embeds_bestiaire = [
         "couleur": "gris_acier"
     },
     {
-        "titre": "地獄の淋気 — Le Jigoku no Rinki",
+        "titre": "地獄の燐気 — Le Jigoku no Rinki",
         "desc": (
             "Sphères noires de Reishi corrompu suintant des murs de l'Enfer depuis la Fissure. "
             "Contact prolongé dissout progressivement l'identité spirituelle."

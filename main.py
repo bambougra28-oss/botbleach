@@ -40,6 +40,14 @@ class InfernumBot(commands.Bot):
             "cogs.lore",
             "cogs.zones",
             "cogs.moderation",
+            # ── Nouveaux systèmes ──
+            "cogs.scenes",
+            "cogs.missions",
+
+            "cogs.pnj",
+            "cogs.territoire",
+            "cogs.journal",
+            "cogs.aptitudes",
         ]
         for cog in cogs:
             try:
@@ -49,10 +57,17 @@ class InfernumBot(commands.Bot):
                 log.error(f"❌ {cog} : {e}")
 
         # Enregistrer les Views persistantes (survie au redémarrage)
-        from cogs.construction import BoutonsFaction, BoutonCombat, BoutonsAbonnements
-        self.add_view(BoutonsFaction())
+        from cogs.construction import BoutonCombat, BoutonsAbonnements, BoutonPacte
+        self.add_view(BoutonPacte())
         self.add_view(BoutonCombat("tous"))
         self.add_view(BoutonsAbonnements())
+
+        # Views persistantes des nouveaux systèmes
+        try:
+            from cogs.scenes import BoutonScene
+            self.add_view(BoutonScene())
+        except Exception as e:
+            log.warning(f"⚠️ BoutonScene non enregistré : {e}")
 
         if self.guild_id:
             guild = discord.Object(id=self.guild_id)
@@ -97,15 +112,34 @@ class InfernumBot(commands.Bot):
         ch = trouver_channel(member.guild, "fissure-du-monde")
         if ch:
             embed = discord.Embed(
+                title="地獄の門 — Une âme traverse la Fissure",
                 description=(
-                    f"Une nouvelle âme traverse la Fissure.\n\n"
-                    f"{member.mention}, bienvenue dans **Infernum Aeterna**.\n"
-                    f"Rendez-vous dans `🎭・choisir-son-destin` pour rejoindre une faction,\n"
-                    f"puis soumettez votre fiche dans `📥・soumission-de-fiche`.\n\n"
-                    f"「 Tout commencement est un jugement. 」"
+                    f"Les Portes ont frémi. Une nouvelle âme traverse la Fissure "
+                    f"— portée par un souffle qui ne lui appartient pas encore.\n\n"
+                    f"{member.mention}, bienvenue dans **Infernum Aeterna**.\n\n"
+                    f"Le monde que vous connaissiez n'existe plus. Les Trois Mondes "
+                    f"vacillent, l'Enfer déborde, et quelque chose frappe aux Portes "
+                    f"depuis l'autre côté. Ici, vous écrirez votre propre légende "
+                    f"— que vous le vouliez ou non."
                 ),
                 color=COULEURS["pourpre_infernal"]
             )
+            embed.add_field(
+                name="⚖️ Première étape — Le Pacte",
+                value="Lisez et acceptez le Pacte des Âmes dans `⚖️・pacte-des-âmes` pour accéder au serveur.",
+                inline=False
+            )
+            embed.add_field(
+                name="🎭 Découvrir les Factions",
+                value="Explorez `🎭・choisir-son-destin` pour découvrir les quatre chemins possibles.",
+                inline=False
+            )
+            embed.add_field(
+                name="📋 Forger votre identité",
+                value="Créez votre personnage dans `📋・modele-de-fiche` puis soumettez-le dans `📥・soumission-de-fiche`. Le staff validera votre fiche et vous attribuera vos rôles.",
+                inline=False
+            )
+            embed.set_footer(text="⸻ Infernum Aeterna · 「 Tout commencement est un jugement. 」 ⸻")
             await ch.send(embed=embed)
 
 

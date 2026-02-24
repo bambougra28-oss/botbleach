@@ -11,38 +11,38 @@
 var SIM_RANGS = {
   shinigami: [
     {cle:"gakusei",       nom:"Gakusei",          emoji:"\uD83C\uDF93", budget:3,  p3:false},
-    {cle:"shinigami_asserm",nom:"Shinigami",       emoji:"\u262F\uFE0F", budget:6,  p3:false},
-    {cle:"yonseki",       nom:"Yonseki",           emoji:"\uD83D\uDDE1\uFE0F", budget:10, p3:false},
-    {cle:"sanseki",       nom:"Sanseki",           emoji:"\u2694\uFE0F", budget:14, p3:false},
-    {cle:"fukutaicho",    nom:"Fukutaich\u014D",   emoji:"\uD83C\uDF96\uFE0F", budget:18, p3:true},
-    {cle:"taicho",        nom:"Taich\u014D",       emoji:"\u2B50",       budget:22, p3:true},
-    {cle:"sotaicho",      nom:"S\u014Dtaich\u014D",emoji:"\uD83D\uDC51", budget:26, p3:true}
+    {cle:"shinigami_asserm",nom:"Shinigami",       emoji:"\u262F\uFE0F", budget:7,  p3:false},
+    {cle:"yonseki",       nom:"Yonseki",           emoji:"\uD83D\uDDE1\uFE0F", budget:12, p3:false},
+    {cle:"sanseki",       nom:"Sanseki",           emoji:"\u2694\uFE0F", budget:18, p3:false},
+    {cle:"fukutaicho",    nom:"Fukutaich\u014D",   emoji:"\uD83C\uDF96\uFE0F", budget:26, p3:true},
+    {cle:"taicho",        nom:"Taich\u014D",       emoji:"\u2B50",       budget:35, p3:true},
+    {cle:"sotaicho",      nom:"S\u014Dtaich\u014D",emoji:"\uD83D\uDC51", budget:45, p3:true}
   ],
   togabito: [
     {cle:"zainin",        nom:"Zainin",            emoji:"\uD83D\uDC80", budget:3,  p3:false},
-    {cle:"togabito_damne",nom:"Togabito",          emoji:"\uD83E\uDE78", budget:8,  p3:false},
-    {cle:"tan_togabito",  nom:"Tan-Togabito",      emoji:"\uD83D\uDD17", budget:14, p3:false},
-    {cle:"ko_togabito",   nom:"K\u014D-Togabito",  emoji:"\u26D3\uFE0F", budget:20, p3:true},
-    {cle:"gokuo",         nom:"Goku\u014D",        emoji:"\uD83D\uDC51", budget:26, p3:true}
+    {cle:"togabito_damne",nom:"Togabito",          emoji:"\uD83E\uDE78", budget:10, p3:false},
+    {cle:"tan_togabito",  nom:"Tan-Togabito",      emoji:"\uD83D\uDD17", budget:20, p3:false},
+    {cle:"ko_togabito",   nom:"K\u014D-Togabito",  emoji:"\u26D3\uFE0F", budget:33, p3:true},
+    {cle:"gokuo",         nom:"Goku\u014D",        emoji:"\uD83D\uDC51", budget:45, p3:true}
   ],
   arrancar: [
     {cle:"horo",          nom:"Hor\u014D",         emoji:"\u25FD",       budget:3,  p3:false},
     {cle:"gillian",       nom:"Gillian",           emoji:"\uD83D\uDFE2", budget:5,  p3:false},
-    {cle:"adjuchas",      nom:"Adjuchas",          emoji:"\uD83D\uDD35", budget:8,  p3:false},
-    {cle:"vasto_lorde",   nom:"Vasto Lorde",       emoji:"\uD83D\uDFE3", budget:11, p3:false},
-    {cle:"numeros",       nom:"N\u00FAmeros",      emoji:"\u25CB",       budget:14, p3:false},
-    {cle:"fraccion",      nom:"Fracci\u00F3n",     emoji:"\u25C7",       budget:17, p3:false},
-    {cle:"privaron_espada",nom:"Privaron Espada",  emoji:"\u25C8",       budget:20, p3:true},
-    {cle:"espada",        nom:"Espada",            emoji:"\uD83D\uDCA0", budget:23, p3:true},
-    {cle:"rey",           nom:"Rey",               emoji:"\uD83D\uDC51", budget:26, p3:true}
+    {cle:"adjuchas",      nom:"Adjuchas",          emoji:"\uD83D\uDD35", budget:9,  p3:false},
+    {cle:"vasto_lorde",   nom:"Vasto Lorde",       emoji:"\uD83D\uDFE3", budget:13, p3:false},
+    {cle:"numeros",       nom:"N\u00FAmeros",      emoji:"\u25CB",       budget:17, p3:false},
+    {cle:"fraccion",      nom:"Fracci\u00F3n",     emoji:"\u25C7",       budget:22, p3:false},
+    {cle:"privaron_espada",nom:"Privaron Espada",  emoji:"\u25C8",       budget:28, p3:true},
+    {cle:"espada",        nom:"Espada",            emoji:"\uD83D\uDCA0", budget:36, p3:true},
+    {cle:"rey",           nom:"Rey",               emoji:"\uD83D\uDC51", budget:45, p3:true}
   ],
   quincy: [
     {cle:"minarai",       nom:"Minarai",           emoji:"\u2218",       budget:3,  p3:false},
-    {cle:"quincy_confirme",nom:"Quincy",           emoji:"\u2217",       budget:7,  p3:false},
-    {cle:"jagdarmee",     nom:"Jagdarmee",         emoji:"\u2295",       budget:12, p3:false},
-    {cle:"sternritter",   nom:"Sternritter",       emoji:"\u2727",       budget:18, p3:true},
-    {cle:"schutzstaffel", nom:"Schutzstaffel",     emoji:"\u2726",       budget:22, p3:true},
-    {cle:"seitei",        nom:"Seitei",            emoji:"\uD83D\uDC51", budget:26, p3:true}
+    {cle:"quincy_confirme",nom:"Quincy",           emoji:"\u2217",       budget:8,  p3:false},
+    {cle:"jagdarmee",     nom:"Jagdarmee",         emoji:"\u2295",       budget:15, p3:false},
+    {cle:"sternritter",   nom:"Sternritter",       emoji:"\u2727",       budget:25, p3:true},
+    {cle:"schutzstaffel", nom:"Schutzstaffel",     emoji:"\u2726",       budget:35, p3:true},
+    {cle:"seitei",        nom:"Seitei",            emoji:"\uD83D\uDC51", budget:45, p3:true}
   ]
 };
 
@@ -195,7 +195,7 @@ togabito: {
 // ─────────────────────────────────────────────────────────────────────────────
 arrancar: {
   nom:"Arrancar", kanji:"\u7834\u9762", couleur:"#8A8A7A",
-  accroche:"Mi-Hollow, mi-humain \u2014 les Arrancar ont arrach\u00E9 leurs masques pour toucher la puissance.",
+  accroche:"Hollow ayant bris\u00E9 leur masque \u2014 les Arrancar ont transcend\u00E9 leur nature pour toucher la puissance.",
   voies:[
   // ── Cero ──
   {id:"arr_cero",nom:"Cero",kanji:"\u865A\u9583",sousTitre:"L'\u00C9clair du Vide",

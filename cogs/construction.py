@@ -396,42 +396,73 @@ class Construction(commands.Cog):
     # ── /actualiser ──────────────────────────────────────────────────────────
     @app_commands.command(
         name="actualiser",
-        description="[ADMIN] Met à jour rôles, channels et lore pour coller au code actuel."
+        description="[ADMIN] Met à jour rôles, channels et/ou lore pour coller au code actuel."
     )
     @app_commands.describe(
-        cible="Quoi actualiser (défaut : tout)",
+        cible="Quoi actualiser (défaut : tout sauf lore)",
     )
     @app_commands.choices(cible=[
-        app_commands.Choice(name="Tout (rôles + permissions + channels + lore)", value="tout"),
+        app_commands.Choice(name="Infrastructure (rôles + permissions + channels)", value="infra"),
         app_commands.Choice(name="Rôles uniquement", value="roles"),
         app_commands.Choice(name="Permissions uniquement", value="permissions"),
         app_commands.Choice(name="Channels (scan IDs)", value="channels"),
-        app_commands.Choice(name="Lore uniquement", value="lore"),
+        app_commands.Choice(name="Lore → choisir les channels", value="lore"),
     ])
     @app_commands.default_permissions(administrator=True)
-    async def actualiser(self, interaction: discord.Interaction, cible: str = "tout"):
-        await interaction.response.defer(ephemeral=True)
+    async def actualiser(self, interaction: discord.Interaction, cible: str = "infra"):
         guild = interaction.guild
+
+        # ── Lore : afficher le menu de sélection ───────────────────────────
+        if cible == "lore":
+            # Détecter les channels lore existants sur le serveur
+            channels_trouves = []
+            for cle in CLES_LORE:
+                ch = trouver_channel(guild, cle)
+                if ch:
+                    channels_trouves.append((cle, ch))
+
+            if not channels_trouves:
+                await interaction.response.send_message(
+                    "❌ Aucun channel lore trouvé sur ce serveur.", ephemeral=True
+                )
+                return
+
+            view = SelectLoreView(self.bot, guild, channels_trouves)
+            embed = discord.Embed(
+                title="📝 Actualisation du Lore",
+                description=(
+                    f"**{len(channels_trouves)}** channels lore détectés.\n\n"
+                    "Sélectionnez les channels à actualiser ci-dessous.\n"
+                    "Le contenu existant du bot sera **remplacé** (pas de doublons)."
+                ),
+                color=COULEURS["or_ancien"]
+            )
+            embed.set_footer(text="⸻ Infernum Aeterna ⸻")
+            await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+            return
+
+        # ── Infrastructure (pas de lore) ───────────────────────────────────
+        await interaction.response.defer(ephemeral=True)
         rapport = []
 
-        # ── 1. Rôles ────────────────────────────────────────────────────────
-        if cible in ("tout", "roles"):
+        # 1. Rôles
+        if cible in ("infra", "roles"):
             r = await self._sync_roles_impl(guild)
             rapport.append(
                 f"**Rôles** : {r['crees']} créé(s), {r['maj']} mis à jour, "
                 f"{r['ignores']} inchangé(s), {r['supprimes']} obsolète(s) supprimé(s)"
             )
 
-        # ── 2. Permissions ─────────────────────────────────────────────────
-        if cible in ("tout", "permissions"):
+        # 2. Permissions
+        if cible in ("infra", "permissions"):
             r = await _sync_permissions_impl(guild)
             rapport.append(
                 f"**Permissions** : {r['categories']} catégorie(s), {r['channels']} channel(s) mis à jour"
                 + (f" ({len(r['warnings'])} avertissement(s))" if r['warnings'] else "")
             )
 
-        # ── 3. Channels (scan IDs) ──────────────────────────────────────────
-        if cible in ("tout", "channels"):
+        # 3. Channels (scan IDs)
+        if cible in ("infra", "channels"):
             mapping = {}
             for ch in guild.text_channels:
                 cle = _cle_channel(ch.name)
@@ -444,38 +475,7 @@ class Construction(commands.Cog):
             sauvegarder_channels(mapping)
             rapport.append(f"**Channels** : {len(mapping)} channel(s) indexé(s)")
 
-        # ── 4. Lore ─────────────────────────────────────────────────────────
-        if cible in ("tout", "lore"):
-            cles_lore = [
-                "fissure-du-monde", "infernum-aeterna", "les-quatre-factions", "geographie",
-                "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche",
-                "figures-de-legende", "etat-de-la-fissure", "tableau-des-missions",
-                "hierarchie-des-espada", "veille-de-la-fissure", "etat-de-la-frontiere",
-                "incidents-repertories", "progression", "objectifs-narratifs", "esprits-perdus"
-            ]
-            nettoyees = 0
-            for cle in cles_lore:
-                ch = trouver_channel(guild, cle)
-                if not ch:
-                    continue
-                try:
-                    async for msg in ch.history(limit=50):
-                        if msg.author == self.bot.user:
-                            if msg.pinned:
-                                try:
-                                    await msg.unpin()
-                                except Exception:
-                                    pass
-                            await msg.delete()
-                            nettoyees += 1
-                            await asyncio.sleep(0.3)
-                except Exception as e:
-                    log.error("actualiser lore: nettoyage %s : %s", cle, e)
-
-            await _peupler_channels_lore(guild)
-            rapport.append(f"**Lore** : {nettoyees} ancien(s) message(s) nettoyé(s), lore republié")
-
-        # ── Résumé ──────────────────────────────────────────────────────────
+        # Résumé
         embed = discord.Embed(
             title="⛩️ Actualisation terminée",
             description="\n".join(f"• {l}" for l in rapport),
@@ -484,44 +484,27 @@ class Construction(commands.Cog):
         embed.set_footer(text="⸻ Infernum Aeterna ⸻")
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-    # ── /refresh-lore ─────────────────────────────────────────────────────────
+    # ── /refresh-lore (raccourci → actualise tout le lore d'un coup) ────────
     @app_commands.command(
         name="refresh-lore",
-        description="[ADMIN] Reposte tout le lore sans reconstruire le serveur."
+        description="[ADMIN] Remplace tout le lore dans tous les channels d'un coup."
     )
     @app_commands.default_permissions(administrator=True)
     async def refresh_lore(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         guild = interaction.guild
 
-        # Nettoyer les anciens messages du bot dans les channels lore
-        cles_lore = [
-            "fissure-du-monde", "infernum-aeterna", "les-quatre-factions", "geographie",
-            "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche",
-            "figures-de-legende", "etat-de-la-fissure", "tableau-des-missions",
-            "hierarchie-des-espada", "veille-de-la-fissure", "etat-de-la-frontiere",
-            "incidents-repertories", "progression", "objectifs-narratifs", "esprits-perdus"
-        ]
-        for cle in cles_lore:
+        nettoyees = 0
+        for cle in CLES_LORE:
             ch = trouver_channel(guild, cle)
-            if not ch:
-                continue
-            try:
-                async for msg in ch.history(limit=50):
-                    if msg.author == self.bot.user:
-                        if msg.pinned:
-                            try:
-                                await msg.unpin()
-                            except Exception:
-                                pass
-                        await msg.delete()
-                        await asyncio.sleep(0.3)
-            except Exception as e:
-                log.error("refresh-lore: nettoyage %s : %s", cle, e)
+            if ch:
+                nettoyees += await _nettoyer_channel_bot(ch, self.bot.user)
 
-        # Re-peupler
         await _peupler_channels_lore(guild)
-        await interaction.followup.send("✅ Lore rafraîchi dans tous les channels.", ephemeral=True)
+        await interaction.followup.send(
+            f"✅ Lore rafraîchi : {nettoyees} ancien(s) message(s) remplacé(s) dans {len(CLES_LORE)} channels.",
+            ephemeral=True
+        )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -870,8 +853,66 @@ async def _envoyer_instructions_fiche(channel):
 #  PEUPLEMENT DES CHANNELS LORE & ADMINISTRATION
 # ══════════════════════════════════════════════════════════════════════════════
 
-async def _peupler_channels_lore(guild: discord.Guild):
-    """Poste le lore dans les channels CHRONIQUES et ADMINISTRATION après /setup."""
+async def _nettoyer_channel_bot(channel, bot_user):
+    """Supprime tous les messages du bot dans un channel (unpin + delete)."""
+    if not channel:
+        return 0
+    count = 0
+    try:
+        async for msg in channel.history(limit=50):
+            if msg.author == bot_user:
+                if msg.pinned:
+                    try:
+                        await msg.unpin()
+                    except Exception:
+                        pass
+                await msg.delete()
+                count += 1
+                await asyncio.sleep(0.3)
+    except Exception as e:
+        log.error("nettoyage %s : %s", getattr(channel, 'name', '?'), e)
+    return count
+
+
+# Clés de tous les channels lore, dans l'ordre de peuplement
+CLES_LORE = [
+    "fissure-du-monde", "infernum-aeterna", "les-quatre-factions", "geographie",
+    "glossaire", "systeme", "bestiaire", "pacte", "modele-de-fiche",
+    "figures-de-legende", "etat-de-la-fissure", "tableau-des-missions",
+    "hierarchie-des-espada", "veille-de-la-fissure", "etat-de-la-frontiere",
+    "incidents-repertories", "progression", "objectifs-narratifs", "esprits-perdus"
+]
+
+# Labels humains pour le menu de sélection
+LABELS_LORE = {
+    "fissure-du-monde": "Fissure du Monde (bienvenue)",
+    "infernum-aeterna": "Infernum Aeterna (lore fondateur)",
+    "les-quatre-factions": "Les Quatre Factions",
+    "geographie": "Géographie des Mondes",
+    "glossaire": "Glossaire",
+    "systeme": "Système et Compétences",
+    "bestiaire": "Bestiaire Infernal",
+    "pacte": "Pacte des Âmes",
+    "modele-de-fiche": "Modèle de Fiche",
+    "figures-de-legende": "Figures de Légende",
+    "etat-de-la-fissure": "État de la Fissure",
+    "tableau-des-missions": "Tableau des Missions",
+    "hierarchie-des-espada": "Hiérarchie des Espada",
+    "veille-de-la-fissure": "Veille de la Fissure (Quincy)",
+    "etat-de-la-frontiere": "État de la Frontière",
+    "incidents-repertories": "Incidents Répertoriés",
+    "progression": "Progression",
+    "objectifs-narratifs": "Objectifs Narratifs",
+    "esprits-perdus": "Esprits Perdus (FAQ)",
+}
+
+
+async def _peupler_channels_lore(guild: discord.Guild, cles_cibles: list[str] | None = None):
+    """Poste le lore dans les channels CHRONIQUES et ADMINISTRATION.
+
+    Si *cles_cibles* est None → tous les channels.
+    Sinon → seulement les channels dont la clé est dans la liste.
+    """
     from cogs.lore import GLOSSAIRE, FICHES_FACTION, STRATES, LORE_DATA
     from cogs.personnage import RANGS_POINTS
     from cogs.aptitudes import APTITUDES_WEB_URL
@@ -892,12 +933,18 @@ async def _peupler_channels_lore(guild: discord.Guild):
         except Exception as e:
             log.error("[LORE] %s : %s", getattr(channel, 'name', '?'), e)
 
+    def doit(cle: str) -> bool:
+        """Retourne True si ce channel doit être peuplé."""
+        if cles_cibles is None:
+            return True
+        return cle in cles_cibles
+
     # ── 0. Lien web lore ──────────────────────────────────────────────────────
     from cogs.lore import LORE_WEB_URL, _ajouter_lien_web
 
     # ── 0b. fissure-du-monde — embed statique de bienvenue ──────────────────
     ch_fissure = find_ch("fissure-du-monde")
-    if ch_fissure:
+    if ch_fissure and doit("fissure-du-monde"):
         e_bienvenue = discord.Embed(
             title="🩸 Infernum Aeterna · 地獄の門",
             description=(
@@ -938,7 +985,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await asyncio.sleep(0.3)
 
     # ── 1. infernum-aeterna — embed lien web + 5 embeds lore fondateur ──────
-    ch = find_ch("infernum-aeterna")
+    ch = find_ch("infernum-aeterna") if doit("infernum-aeterna") else None
 
     # Embed d'accueil avec lien vers le lore complet
     e_web = discord.Embed(
@@ -981,7 +1028,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await poster(ch, e)
 
     # ── 2. les-quatre-factions — 4 embeds ────────────────────────────────────
-    ch = find_ch("les-quatre-factions")
+    ch = find_ch("les-quatre-factions") if doit("les-quatre-factions") else None
     for faction_key in ["shinigami", "togabito", "arrancar", "quincy"]:
         fiche = FICHES_FACTION[faction_key]
         e = discord.Embed(title=fiche["titre"], color=fiche["couleur"])
@@ -992,7 +1039,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await poster(ch, e)
 
     # ── 3. geographie-des-mondes — 2 embeds ──────────────────────────────────
-    ch = find_ch("geographie")
+    ch = find_ch("geographie") if doit("geographie") else None
     e = discord.Embed(title="🗺️ Les Cinq Strates de l'Enfer", color=COULEURS["pourpre_infernal"])
     for strate in STRATES:
         e.add_field(
@@ -1029,7 +1076,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e2)
 
     # ── 4. glossaire — embeds par groupes de 5 ───────────────────────────────
-    ch = find_ch("glossaire")
+    ch = find_ch("glossaire") if doit("glossaire") else None
     entrees = list(GLOSSAIRE.items())
     for i in range(0, len(entrees), 5):
         groupe = entrees[i:i + 5]
@@ -1047,7 +1094,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await poster(ch, e)
 
     # ── 5. systeme-et-competences — 2 embeds ─────────────────────────────────
-    ch = find_ch("systeme")
+    ch = find_ch("systeme") if doit("systeme") else None
     data_sys = LORE_DATA["systeme"]
     e = discord.Embed(title=data_sys["titre"], description=data_sys["description"], color=data_sys["couleur"])
     for nom_champ, valeur_champ in data_sys.get("fields", []):
@@ -1100,7 +1147,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         log.warning("[LORE] Embed aptitudes résumé non posté : %s", ex)
 
     # ── 6. bestiaire-infernal — embeds ──────────────────────────────────────
-    ch = find_ch("bestiaire")
+    ch = find_ch("bestiaire") if doit("bestiaire") else None
     embeds_bestiaire = [
         {
             "titre": "倶舎那陀 Les Kushanāda",
@@ -1205,7 +1252,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await poster(ch, e)
 
     # ── 7. pacte-des-ames — 3 embeds + bouton Prêter Serment ─────────────────
-    ch = find_ch("pacte")
+    ch = find_ch("pacte") if doit("pacte") else None
 
     # Embed 1 — Introduction narrative
     e_intro = discord.Embed(
@@ -1312,7 +1359,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await asyncio.sleep(0.3)
 
     # ── 8. modele-de-fiche — 2 embeds ────────────────────────────────────────
-    ch = find_ch("modele-de-fiche")
+    ch = find_ch("modele-de-fiche") if doit("modele-de-fiche") else None
 
     modele = (
         "```\n"
@@ -1384,7 +1431,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e2)
 
     # ── 9. figures-de-legende — personnages originaux du lore ───────────────
-    ch = find_ch("figures-de-legende")
+    ch = find_ch("figures-de-legende") if doit("figures-de-legende") else None
     figures = [
         {
             "titre": "👑 Kōshin Jūrōmaru · 光信樹郎丸",
@@ -1475,7 +1522,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         await poster(ch, e)
 
     # ── 10. etat-de-la-fissure — embed initial ──────────────────────────────
-    ch = find_ch("etat-de-la-fissure")
+    ch = find_ch("etat-de-la-fissure") if doit("etat-de-la-fissure") else None
     e = discord.Embed(
         title="⛓️ État de la Fissure · 裂け目の状態",
         description=(
@@ -1491,7 +1538,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 11. tableau-des-missions — embed initial ────────────────────────────
-    ch = find_ch("tableau-des-missions")
+    ch = find_ch("tableau-des-missions") if doit("tableau-des-missions") else None
     e = discord.Embed(
         title="📌 Tableau des Missions · 任務表",
         description=(
@@ -1505,7 +1552,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 12. hierarchie-des-espada — lore + classement ────────────────────────
-    ch = find_ch("hierarchie-des-espada")
+    ch = find_ch("hierarchie-des-espada") if doit("hierarchie-des-espada") else None
     e = discord.Embed(
         title="💠 Hiérarchie de Las Noches · 十刃",
         description=(
@@ -1579,7 +1626,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 13. veille-de-la-fissure (Quincy) — embed initial ──────────────────
-    ch = find_ch("veille-de-la-fissure")
+    ch = find_ch("veille-de-la-fissure") if doit("veille-de-la-fissure") else None
     e = discord.Embed(
         title="📌 Veille de la Fissure · 裂け目の監視",
         description=(
@@ -1594,7 +1641,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 14. etat-de-la-frontiere — embed initial ────────────────────────────
-    ch = find_ch("etat-de-la-frontiere")
+    ch = find_ch("etat-de-la-frontiere") if doit("etat-de-la-frontiere") else None
     e = discord.Embed(
         title="📌 État de la Frontière · 境界の状態",
         description=(
@@ -1615,7 +1662,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 15. incidents-repertories — embed initial ───────────────────────────
-    ch = find_ch("incidents-repertories")
+    ch = find_ch("incidents-repertories") if doit("incidents-repertories") else None
     e = discord.Embed(
         title="📌 Incidents Répertoriés · 事件記録",
         description=(
@@ -1630,7 +1677,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 16. progression — embed explicatif ──────────────────────────────────
-    ch = find_ch("progression")
+    ch = find_ch("progression") if doit("progression") else None
     e = discord.Embed(
         title="📈 Progression · 成長の道",
         description=(
@@ -1644,7 +1691,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 17. objectifs-narratifs — embed explicatif ──────────────────────────
-    ch = find_ch("objectifs-narratifs")
+    ch = find_ch("objectifs-narratifs") if doit("objectifs-narratifs") else None
     e = discord.Embed(
         title="🎯 Objectifs Narratifs · 物語の目標",
         description=(
@@ -1668,7 +1715,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     await poster(ch, e)
 
     # ── 18. esprits-perdus (FAQ) — embed d'accueil ─────────────────────────
-    ch = find_ch("esprits-perdus")
+    ch = find_ch("esprits-perdus") if doit("esprits-perdus") else None
     e = discord.Embed(
         title="❓ Esprits Perdus · 迷える魂",
         description=(
@@ -1693,8 +1740,85 @@ async def _peupler_channels_lore(guild: discord.Guild):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  VUES (boutons persistants)
+#  VUES (boutons persistants + menus interactifs)
 # ══════════════════════════════════════════════════════════════════════════════
+
+class SelectLoreView(discord.ui.View):
+    """Menu déroulant multi-sélection pour choisir les channels lore à actualiser."""
+
+    def __init__(self, bot, guild, channels_trouves: list[tuple[str, discord.TextChannel]]):
+        super().__init__(timeout=120)
+        self.bot = bot
+        self.guild = guild
+        self.channels_trouves = channels_trouves
+
+        # Construire les options du Select (max 25, on en a ≤19)
+        options = [
+            discord.SelectOption(
+                label="✦ Tout sélectionner",
+                value="__tous__",
+                description=f"Actualise les {len(channels_trouves)} channels d'un coup",
+            )
+        ]
+        for cle, ch in channels_trouves:
+            options.append(discord.SelectOption(
+                label=LABELS_LORE.get(cle, cle),
+                value=cle,
+                description=f"#{ch.name}",
+            ))
+
+        select = discord.ui.Select(
+            placeholder=f"Choisir les channels à actualiser ({len(channels_trouves)} disponibles)…",
+            min_values=1,
+            max_values=len(options),
+            options=options,
+        )
+        select.callback = self._on_select
+        self.add_item(select)
+
+    async def _on_select(self, interaction: discord.Interaction):
+        selected = interaction.data["values"]
+
+        # "Tout sélectionner" → toutes les clés
+        if "__tous__" in selected:
+            cles = [cle for cle, _ in self.channels_trouves]
+        else:
+            cles = [v for v in selected if v != "__tous__"]
+
+        n = len(cles)
+        await interaction.response.edit_message(
+            embed=discord.Embed(
+                title="⏳ Actualisation en cours…",
+                description=f"Nettoyage puis réécriture de **{n}** channel(s).\nCela peut prendre quelques minutes.",
+                color=COULEURS["or_ancien"],
+            ),
+            view=None,
+        )
+
+        # Phase 1 — nettoyage (supprimer les anciens messages du bot)
+        nettoyees = 0
+        for cle in cles:
+            ch = trouver_channel(self.guild, cle)
+            if ch:
+                nettoyees += await _nettoyer_channel_bot(ch, self.bot.user)
+
+        # Phase 2 — repeupler uniquement les channels sélectionnés
+        await _peupler_channels_lore(self.guild, cles_cibles=cles)
+
+        # Rapport final
+        labels = [LABELS_LORE.get(c, c) for c in cles]
+        liste_txt = "\n".join(f"• {l}" for l in labels)
+        embed = discord.Embed(
+            title="✅ Lore actualisé",
+            description=(
+                f"**{nettoyees}** ancien(s) message(s) supprimé(s)\n"
+                f"**{n}** channel(s) repeuplé(s) :\n\n{liste_txt}"
+            ),
+            color=COULEURS["or_ancien"],
+        )
+        embed.set_footer(text="⸻ Infernum Aeterna ⸻")
+        await interaction.edit_original_response(embed=embed)
+
 
 class BoutonPacte(discord.ui.View):
     """Bouton persistant 'Prêter Serment' — assigne le rôle voyageur."""

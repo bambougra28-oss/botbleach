@@ -104,7 +104,7 @@ class Evenements(commands.Cog):
         niveau_fissure="Niveau initial de la Fissure pour cet arc",
     )
     @app_commands.choices(niveau_fissure=[
-        app_commands.Choice(name=f"Niveau {n} — {v[0]}", value=n)
+        app_commands.Choice(name=f"Niveau {n} · {v[0]}", value=n)
         for n, v in NIVEAUX_FISSURE.items()
     ])
     @app_commands.default_permissions(manage_guild=True)
@@ -135,11 +135,11 @@ class Evenements(commands.Cog):
 
         niveau_info = NIVEAUX_FISSURE[niveau_fissure]
         embed = discord.Embed(
-            title=f"📖 Nouvel Arc — {titre}",
+            title=f"📖 Nouvel Arc · {titre}",
             description=description,
             color=niveau_info[1]
         )
-        embed.add_field(name="État de la Fissure", value=f"Niveau {niveau_fissure} — **{niveau_info[0]}**", inline=True)
+        embed.add_field(name="État de la Fissure", value=f"Niveau {niveau_fissure} · **{niveau_info[0]}**", inline=True)
         embed.add_field(name="Début", value=datetime.now(timezone.utc).strftime("%d/%m/%Y"), inline=True)
         embed.set_footer(text="⸻ Infernum Aeterna · Chroniques ⸻")
 
@@ -187,7 +187,7 @@ class Evenements(commands.Cog):
         await self._save()
 
         embed = discord.Embed(
-            title=f"📚 Arc Terminé — {arc['titre']}",
+            title=f"📚 Arc Terminé · {arc['titre']}",
             description=resume,
             color=COULEURS["or_ancien"]
         )
@@ -210,11 +210,11 @@ class Evenements(commands.Cog):
         niveau = self.data.get("fissure_niveau", 2)
         niveau_info = NIVEAUX_FISSURE.get(niveau, NIVEAUX_FISSURE[2])
         embed = discord.Embed(
-            title=f"📖 Arc en cours — {arc['titre']}",
+            title=f"📖 Arc en cours · {arc['titre']}",
             description=arc.get("description", ""),
             color=niveau_info[1]
         )
-        embed.add_field(name="Fissure", value=f"Niveau {niveau} — **{niveau_info[0]}**\n*{niveau_info[2]}*", inline=False)
+        embed.add_field(name="Fissure", value=f"Niveau {niveau} · **{niveau_info[0]}**\n*{niveau_info[2]}*", inline=False)
         embed.add_field(name="Début",   value=arc["debut"][:10], inline=True)
         if arc.get("evenements"):
             derniers = arc["evenements"][-3:]
@@ -244,7 +244,7 @@ class Evenements(commands.Cog):
         description="Description narrative de l'état actuel",
     )
     @app_commands.choices(niveau=[
-        app_commands.Choice(name=f"Niveau {n} — {v[0]}", value=n)
+        app_commands.Choice(name=f"Niveau {n} · {v[0]}", value=n)
         for n, v in NIVEAUX_FISSURE.items()
     ])
     @app_commands.default_permissions(manage_guild=True)
@@ -262,7 +262,7 @@ class Evenements(commands.Cog):
         niveau_info = NIVEAUX_FISSURE[niveau]
         desc = description or niveau_info[2]
         embed = discord.Embed(
-            title=f"🩸 État de la Fissure — Niveau {niveau} : {niveau_info[0]}",
+            title=f"🩸 État de la Fissure · Niveau {niveau} : {niveau_info[0]}",
             description=desc,
             color=niveau_info[1]
         )
@@ -281,7 +281,7 @@ class Evenements(commands.Cog):
             await canal_trouve.send(embed=embed)
 
         await interaction.response.send_message(
-            f"✅ Fissure mise à jour : Niveau {niveau} — **{niveau_info[0]}**"
+            f"✅ Fissure mise à jour : Niveau {niveau} · **{niveau_info[0]}**"
             + (f" dans {canal_trouve.mention}" if canal_trouve else ""),
             ephemeral=True
         )
@@ -334,7 +334,7 @@ class Evenements(commands.Cog):
             if role_event:
                 ch_flash = trouver_channel(guild, "flash-evenements") or trouver_channel(guild, "flash")
                 if ch_flash:
-                    await ch_flash.send(f"{role_event.mention} — Le portail **{channel.name}** vient de s'ouvrir.")
+                    await ch_flash.send(f"{role_event.mention} · Le portail **{channel.name}** vient de s'ouvrir.")
 
         await interaction.response.send_message(f"✅ Portail {channel.mention} ouvert.", ephemeral=True)
 
@@ -391,12 +391,12 @@ class Evenements(commands.Cog):
                     factions_count[faction] += 1
 
         embed = discord.Embed(
-            title="⛩️ Infernum Aeterna — État du Serveur",
+            title="⛩️ Infernum Aeterna · État du Serveur",
             color=niveau_info[1]
         )
         embed.add_field(
             name="🩸 Fissure",
-            value=f"Niveau **{niveau}** — {niveau_info[0]}\n*{niveau_info[2]}*",
+            value=f"Niveau **{niveau}** · {niveau_info[0]}\n*{niveau_info[2]}*",
             inline=False
         )
         if arc:
@@ -618,7 +618,7 @@ class Evenements(commands.Cog):
         if ch:
             mentions = " ".join(f"<@{uid}>" for uid in evt.get("inscrits", [])[:20])
             embed = discord.Embed(
-                title=f"⏰ Rappel — {evt['titre']}",
+                title=f"⏰ Rappel · {evt['titre']}",
                 description=f"L'événement commence dans **{delai}** !\n\n{mentions}",
                 color=COULEURS["pourpre_infernal"]
             )
@@ -632,7 +632,7 @@ class Evenements(commands.Cog):
                 try:
                     await member.send(
                         embed=discord.Embed(
-                            title=f"⏰ Rappel — {evt['titre']}",
+                            title=f"⏰ Rappel · {evt['titre']}",
                             description=f"L'événement commence dans **{delai}** !",
                             color=COULEURS["pourpre_infernal"]
                         )

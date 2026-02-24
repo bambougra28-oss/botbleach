@@ -55,7 +55,7 @@ class Zones(commands.Cog):
         prive="Si activé, seuls les staff et les factions désignées voient le salon",
     )
     @app_commands.choices(secteur=[
-        app_commands.Choice(name="Enfer — Les Strates",       value="enfer"),
+        app_commands.Choice(name="Enfer · Les Strates",        value="enfer"),
         app_commands.Choice(name="Soul Society",               value="soul_society"),
         app_commands.Choice(name="Hueco Mundo",                value="hueco_mundo"),
         app_commands.Choice(name="Monde des Vivants",          value="vivants"),

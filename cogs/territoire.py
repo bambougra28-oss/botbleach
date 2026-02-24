@@ -345,7 +345,7 @@ class Territoire(commands.Cog):
         date_debut = self.data.get("date_debut_saison", "")[:10]
 
         embed = discord.Embed(
-            title=f"🗺️ Carte des Territoires — Saison {saison}",
+            title=f"🗺️ Carte des Territoires · Saison {saison}",
             description=(
                 f"*Depuis le {date_debut}*\n"
                 f"Seuil de dominance : **{SEUIL_DOMINANCE}** points d'avance\n"
@@ -382,9 +382,9 @@ class Territoire(commands.Cog):
                 # Titre de la zone avec dominante
                 if dominante:
                     emoji_dom = FACTION_EMOJI.get(dominante, "")
-                    bloc += f"**{zone_info['nom']}** — {emoji_dom} {dominante.capitalize()} domine\n"
+                    bloc += f"**{zone_info['nom']}** · {emoji_dom} {dominante.capitalize()} domine\n"
                 else:
-                    bloc += f"**{zone_info['nom']}** — *Contestée*\n"
+                    bloc += f"**{zone_info['nom']}** · *Contestée*\n"
 
                 # Barres d'influence pour chaque faction
                 for faction in FACTIONS:
@@ -543,7 +543,7 @@ class Territoire(commands.Cog):
                 "date": maintenant.isoformat(),
                 "ancienne": dominante,
                 "nouvelle": None,
-                "raison": f"Fin de saison {ancienne_saison} — réinitialisation",
+                "raison": f"Fin de saison {ancienne_saison}, réinitialisation",
             })
             # Limiter l'historique
             if len(zone_data["historique"]) > 50:
@@ -569,7 +569,7 @@ class Territoire(commands.Cog):
         ch_flash = trouver_channel(guild, "flash-evenements")
 
         embed_annonce = discord.Embed(
-            title=f"🔄 Nouvelle Saison Territoriale — Saison {self.data['saison']}",
+            title=f"🔄 Nouvelle Saison Territoriale · Saison {self.data['saison']}",
             description=(
                 f"La saison **{ancienne_saison}** est terminée.\n"
                 f"Toutes les influences ont été réinitialisées.\n\n"
@@ -591,7 +591,7 @@ class Territoire(commands.Cog):
 
         await interaction.followup.send(
             f"✅ Saison {ancienne_saison} archivée. "
-            f"Saison **{self.data['saison']}** lancée — toutes les influences remises à 0.",
+            f"Saison **{self.data['saison']}** lancée, toutes les influences remises à 0.",
             ephemeral=True,
         )
 
@@ -630,7 +630,7 @@ class Territoire(commands.Cog):
 
         saison = self.data.get("saison", 1)
         embed = discord.Embed(
-            title=f"📜 Historique Territorial — Saison {saison}",
+            title=f"📜 Historique Territorial · Saison {saison}",
             color=COULEURS["or_ancien"],
         )
 
@@ -701,7 +701,7 @@ class Territoire(commands.Cog):
         # Construire le rapport
         saison = self.data.get("saison", 1)
         embed = discord.Embed(
-            title=f"📊 Rapport Territorial Quotidien — Saison {saison}",
+            title=f"📊 Rapport Territorial Quotidien · Saison {saison}",
             description=f"*{maintenant.strftime('%d/%m/%Y')}*",
             color=COULEURS["or_ancien"],
             timestamp=maintenant,

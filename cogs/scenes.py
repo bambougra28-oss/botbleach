@@ -407,7 +407,7 @@ class Scenes(commands.Cog):
         # Verifier si la scene est fermee ou solo
         if scene_data.get("type_scene") == "solo":
             await interaction.followup.send(
-                "❌ Cette scene est en mode **Solo** — elle n'accepte pas de participants supplementaires.",
+                "❌ Cette scene est en mode **Solo**, elle n'accepte pas de participants supplementaires.",
                 ephemeral=True
             )
             return
@@ -516,7 +516,7 @@ class Scenes(commands.Cog):
         # Embed de cloture
         nb_participants = len(scene_data.get("participants", []))
         embed = discord.Embed(
-            title=f"🏁 Scene Terminee — {scene_data['titre']}",
+            title=f"🏁 Scene Terminee · {scene_data['titre']}",
             description=(
                 (f"*{conclusion}*\n\n" if conclusion else "")
                 + "「 Ce recit se referme. Ce qui fut ecrit demeure dans les Chroniques. 」"
@@ -621,7 +621,7 @@ class Scenes(commands.Cog):
 
             embed = discord.Embed(
                 title=f"🎭 Scenes Actives ({total})"
-                      + (f" — {_zone_label(zone)}" if zone else ""),
+                      + (f" · {_zone_label(zone)}" if zone else ""),
                 color=COULEURS["or_ancien"]
             )
 
@@ -856,7 +856,7 @@ class ModalScene(discord.ui.Modal, title="Creer une Scene RP"):
             if zone_trouvee:
                 zone_raw = zone_trouvee
             else:
-                zones_list = "\n".join(f"  `{cle}` — {label}" for cle, label in ZONES_RP)
+                zones_list = "\n".join(f"  `{cle}` · {label}" for cle, label in ZONES_RP)
                 await interaction.followup.send(
                     f"❌ Zone **{self.zone_input.value}** introuvable.\n\n"
                     f"Zones disponibles :\n{zones_list}",

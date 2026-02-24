@@ -177,7 +177,7 @@ class Journal(commands.Cog):
         if forum and isinstance(forum, discord.ForumChannel):
             try:
                 result = await forum.create_thread(
-                    name=f"📔 {nom_perso} — Journal",
+                    name=f"📔 {nom_perso} · Journal",
                     embed=intro_embed,
                     reason=f"Journal personnel de {nom_perso}",
                 )
@@ -200,7 +200,7 @@ class Journal(commands.Cog):
             if ch_fallback and isinstance(ch_fallback, discord.TextChannel):
                 try:
                     thread = await ch_fallback.create_thread(
-                        name=f"📔 {nom_perso} — Journal",
+                        name=f"📔 {nom_perso} · Journal",
                         type=discord.ChannelType.public_thread,
                         reason=f"Journal personnel de {nom_perso}",
                     )
@@ -274,7 +274,7 @@ class Journal(commands.Cog):
             timestamp=maintenant,
         )
         embed.set_author(name=nom_perso)
-        embed.set_footer(text=f"⸻ Infernum Aeterna · Journal — {date_str} ⸻")
+        embed.set_footer(text=f"⸻ Infernum Aeterna · Journal · {date_str} ⸻")
 
         try:
             await thread.send(embed=embed)
@@ -343,7 +343,7 @@ class Journal(commands.Cog):
             description=(
                 f"{kanji} **{faction.capitalize() if faction else 'Inconnu'}**\n\n"
                 f"Votre journal personnel est actif. Chaque moment clé de votre parcours "
-                f"y est consigné — et vous pouvez y ajouter vos propres réflexions "
+                f"y est consigné, et vous pouvez y ajouter vos propres réflexions "
                 f"avec `/journal-ecrire`.\n\n"
                 f"📎 **[Accéder au journal]({thread.jump_url})**"
             ),
@@ -407,7 +407,7 @@ class Journal(commands.Cog):
             timestamp=maintenant,
         )
         embed.set_author(name=nom_perso)
-        embed.set_footer(text=f"⸻ Infernum Aeterna · Journal — {date_str} ⸻")
+        embed.set_footer(text=f"⸻ Infernum Aeterna · Journal · {date_str} ⸻")
 
         try:
             await thread.send(embed=embed)
@@ -600,7 +600,7 @@ class Journal(commands.Cog):
             comparaison = f"Dans la moyenne du serveur (**{moyenne_entrees}** entrées)"
 
         embed = discord.Embed(
-            title=f"📊 Statistiques — Journal de {nom_perso}",
+            title=f"📊 Statistiques · Journal de {nom_perso}",
             color=couleur,
         )
         embed.set_author(

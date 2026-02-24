@@ -188,7 +188,7 @@ class Construction(commands.Cog):
 
         # ── Résumé — posté dans le canal staff nouvellement créé ──────────────
         embed = discord.Embed(
-            title="⛩️ Infernum Aeterna — Construction terminée",
+            title="⛩️ Infernum Aeterna · Construction terminée",
             description=(
                 f"**{len(roles_map)}** rôles synchronisés ({r['crees']} créé(s), {r['maj']} mis à jour)\n"
                 f"**{sum(len(c['channels']) for c in CATEGORIES)}** channels créés\n"
@@ -763,7 +763,7 @@ async def _envoyer_presentation_factions(channel, roles_map):
     """Poste la présentation narrative des factions (lecture seule, sans boutons)."""
     from cogs.lore import LORE_WEB_URL
     embed = discord.Embed(
-        title="🎭 Les Quatre Destins — 運命を選べ",
+        title="🎭 Les Quatre Destins · 運命を選べ",
         description=(
             "Quatre chemins s'ouvrent devant vous. Quatre vérités inconciliables.\n\n"
             "Nul ne choisit sa faction par hasard — c'est elle qui vous appelle, "
@@ -776,7 +776,7 @@ async def _envoyer_presentation_factions(channel, roles_map):
         color=COULEURS["or_ancien"]
     )
     embed.add_field(
-        name="死神 Shinigami — Les Gardiens",
+        name="死神 Shinigami · Les Gardiens",
         value=(
             "Soldats du Seireitei, liés par le devoir et le poids d'un secret millénaire. "
             "Leur lame porte un nom. Leur honneur porte des fissures."
@@ -784,7 +784,7 @@ async def _envoyer_presentation_factions(channel, roles_map):
         inline=False
     )
     embed.add_field(
-        name="咎人 Togabito — Les Damnés",
+        name="咎人 Togabito · Les Damnés",
         value=(
             "Âmes enchaînées aux Strates de l'Enfer, forgées par la souffrance. "
             "Certains y voient une prison. D'autres, un trône à conquérir."
@@ -792,7 +792,7 @@ async def _envoyer_presentation_factions(channel, roles_map):
         inline=False
     )
     embed.add_field(
-        name="破面 Arrancar — Les Masques Brisés",
+        name="破面 Arrancar · Les Masques Brisés",
         value=(
             "Hollow ayant arraché leur masque pour toucher quelque chose de plus humain. "
             "Las Noches tremble sous le poids de leur faim et de leur orgueil."
@@ -800,7 +800,7 @@ async def _envoyer_presentation_factions(channel, roles_map):
         inline=False
     )
     embed.add_field(
-        name="滅却師 Quincy — Les Survivants",
+        name="滅却師 Quincy · Les Survivants",
         value=(
             "Derniers héritiers d'un empire décimé, cachés dans l'ombre du Monde des Vivants. "
             "Le Reishi chante dans leur sang — et le sang n'oublie jamais."
@@ -822,9 +822,10 @@ async def _envoyer_bouton_combat(channel, ch_def):
     embed = discord.Embed(
         title="⚔️ Initier un Combat",
         description=(
-            "Cliquez sur le bouton ci-dessous pour ouvrir un fil de combat.\n"
-            "Un fil privé sera créé avec votre adversaire désigné.\n\n"
-            "「 Tout combat doit être validé par un Émissaire ou supérieur. 」"
+            "Le champ de bataille vous attend. Pressez le bouton ci-dessous "
+            "pour ouvrir un fil de combat avec votre adversaire. Un espace privé "
+            "sera créé, visible uniquement par les deux combattants et le staff.\n\n"
+            "「 Tout affrontement doit être validé par un Émissaire ou supérieur. 」"
         ),
         color=COULEURS["rouge_chaine"]
     )
@@ -837,8 +838,9 @@ async def _envoyer_boutons_abonnements(channel, roles_map):
     embed = discord.Embed(
         title="🔔 Abonnements aux Notifications",
         description=(
-            "Gérez vos notifications en cliquant sur les boutons.\n"
-            "Chaque clic alterne entre abonné et désabonné."
+            "Choisissez les nouvelles qui vous parviennent. Chaque bouton "
+            "ci-dessous active ou désactive un type de notification. "
+            "Pressez une fois pour vous abonner, une seconde fois pour vous désinscrire."
         ),
         color=COULEURS["bleu_abyssal"]
     )
@@ -851,9 +853,12 @@ async def _envoyer_instructions_fiche(channel):
     embed = discord.Embed(
         title="📋 Soumettre une Fiche Personnage",
         description=(
-            "Copiez le modèle disponible dans `📋・modele-de-fiche` et soumettez-le ici.\n\n"
-            "Le staff répondra dans les 48 heures.\n"
-            "Votre fiche sera archivée dans `✅・fiches-validees` après validation.\n\n"
+            "C'est ici que votre personnage prend forme. Copiez le modèle "
+            "disponible dans `📋・modele-de-fiche`, remplissez-le avec soin, "
+            "puis soumettez-le dans ce canal.\n\n"
+            "Le staff lira chaque mot et vous répondra sous 48 heures. "
+            "Après validation, votre fiche rejoindra les archives de "
+            "`✅・fiches-validees` et vos rôles seront attribués.\n\n"
             "「 Aucune réécriture ne sera imposée sans consultation. 」"
         ),
         color=COULEURS["blanc_seireitei"]
@@ -893,10 +898,10 @@ async def _peupler_channels_lore(guild: discord.Guild):
     ch_fissure = find_ch("fissure-du-monde")
     if ch_fissure:
         e_bienvenue = discord.Embed(
-            title="🩸 Infernum Aeterna — 地獄の門",
+            title="🩸 Infernum Aeterna · 地獄の門",
             description=(
                 "Les Portes de l'Enfer se sont ouvertes. La Fissure s'élargit.\n\n"
-                "Bienvenue dans **Infernum Aeterna** — un serveur de jeu de rôle "
+                "Bienvenue dans **Infernum Aeterna**, un serveur de jeu de rôle "
                 "par forum dans un univers alternatif inspiré de Bleach, "
                 "où quatre factions s'affrontent au bord de l'abîme. "
                 "Ici, chaque mot pèse, chaque choix résonne, "
@@ -906,17 +911,17 @@ async def _peupler_channels_lore(guild: discord.Guild):
             color=COULEURS["pourpre_infernal"]
         )
         e_bienvenue.add_field(
-            name="⚖️ Étape 1 — Le Pacte",
+            name="⚖️ Étape 1 · Le Pacte",
             value="Rendez-vous dans `⚖️・pacte-des-âmes` et prêtez serment pour accéder au serveur.",
             inline=False
         )
         e_bienvenue.add_field(
-            name="🎭 Étape 2 — Découvrir les Factions",
+            name="🎭 Étape 2 · Découvrir les Factions",
             value="Explorez `🎭・choisir-son-destin` pour découvrir les quatre factions et trouver celle qui résonne avec votre âme.",
             inline=False
         )
         e_bienvenue.add_field(
-            name="📋 Étape 3 — Forger son Identité",
+            name="📋 Étape 3 · Forger son Identité",
             value="Créez votre personnage via `📋・modele-de-fiche` et soumettez-le dans `📥・soumission-de-fiche`. Le staff validera votre fiche et vous attribuera vos rôles.",
             inline=False
         )
@@ -942,8 +947,8 @@ async def _peupler_channels_lore(guild: discord.Guild):
         description=(
             "Bienvenue dans les chroniques d'**Infernum Aeterna**.\n\n"
             "Les résumés ci-dessous présentent les fondations de notre lore. "
-            "Le texte intégral — quinze mille mots, quatre chroniques, chaque "
-            "mot pesé — est accessible sur notre page dédiée."
+            "Le texte intégral, quinze mille mots répartis en quatre chroniques, "
+            "est accessible sur notre page dédiée."
         ),
         color=COULEURS["or_ancien"]
     )
@@ -1004,18 +1009,21 @@ async def _peupler_channels_lore(guild: discord.Guild):
     e2 = discord.Embed(
         title="🌍 Les Trois Mondes",
         description=(
-            "**Soul Society** — Royaume des Shinigami. "
-            "Seireitei au centre, Rukongai en périphérie. "
-            "Gouverné par le Gotei 13, fragilisé par la vérité du Konsō Reisai.\n\n"
-            "**Hueco Mundo** — Désert éternel des Hollow. "
-            "Las Noches en son cœur. Résonance croissante avec le Jigoku no Rinki "
-            "depuis l'ouverture de la Fissure.\n\n"
-            "**Monde des Vivants** — Karakura et ses alentours. "
-            "Portails actifs détectés. Contamination spirituelle progressive.\n\n"
-            "**La Frontière (境界)** — Le vide entre les mondes que personne ne "
-            "regardait, révélé par la Fissure. Territoire mouvant de fragments arrachés "
-            "aux mondes adjacents, parcouru de courants de Reishi brut. Quatre races s'y "
-            "croisent. Aucune ne la contrôle. Elle s'étend."
+            "**Soul Society** abrite les Shinigami. Le Seireitei se dresse en "
+            "son centre, forteresse de murs blancs et de secrets anciens, entouré "
+            "par le Rukongai où les âmes ordinaires vivent et meurent une seconde "
+            "fois. Le Gotei 13 gouverne, fragilisé par la vérité du Konsō Reisai.\n\n"
+            "**Hueco Mundo** est le désert éternel des Hollow. Las Noches s'y "
+            "élève, forteresse bâtie couche après couche par des générations "
+            "d'Arrancar. Depuis l'ouverture de la Fissure, une résonance croissante "
+            "avec le Jigoku no Rinki traverse ses sables.\n\n"
+            "**Le Monde des Vivants** subit les conséquences sans les comprendre. "
+            "Des portails instables s'ouvrent aux abords de Karakura. La contamination "
+            "spirituelle progresse lentement, imperceptible pour les humains.\n\n"
+            "**La Frontière** (境界, Kyōkai) est le vide entre les mondes que "
+            "personne ne regardait, révélé par la Fissure. Un territoire mouvant "
+            "de fragments arrachés aux mondes adjacents, parcouru de courants de "
+            "Reishi brut. Quatre races s'y croisent. Aucune ne la contrôle. Elle s'étend."
         ),
         color=COULEURS["gris_acier"]
     )
@@ -1051,7 +1059,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
 
     e = discord.Embed(title="📊 Rangs par Faction", color=COULEURS["or_ancien"])
     for faction, rangs in RANGS_POINTS.items():
-        lignes = "\n".join(f"{label} — {pts:,} pts" for _, pts, label in rangs)
+        lignes = "\n".join(f"{label} · {pts:,} pts" for _, pts, label in rangs)
         e.add_field(name=faction.capitalize(), value=lignes, inline=True)
     e.set_footer(text="⸻ Infernum Aeterna · Système ⸻")
     await poster(ch, e)
@@ -1064,14 +1072,14 @@ async def _peupler_channels_lore(guild: discord.Guild):
             emoji_f = APT_EMOJI.get(faction, "")
             for voie in voies:
                 e = discord.Embed(
-                    title=f"{emoji_f} {voie['kanji']} {voie['nom']} — {voie['sous_titre']}",
+                    title=f"{emoji_f} {voie['kanji']} {voie['nom']} · {voie['sous_titre']}",
                     description=voie["description"],
                     color=COULEURS_FACTION.get(faction, COULEURS["or_ancien"]),
                 )
                 for apt in voie["aptitudes"]:
                     desc_courte = apt["description"].split(".")[0] + "." if "." in apt["description"] else apt["description"][:120]
                     e.add_field(
-                        name=f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} {apt['nom']} ({apt['kanji']}) — {apt['cout']}霊力",
+                        name=f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} {apt['nom']} ({apt['kanji']}) · {apt['cout']}霊力",
                         value=desc_courte,
                         inline=False,
                     )
@@ -1084,52 +1092,54 @@ async def _peupler_channels_lore(guild: discord.Guild):
     ch = find_ch("bestiaire")
     embeds_bestiaire = [
         {
-            "titre": "倶舎那陀 — Les Kushanāda",
+            "titre": "倶舎那陀 Les Kushanāda",
             "desc": (
                 "Créatures titanesques aux allures de magistrats cosmiques. "
-                "Ils ne punissent pas — ils maintiennent. "
-                "Leur seul but : empêcher quiconque de s'échapper des Strates."
+                "Ils ne punissent pas : ils maintiennent. "
+                "Leur seul but est d'empêcher quiconque de s'échapper des Strates."
             ),
             "fields": [
-                ("Apparence", "Silhouettes de juges aux yeux vides, portant des masses rituelles. "
-                              "Taille variable selon la Strate — plus profond, plus imposants."),
-                ("Comportement", "Passifs en l'absence de tentative d'évasion. "
-                                 "Réactivité instantanée dès qu'une âme approche des limites."),
-                ("Anomalie", "Depuis l'ouverture de la Fissure, certains Kushanāda semblent hésiter. "
-                             "Comme si leurs instructions entraient en conflit avec quelque chose de nouveau."),
+                ("Ce qu'on voit", "Des silhouettes de juges aux yeux vides, portant des masses "
+                                  "rituelles. Leur taille varie selon la Strate : plus on descend, "
+                                  "plus ils sont imposants."),
+                ("Ce qu'on observe", "Ils restent passifs tant que personne ne tente de fuir. "
+                                     "Dès qu'une âme approche des limites, la réaction est instantanée."),
+                ("Ce qui a changé", "Depuis l'ouverture de la Fissure, certains Kushanāda semblent hésiter, "
+                                    "comme si leurs instructions entraient en conflit avec quelque chose de nouveau."),
             ],
             "couleur": "gris_acier"
         },
         {
-            "titre": "地獄の燐気 — Le Jigoku no Rinki",
+            "titre": "地獄の燐気 Le Jigoku no Rinki",
             "desc": (
-                "Sphères noires de Reishi corrompu suintant des murs de l'Enfer depuis la Fissure. "
-                "Contact prolongé dissout progressivement l'identité spirituelle."
+                "Des sphères noires de Reishi corrompu suintent des murs de l'Enfer "
+                "depuis la Fissure. Un contact prolongé dissout progressivement "
+                "l'identité spirituelle de celui qui s'en approche."
             ),
             "fields": [
-                ("Symptômes", "Mémoire fragmentée, puissance instable, "
-                              "réminiscences involontaires d'avant la mort."),
-                ("Danger", "Irréversible au stade avancé. "
-                           "L'âme commence à se fondre dans la matière infernale."),
-                ("Usage contrôlé", "Certains Togabito anciens ont appris à le canaliser. "
-                                    "Risque extrême. Pouvoir disproportionné."),
+                ("Les premiers signes", "La mémoire se fragmente. La puissance devient instable. "
+                                        "Des réminiscences involontaires d'avant la mort remontent à la surface."),
+                ("Le point de non-retour", "Au stade avancé, le processus est irréversible. "
+                                           "L'âme se fond dans la matière infernale, absorbée par l'Enfer lui-même."),
+                ("Ceux qui osent", "Certains Togabito anciens ont appris à canaliser le Rinki. "
+                                   "Le risque est extrême, mais le pouvoir qu'ils en tirent dépasse l'entendement."),
             ],
             "couleur": "pourpre_infernal"
         },
         {
-            "titre": "虚 — Les Hollow Infernaux",
+            "titre": "虚 Les Hollow Infernaux",
             "desc": (
-                "Hollow ayant sombré en Enfer plutôt que d'être purifiés. "
-                "Mutation profonde due au Reishi infernal. "
-                "Plus dangereux et moins prévisibles que leurs équivalents standard."
+                "Des Hollow ayant sombré en Enfer plutôt que d'être purifiés. "
+                "Le Reishi infernal les a profondément altérés, les rendant "
+                "plus dangereux et moins prévisibles que leurs semblables."
             ),
             "fields": [
-                ("Différences", "Masque partiellement dissous. Cero noir. "
-                                "Instinct partiellement remplacé par une logique primitive."),
-                ("Comportement", "Ni sauvages ni organisés — quelque chose entre les deux. "
-                                 "Semblent reconnaître une hiérarchie non formalisée."),
-                ("Mystère", "Certains semblent reconnaître les Togabito anciens "
-                            "et ne pas les attaquer. Raison inconnue."),
+                ("Ce qui les distingue", "Leur masque est partiellement dissous. Leur Cero tire vers le noir. "
+                                         "L'instinct brut a cédé la place à une logique primitive, plus inquiétante."),
+                ("Leur comportement", "Ils ne sont ni sauvages ni organisés, mais quelque chose entre les deux. "
+                                      "Ils semblent reconnaître une hiérarchie qui n'a jamais été formalisée."),
+                ("L'énigme", "Certains semblent reconnaître les Togabito anciens "
+                             "et ne pas les attaquer. Personne ne sait pourquoi."),
             ],
             "couleur": "noir_abyssal"
         },
@@ -1146,7 +1156,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
 
     # Embed 1 — Introduction narrative
     e_intro = discord.Embed(
-        title="⚖️ Le Pacte des Âmes — 魂の誓約",
+        title="⚖️ Le Pacte des Âmes · 魂の誓約",
         description=(
             "Avant que les Portes ne s'ouvrent davantage, avant que votre nom "
             "ne s'inscrive dans les chroniques — il y a ceci.\n\n"
@@ -1163,7 +1173,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
 
     # Embed 2 — Les Dix Serments (partie 1 : 5 premiers)
     e_serments1 = discord.Embed(
-        title="Les Dix Serments — I",
+        title="Les Dix Serments · I",
         color=COULEURS["or_ancien"]
     )
     e_serments1.add_field(
@@ -1196,7 +1206,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
 
     # Embed 3 — Les Dix Serments (partie 2 : 5 derniers)
     e_serments2 = discord.Embed(
-        title="Les Dix Serments — II",
+        title="Les Dix Serments · II",
         color=COULEURS["or_ancien"]
     )
     e_serments2.add_field(
@@ -1256,7 +1266,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     modele = (
         "```\n"
         "═══════════════════════════════\n"
-        "   FICHE PERSONNAGE — INFERNUM AETERNA\n"
+        "   FICHE PERSONNAGE · INFERNUM AETERNA\n"
         "═══════════════════════════════\n"
         "Nom du personnage :\n"
         "Faction : [Shinigami / Togabito / Arrancar / Quincy]\n"
@@ -1276,7 +1286,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
         "```"
     )
     e1 = discord.Embed(
-        title="📋 Forger son Identité — 魂の形",
+        title="📋 Forger son Identité · 魂の形",
         description=(
             "Chaque âme qui traverse la Fissure porte un nom, une histoire, "
             "une raison d'exister dans ce monde brisé. Votre fiche est le premier "
@@ -1297,7 +1307,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     e2 = discord.Embed(title="📥 Le Chemin vers la Validation", color=COULEURS["or_pale"])
     e2.add_field(
         name="Préparer",
-        value="Copiez le modèle ci-dessus et remplissez chaque section. Minimum **300 mots** pour l'Histoire — c'est le socle de votre personnage.",
+        value="Copiez le modèle ci-dessus et remplissez chaque section. L'Histoire demande un minimum de **300 mots** : c'est le socle de votre personnage.",
         inline=False
     )
     e2.add_field(
@@ -1326,7 +1336,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     ch = find_ch("figures-de-legende")
     figures = [
         {
-            "titre": "👑 Kōshin Jūrōmaru — 光信樹郎丸",
+            "titre": "👑 Kōshin Jūrōmaru · 光信樹郎丸",
             "desc": (
                 "Capitaine-Commandant fondateur du Gotei 13. Son Zanpakutō de type feu "
                 "était l'aîné et le plus puissant de cette catégorie. Il réunit treize "
@@ -1334,13 +1344,13 @@ async def _peupler_channels_lore(guild: discord.Guild):
                 "non par la persuasion, mais par la force — district après district.\n\n"
                 "Il mourut de vieillesse après des millénaires d'existence, ce qui était "
                 "presque sans précédent pour un être de sa puissance. Son corps fut honoré "
-                "par le Konsō Reisai. Ce qu'il ignorait — ce que tous ignoraient — "
+                "par le Konsō Reisai. Ce qu'il ignorait, ce que tous ignoraient, "
                 "c'est ce que ce rituel impliquait véritablement."
             ),
             "couleur": "or_ancien"
         },
         {
-            "titre": "⚔️ Tōka Shibari — 灯華柴張",
+            "titre": "⚔️ Tōka Shibari · 灯華柴張",
             "desc": (
                 "Première à porter le titre non officiel de Kenpachi. Son Zanpakutō "
                 "existait en état de libération permanente — son lien avec son âme était "
@@ -1353,7 +1363,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
             "couleur": "rouge_chaine"
         },
         {
-            "titre": "🔮 Renjō Mikazuchi — 蓮生三日国",
+            "titre": "🔮 Renjō Mikazuchi · 蓮生三日国",
             "desc": (
                 "Le plus mystérieux des trois Capitaines fondateurs. Il abritait apparemment "
                 "quelque chose d'autre en lui — une entité spirituelle d'une nature inconnue "
@@ -1366,7 +1376,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
             "couleur": "pourpre_infernal"
         },
         {
-            "titre": "🔴 Les Kushanāda — 倶舎那陀",
+            "titre": "🔴 Les Kushanāda · 倶舎那陀",
             "desc": (
                 "Créatures titanesques aux allures de magistrats cosmiques. "
                 "Nul ne sait qui les a créés. Nul ne sait ce qu'ils pensent. "
@@ -1390,15 +1400,15 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 10. etat-de-la-fissure — embed initial ──────────────────────────────
     ch = find_ch("etat-de-la-fissure")
     e = discord.Embed(
-        title="⛓️ État de la Fissure — 裂け目の状態",
+        title="⛓️ État de la Fissure · 裂け目の状態",
         description=(
-            "La Fissure entre les mondes est actuellement **stable** — pour l'instant.\n\n"
-            "Ce channel sera mis à jour automatiquement après chaque événement majeur. "
+            "La Fissure entre les mondes est actuellement **stable**, pour l'instant.\n\n"
+            "Ce canal est mis à jour automatiquement après chaque événement majeur. "
             "L'état de la Fissure influence l'atmosphère de toutes les zones de RP."
         ),
         color=COULEURS["pourpre_infernal"]
     )
-    e.add_field(name="Niveau actuel", value="🟢 **1 — Stable**", inline=True)
+    e.add_field(name="Niveau actuel", value="🟢 **1 · Stable**", inline=True)
     e.add_field(name="Dernier changement", value="Initialisation du serveur", inline=True)
     e.set_footer(text="⸻ Infernum Aeterna · Fissure ⸻")
     await poster(ch, e)
@@ -1406,12 +1416,13 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 11. tableau-des-missions — embed initial ────────────────────────────
     ch = find_ch("tableau-des-missions")
     e = discord.Embed(
-        title="📌 Tableau des Missions — 任務表",
+        title="📌 Tableau des Missions · 任務表",
         description=(
-            "Les missions actives apparaissent ici, publiées par le staff.\n\n"
-            "Chaque mission précise sa difficulté, les factions concernées, "
-            "et les récompenses narratives à la clé. "
-            "Consultez régulièrement ce tableau pour trouver votre prochaine aventure."
+            "Les missions actives sont affichées ici par le staff. "
+            "Chacune précise sa difficulté, les factions concernées "
+            "et les récompenses narratives promises à ceux qui les "
+            "mèneront à bien. Revenez souvent : de nouvelles tâches "
+            "apparaissent au fil des arcs."
         ),
         color=COULEURS["blanc_seireitei"]
     )
@@ -1422,11 +1433,12 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 12. hierarchie-des-espada — embed initial ───────────────────────────
     ch = find_ch("hierarchie-des-espada")
     e = discord.Embed(
-        title="💠 Hiérarchie des Espada — 十刃",
+        title="💠 Hiérarchie des Espada · 十刃",
         description=(
-            "Le classement actuel des Espada de Las Noches.\n\n"
-            "Les positions évoluent en fonction des combats, des arcs narratifs "
-            "et des décisions du staff. Ce canal est mis à jour après chaque changement."
+            "Le classement des Espada de Las Noches est affiché ici. "
+            "Les positions évoluent au fil des combats, des arcs narratifs "
+            "et des décisions du staff. Ce canal reflète l'état actuel "
+            "de la hiérarchie de Hueco Mundo."
         ),
         color=COULEURS["gris_sable"]
     )
@@ -1437,7 +1449,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 13. veille-de-la-fissure (Quincy) — embed initial ──────────────────
     ch = find_ch("veille-de-la-fissure")
     e = discord.Embed(
-        title="📌 Veille de la Fissure — 裂け目の監視",
+        title="📌 Veille de la Fissure · 裂け目の監視",
         description=(
             "Les Quincy surveillent la contamination spirituelle depuis leur refuge.\n\n"
             "Ce canal documente les anomalies détectées par les capteurs de Reishi, "
@@ -1446,21 +1458,21 @@ async def _peupler_channels_lore(guild: discord.Guild):
         ),
         color=COULEURS["bleu_abyssal"]
     )
-    e.add_field(name="Statut actuel", value="🔵 Surveillance passive — aucune anomalie signalée.", inline=False)
+    e.add_field(name="Statut actuel", value="🔵 Surveillance passive. Aucune anomalie signalée.", inline=False)
     e.set_footer(text="⸻ Infernum Aeterna · Quincy ⸻")
     await poster(ch, e)
 
     # ── 14. etat-de-la-frontiere — embed initial ────────────────────────────
     ch = find_ch("etat-de-la-frontiere")
     e = discord.Embed(
-        title="📌 État de la Frontière — 境界の状態",
+        title="📌 État de la Frontière · 境界の状態",
         description=(
-            "Personne ne s'y arrêtait. Un vide entre les mondes, rien d'autre — "
+            "Personne ne s'y arrêtait. Un vide entre les mondes, rien d'autre, "
             "un couloir qu'on emprunte sans regarder les murs. Puis la Fissure "
             "a déchiré les Portes, et le couloir s'est élargi jusqu'à devenir "
             "un lieu.\n\n"
-            "Le Kyōkai (境界). La Frontière. Pas de ciel, pas de sol fixe — des "
-            "fragments de mondes qui dérivent dans un vide gris parcouru de veines "
+            "Le Kyōkai (境界). La Frontière. Ni ciel, ni sol fixe : des "
+            "fragments de mondes dérivent dans un vide gris parcouru de veines "
             "lumineuses. Les courants de Reishi brut y désintègrent les imprudents. "
             "Le Jigoku no Rinki y flotte en nuages noirs, plus dense ici qu'ailleurs.\n\n"
             "Aucune faction ne la contrôle. Toutes y sont présentes. Elle s'étend."
@@ -1469,7 +1481,7 @@ async def _peupler_channels_lore(guild: discord.Guild):
     )
     e.add_field(
         name="Statut actuel",
-        value="⚪ Frontière instable — passages détectés.",
+        value="⚪ Frontière instable. Passages détectés.",
         inline=False
     )
     e.set_footer(text="⸻ Infernum Aeterna · Frontière ⸻")
@@ -1478,28 +1490,29 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 15. incidents-repertories — embed initial ───────────────────────────
     ch = find_ch("incidents-repertories")
     e = discord.Embed(
-        title="📌 Incidents Répertoriés — 事件記録",
+        title="📌 Incidents Répertoriés · 事件記録",
         description=(
-            "Liste des anomalies spirituelles détectées dans le Monde des Vivants.\n\n"
-            "Portails instables, apparitions de Hollow, fluctuations de Reishi — "
-            "tout incident est consigné ici par le staff ou le bot narrateur."
+            "Ce canal consigne les anomalies spirituelles détectées "
+            "dans le Monde des Vivants. Portails instables, apparitions "
+            "de Hollow, fluctuations de Reishi : chaque incident est "
+            "enregistré ici par le staff ou le bot narrateur."
         ),
         color=COULEURS["gris_acier"]
     )
-    e.add_field(name="Aucun incident actif", value="*Le monde des vivants dort encore — pour combien de temps ?*", inline=False)
+    e.add_field(name="Aucun incident actif", value="*Le monde des vivants dort encore. Pour combien de temps ?*", inline=False)
     e.set_footer(text="⸻ Infernum Aeterna · Monde des Vivants ⸻")
     await poster(ch, e)
 
     # ── 16. progression — embed explicatif ──────────────────────────────────
     ch = find_ch("progression")
     e = discord.Embed(
-        title="📈 Progression — 成長の道",
+        title="📈 Progression · 成長の道",
         description=(
-            "Ce canal affiche les montées de rang, les gains de points "
-            "et les aptitudes débloquées par les personnages.\n\n"
-            "Chaque évolution est publiée automatiquement par le bot "
-            "après validation par le staff. Consultez `/classement` "
-            "pour voir le tableau complet."
+            "Chaque montée de rang, chaque gain de points, chaque aptitude "
+            "débloquée est consigné ici. Le bot publie automatiquement "
+            "les évolutions après validation par le staff.\n\n"
+            "Pour consulter le tableau complet des personnages "
+            "et leur classement, utilisez la commande `/classement`."
         ),
         color=COULEURS["or_pale"]
     )
@@ -1509,22 +1522,24 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 17. objectifs-narratifs — embed explicatif ──────────────────────────
     ch = find_ch("objectifs-narratifs")
     e = discord.Embed(
-        title="🎯 Objectifs Narratifs — 物語の目標",
+        title="🎯 Objectifs Narratifs · 物語の目標",
         description=(
-            "Les conditions pour débloquer les aptitudes spéciales, "
-            "les montées de rang et les événements personnels.\n\n"
-            "Le staff publie ici les objectifs de chaque personnage "
-            "après validation de sa fiche. Chaque objectif accompli "
-            "est une étape vers la légende."
+            "Chaque personnage validé reçoit des objectifs narratifs "
+            "publiés ici par le staff. Ce sont les conditions pour "
+            "débloquer les aptitudes de Transcendance, les montées "
+            "de rang exceptionnelles et les événements personnels.\n\n"
+            "Accomplissez-les en jeu et signalez votre progression "
+            "au staff. Chaque objectif accompli est une étape vers la légende."
         ),
         color=COULEURS["or_pale"]
     )
     e.add_field(
-        name="Comment ça fonctionne",
+        name="Le parcours",
         value=(
-            "**1.** Votre fiche est validée → le staff publie vos objectifs ici.\n"
-            "**2.** Accomplissez-les en RP → signalez-le au staff.\n"
-            "**3.** Validation → montée de rang ou aptitude débloquée."
+            "Votre fiche est validée et le staff publie vos objectifs dans ce canal. "
+            "Vous les accomplissez en RP, à votre rythme, puis vous signalez votre "
+            "progression. Après vérification, le staff valide et le bot attribue "
+            "la montée de rang ou l'aptitude débloquée."
         ),
         inline=False
     )
@@ -1534,9 +1549,9 @@ async def _peupler_channels_lore(guild: discord.Guild):
     # ── 18. esprits-perdus (FAQ) — embed d'accueil ─────────────────────────
     ch = find_ch("esprits-perdus")
     e = discord.Embed(
-        title="❓ Esprits Perdus — FAQ — 迷える魂",
+        title="❓ Esprits Perdus · 迷える魂",
         description=(
-            "Vous êtes perdus ? C'est normal — la Fissure désoriente même "
+            "Vous êtes perdus ? C'est normal. La Fissure désoriente même "
             "les plus aguerris.\n\n"
             "Posez vos questions ici. Le staff ou la communauté vous répondra. "
             "Les réponses fréquentes seront épinglées pour les prochains voyageurs."
@@ -1544,12 +1559,13 @@ async def _peupler_channels_lore(guild: discord.Guild):
         color=COULEURS["bleu_abyssal"]
     )
     e.add_field(
-        name="Questions fréquentes",
+        name="Premiers repères",
         value=(
-            "**Comment créer un personnage ?** → Voir `📋・modele-de-fiche`\n"
-            "**Comment choisir une faction ?** → Voir `🎭・choisir-son-destin`\n"
-            "**Où se trouve le lore ?** → Voir `📖・infernum-aeterna` ou la page web\n"
-            "**Comment lancer un combat ?** → Bouton ⚔️ dans les salles de combat"
+            "Pour créer un personnage, consultez `📋・modele-de-fiche` où "
+            "vous trouverez le modèle et les instructions. Les quatre factions "
+            "sont présentées dans `🎭・choisir-son-destin`. Le lore complet "
+            "se trouve dans `📖・infernum-aeterna` ainsi que sur la page web. "
+            "Pour lancer un combat, utilisez le bouton ⚔️ dans les salles dédiées."
         ),
         inline=False
     )

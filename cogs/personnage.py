@@ -193,7 +193,7 @@ class Personnage(commands.Cog):
         modele_texte = (
             "```\n"
             "═══════════════════════════════\n"
-            "   FICHE PERSONNAGE — INFERNUM AETERNA\n"
+            "   FICHE PERSONNAGE · INFERNUM AETERNA\n"
             "═══════════════════════════════\n"
             "Nom du personnage :\n"
             "Faction : [Shinigami / Togabito / Arrancar / Quincy]\n"
@@ -334,7 +334,7 @@ class Personnage(commands.Cog):
         ch_fiches = trouver_channel(interaction.guild, "fiches-validees")
         if ch_fiches:
             embed = discord.Embed(
-                title=f"✅ {nom_perso} — Fiche Validée",
+                title=f"✅ {nom_perso} · Fiche Validée",
                 description=perso.get("fiche_contenu", "")[:1800] or "*Fiche non disponible.*",
                 color=COULEURS["or_ancien"]
             )
@@ -490,7 +490,7 @@ class Personnage(commands.Cog):
             await interaction.response.send_message("Aucun personnage validé pour ce filtre.", ephemeral=True)
             return
 
-        titre = "🏆 Classement Global" if faction == "tous" else f"🏆 Classement — {EMOJI_FACTION.get(faction, '')} {faction.capitalize()}"
+        titre = "🏆 Classement Global" if faction == "tous" else f"🏆 Classement · {EMOJI_FACTION.get(faction, '')} {faction.capitalize()}"
         embed = discord.Embed(title=titre, color=COULEURS["or_ancien"])
 
         from data.aptitudes import puissance_spirituelle
@@ -717,7 +717,7 @@ class Personnage(commands.Cog):
         await self._sauvegarder()
 
         embed = discord.Embed(
-            title=f"{label} — Lien Déclaré",
+            title=f"{label} · Lien Déclaré",
             description=(
                 f"**{perso['nom_perso']}** a déclaré une relation avec **{perso_cible['nom_perso']}**.\n\n"
                 + (f"*{description}*" if description else "")
@@ -854,7 +854,7 @@ class ModalFiche(discord.ui.Modal, title="Soumettre une Fiche Personnage"):
 
         # Poster dans soumission-de-fiche + notifier staff en DM
         embed_fiche = discord.Embed(
-            title=f"📋 Nouvelle Fiche — {self.nom_perso.value}",
+            title=f"📋 Nouvelle Fiche · {self.nom_perso.value}",
             description=self.contenu.value[:2000],
             color=COULEURS["or_pale"]
         )
@@ -926,7 +926,7 @@ def _barre_progression(faction: Optional[str], points: int) -> Optional[str]:
                 prochain_seuil = rangs[i + 1][1]
                 prochain_rang_label = rangs[i + 1][2]
     if not prochain_seuil:
-        return f"{rang_actuel_label} — **Rang Maximum** ✦"
+        return f"{rang_actuel_label} · **Rang Maximum** ✦"
     progress = points - seuil_actuel
     total = prochain_seuil - seuil_actuel
     pct = min(int(progress / total * 10), 10)

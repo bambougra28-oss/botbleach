@@ -44,7 +44,7 @@ PROMPTS = {
         f"Voici les SEULES informations disponibles :\n\n{c}\n\n"
         "Produis une narration d'accueil annonçant l'arrivée de cette âme dans les Trois Mondes. "
         "Mentionne sa faction et son rang tels qu'indiqués ci-dessus. "
-        "Si son histoire est résumée, évoque-la en restant fidèle au texte fourni — n'extrapole pas. "
+        "Si son histoire est résumée, évoque-la en restant fidèle au texte fourni, n'extrapole pas. "
         "Situe son arrivée dans le contexte de la Fissure et des tensions actuelles."
         + _RAPPEL_OC
     ),

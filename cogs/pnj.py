@@ -214,7 +214,7 @@ class PNJ(commands.Cog):
 
         titre = f"{pnj_data['emoji']} {pnj_data['nom']}"
         if titre_suffixe:
-            titre += f" — {titre_suffixe}"
+            titre += f" · {titre_suffixe}"
 
         embed = discord.Embed(
             title=titre,
@@ -315,7 +315,7 @@ class PNJ(commands.Cog):
             return
 
         # Créer le thread pour l'interaction PNJ
-        nom_thread = f"{pnj_data['emoji']} {pnj_data['nom']} — {interaction.user.display_name}"
+        nom_thread = f"{pnj_data['emoji']} {pnj_data['nom']} · {interaction.user.display_name}"
         # Tronquer le nom du thread à 100 caractères (limite Discord)
         if len(nom_thread) > 100:
             nom_thread = nom_thread[:97] + "..."
@@ -596,7 +596,7 @@ class PNJ(commands.Cog):
             invocateur = self.bot.get_user(sess["invocateur_id"])
             nom_invocateur = invocateur.display_name if invocateur else f"ID {sess['invocateur_id']}"
             sessions_valides.append(
-                f"{pnj_info['emoji']} **{sess['pnj_nom']}** — {thread.mention}\n"
+                f"{pnj_info['emoji']} **{sess['pnj_nom']}** · {thread.mention}\n"
                 f"  Invoqué par *{nom_invocateur}* · "
                 f"{sess['interactions']}/{MAX_ECHANGES} échanges"
             )

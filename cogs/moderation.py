@@ -459,7 +459,7 @@ class Moderation(commands.Cog):
     ):
         await self._avertir(utilisateur, interaction.guild, raison, "staff")
         await interaction.response.send_message(
-            f"✅ Avertissement envoyé à {utilisateur.mention} — *{raison}*",
+            f"✅ Avertissement envoyé à {utilisateur.mention}, *{raison}*",
             ephemeral=True,
         )
 
@@ -481,7 +481,7 @@ class Moderation(commands.Cog):
             utilisateur, interaction.guild, raison, duree * 60, "staff"
         )
         await interaction.response.send_message(
-            f"✅ Timeout {duree}min appliqué à {utilisateur.mention} — *{raison}*",
+            f"✅ Timeout {duree}min appliqué à {utilisateur.mention}, *{raison}*",
             ephemeral=True,
         )
 
@@ -506,7 +506,7 @@ class Moderation(commands.Cog):
             return
 
         embed = discord.Embed(
-            title=f"📋 Historique — {utilisateur}",
+            title=f"📋 Historique · {utilisateur}",
             color=COULEURS["gris_acier"],
             timestamp=datetime.now(timezone.utc),
         )
@@ -524,7 +524,7 @@ class Moderation(commands.Cog):
         if infractions:
             dernieres = infractions[-10:]
             txt = "\n".join(
-                f"• `{i['date'][:10]}` [{i['source']}] {i['type']} {i.get('duree', 0) // 60}min — {i['raison']}"
+                f"• `{i['date'][:10]}` [{i['source']}] {i['type']} {i.get('duree', 0) // 60}min · {i['raison']}"
                 for i in dernieres
             )
             if len(infractions) > 10:
@@ -636,7 +636,7 @@ class Moderation(commands.Cog):
         label = {1: "24h", 7: "7 jours", 30: "30 jours"}.get(periode, f"{periode}j")
 
         embed = discord.Embed(
-            title=f"📊 Rapport de modération — {label}",
+            title=f"📊 Rapport de modération · {label}",
             color=COULEURS["gris_acier"],
             timestamp=datetime.now(timezone.utc),
         )
@@ -685,7 +685,7 @@ class Moderation(commands.Cog):
         # DM à l'utilisateur
         try:
             await user.send(
-                f"⚠️ **Avertissement** — Serveur *{guild.name}*\n"
+                f"⚠️ **Avertissement** · Serveur *{guild.name}*\n"
                 f"Raison : {raison}\n\n"
                 f"Merci de respecter les règles du serveur."
             )
@@ -745,7 +745,7 @@ class Moderation(commands.Cog):
         if nb >= 3:
             await self._alerte_owner(
                 guild,
-                f"🚨 **ALERTE CRITIQUE** — {member} ({member.id}) a atteint "
+                f"🚨 **ALERTE CRITIQUE** · {member} ({member.id}) a atteint "
                 f"**{nb} infractions**. Dernière : {raison}\n"
                 f"Action manuelle recommandée (ban potentiel).",
             )
@@ -819,7 +819,7 @@ class Moderation(commands.Cog):
         # Alerte owner
         await self._alerte_owner(
             guild,
-            "🚨 **RAID DÉTECTÉ** — Lockdown activé automatiquement.\n"
+            "🚨 **RAID DÉTECTÉ** · Lockdown activé automatiquement.\n"
             "Le niveau de vérification du serveur est maintenant au maximum.\n"
             "Vérifiez les nouveaux membres et réduisez le niveau quand le raid est terminé.",
         )

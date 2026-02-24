@@ -184,7 +184,7 @@ class Combat(commands.Cog):
             ),
             color=COULEURS["rouge_chaine"]
         )
-        embed.add_field(name="📊 Tour",    value="0 — Pré-combat",  inline=True)
+        embed.add_field(name="📊 Tour",    value="0 · Pré-combat",  inline=True)
         embed.add_field(name="📌 Statut",  value="⚔️ Actif",        inline=True)
         embed.add_field(name="⚡ Puissance Spirituelle", value=palier_txt, inline=False)
         embed.set_footer(text="Utilisez /tour pour signaler votre tour · /clore-combat pour terminer")
@@ -258,7 +258,7 @@ class Combat(commands.Cog):
         await self._store.save()
 
         embed = discord.Embed(
-            description=f"**Tour {combat['tour']}** — {interaction.user.mention}\n\n*{action}*",
+            description=f"**Tour {combat['tour']}** · {interaction.user.mention}\n\n*{action}*",
             color=COULEURS["or_pale"]
         )
         embed.set_footer(text="⸻ Awaiting response ⸻")
@@ -302,7 +302,7 @@ class Combat(commands.Cog):
         await self._maj_stats_personnages(combat, vainqueur)
 
         embed = discord.Embed(
-            title=f"⚔️ Combat Terminé — {combat['titre']}",
+            title=f"⚔️ Combat Terminé · {combat['titre']}",
             description=(
                 f"**Tours joués :** {combat['tour']}\n"
                 f"**Vainqueur :** {vainqueur.mention if vainqueur else 'Indéterminé'}\n\n"

@@ -36,31 +36,31 @@ def _ajouter_lien_web(embed, fragment=""):
 
 GLOSSAIRE = {
     "reishi":         ("霊子", "Particules spirituelles constitutives de toute matière dans les Trois Mondes. La densité de Reishi détermine la puissance d'une âme."),
-    "reiatsu":        ("霊圧", "Pression spirituelle émise par le Reishi concentré d'un être. Mesure visible de la puissance — quand un Capitaine libère son Reiatsu, l'air lui-même plie."),
+    "reiatsu":        ("霊圧", "Pression spirituelle émise par le Reishi concentré d'un être. Mesure visible de la puissance : quand un Capitaine libère son Reiatsu, l'air lui-même plie."),
     "zanpakuto":      ("斬魄刀", "Épée spirituelle des Shinigami. Contient et canalise leur puissance. Son nom est celui d'une entité intérieure dont la voix ne se révèle qu'à ceux qui méritent de l'entendre."),
-    "shikai":         ("始解", "Première libération d'un Zanpakutō. Le nom est prononcé pour activer sa forme initiale — un pacte entre le porteur et l'esprit de la lame."),
-    "bankai":         ("卍解", "Seconde et ultime libération. Requiert dix ans de maîtrise minimum. Multiplie la puissance par un facteur considérable — rares sont ceux qui y survivent."),
+    "shikai":         ("始解", "Première libération d'un Zanpakutō. Le nom est prononcé pour activer sa forme initiale, scellant un pacte entre le porteur et l'esprit de la lame."),
+    "bankai":         ("卍解", "Seconde et ultime libération. Requiert dix ans de maîtrise minimum. Multiplie la puissance par un facteur considérable, et rares sont ceux qui y survivent."),
     "hollow":         ("虚", "Âme ayant raté le passage vers Soul Society. Son cœur est dévoré par la peur et la faim. Un trou béant dans la poitrine marque l'absence de ce qui faisait d'elle une personne."),
-    "resurreccion":   ("帰刃", "Libération de la puissance Hollow d'un Arrancar. Retrouve temporairement sa forme Hollow originelle — un acte de dépouillement autant que de déchaînement."),
+    "resurreccion":   ("帰刃", "Libération de la puissance Hollow d'un Arrancar. Retrouve temporairement sa forme Hollow originelle, un acte de dépouillement autant que de déchaînement."),
     "jigokusari":     ("地獄鎖", "Chaînes spirituelles de l'Enfer. Issues de la chair même de ce monde, elles s'enroulent autour des âmes damnées et les contraignent dans un cycle de mort et de résurrection."),
     "kushanada":      ("倶舎那陀", "Gardiens massifs de l'Enfer. Créatures colossales à quatre membres dont la seule fonction apparente est de dévorer et de punir, sans relâche, sans fatigue."),
     "jigoku_no_rinki":("地獄の燐気", "Sphères noires phosphorescentes apparues depuis la Fissure. Marqueur visible du déséquilibre infernal qui s'infiltre dans les Trois Mondes."),
     "konso":          ("魂葬", "Rite des Shinigami pour guider les âmes humaines vers Soul Society en frappant leur front du manche du Zanpakutō. Un geste simple dont nul ne questionne la portée."),
     "konso_reisai":   ("魂葬霊祭", "Cérémonie secrète : douze ans après la mort d'un Capitaine, son Reishi est canalisé vers l'Enfer. Un mensonge bienveillant qui a duré des millénaires."),
-    "reio":           ("霊王", "Roi des Âmes. Mutilé et scellé dans un cristal par les Cinq Grandes Maisons. Verrou cosmique maintenant les Trois Mondes — ni vivant, ni mort, simplement nécessaire."),
+    "reio":           ("霊王", "Roi des Âmes. Mutilé et scellé dans un cristal par les Cinq Grandes Maisons. Verrou cosmique maintenant les Trois Mondes, ni vivant ni mort, simplement nécessaire."),
     "mimihagi":       ("耳禿", "Bras droit arraché du Reiō. Divinité de la Stagnation. L'un des Deux Piliers Maudits dont la disparition causa la Fissure."),
     "togabito":       ("咎人", "Littéralement « personne fautive ». Âmes damnées de l'Enfer — par péché, par purification, ou par le rituel secret du Konsō Reisai. Condition, non espèce."),
-    "mer_primordiale":("原初の海", "État indivisé précédant les Trois Mondes. Vie et mort n'étaient pas distincts. Source de toute puissance spirituelle — et de l'obscurité qui la rongea."),
+    "mer_primordiale":("原初の海", "État indivisé précédant les Trois Mondes. Vie et mort n'étaient pas distincts. Source de toute puissance spirituelle, et de l'obscurité qui la rongea."),
     "lichtreich":     ("光帝国", "Empire de Lumière. Civilisation Quincy à son apogée, capable de regarder le Gotei 13 en face. Ses ruines persistent dans la mémoire et dans les ombres."),
     "wandenreich":    ("見えざる帝国", "Empire Invisible. Organisation secrète des survivants Quincy, cachée dans les ombres du Seireitei depuis des siècles, nourrie par le Reishi de l'ennemi."),
-    "oken":           ("王鍵", "Clé Royale. Gravée dans les os des membres de la Division Zéro. Permet l'accès au Palais du Reiō — un privilège qui est aussi une prison."),
+    "oken":           ("王鍵", "Clé Royale. Gravée dans les os des membres de la Division Zéro. Permet l'accès au Palais du Reiō, un privilège qui est aussi une prison."),
     "gotei_13":       ("護廷十三隊", "Les Treize Divisions de la Cour. Institution militaire de Soul Society fondée par des tueurs, devenue gardienne d'un ordre bâti sur un secret inavouable."),
     "hueco_mundo":    ("虚圏", "Le Monde Creux. Désert blanc infini sous une lune immobile, domaine des Hollow. Structures de quartz et cristaux de Reishi pétrifiés par des millénaires d'accumulation."),
     "seireitei":      ("瀞霊廷", "La Cour des Âmes Pures. Cœur fortifié de Soul Society où résident les Shinigami. Ses murs blancs cachent des siècles de vérités tues."),
-    "schrift":        ("聖文字", "Lettre sacrée gravée dans l'âme d'un Quincy par l'Empereur. Transforme une capacité individuelle en puissance incommensurable — un don et une chaîne."),
+    "schrift":        ("聖文字", "Lettre sacrée gravée dans l'âme d'un Quincy par l'Empereur. Transforme une capacité individuelle en puissance incommensurable, un don et une chaîne."),
     "las_noches":     ("虚夜宮", "Le Palais de la Nuit Creuse. Forteresse de Hueco Mundo bâtie couche après couche par des générations d'Arrancar, chaque époque y laissant sa marque."),
     "blut":           ("血装", "Fortification spirituelle du sang, technique défensive Quincy. Le Blut Vene rend le corps quasi imperméable aux blessures ; le Blut Arterie décuple la puissance offensive."),
-    "kyokai":         ("境界", "La Frontière. Le vide entre les mondes que personne ne regardait, révélé par la Fissure. Ni Soul Society, ni Hueco Mundo, ni Enfer — un territoire mouvant où les lois spirituelles se contredisent et où les quatre races se croisent sans qu'aucune ne puisse revendiquer le terrain. Elle s'étend."),
+    "kyokai":         ("境界", "La Frontière. Le vide entre les mondes que personne ne regardait, révélé par la Fissure. Ni Soul Society, ni Hueco Mundo, ni Enfer, un territoire mouvant où les lois spirituelles se contredisent et où les quatre races se croisent sans qu'aucune ne puisse revendiquer le terrain. Elle s'étend."),
 }
 
 
@@ -70,7 +70,7 @@ GLOSSAIRE = {
 
 FICHES_FACTION = {
     "shinigami": {
-        "titre":   "死神 Shinigami — Gardiens de Soul Society",
+        "titre":   "死神 Shinigami · Gardiens de Soul Society",
         "couleur": COULEURS["blanc_seireitei"],
         "web_fragment": "shinigami",
         "sections": [
@@ -83,10 +83,10 @@ FICHES_FACTION = {
              "tueurs redoutables, pas des gardiens — la noblesse vint après la victoire."),
             ("Puissance",
              "Le Zanpakutō est l'extension d'une entité intérieure dont la voix ne se révèle "
-             "qu'à ceux qui méritent de l'entendre. Shikai, première libération — un pacte "
-             "murmuré. Bankai, seconde et ultime — dix ans de maîtrise, un facteur de puissance "
-             "qui change la nature même du combat. Kidō, Hohō, Zanjutsu, Hakuda : quatre "
-             "disciplines qui dessinent l'identité de chaque guerrier."),
+             "qu'à ceux qui méritent de l'entendre. Le Shikai est la première libération, un pacte "
+             "murmuré entre le porteur et l'esprit de la lame. Le Bankai, seconde et ultime, exige "
+             "dix ans de maîtrise et change la nature même du combat. Kidō, Hohō, Zanjutsu, Hakuda : "
+             "quatre disciplines qui dessinent l'identité de chaque guerrier."),
             ("Le Secret",
              "Le Konsō Reisai envoie les Capitaines défunts en Enfer depuis des éons. Douze ans "
              "après leur mort, un Hollow est sacrifié devant la tombe, et le Reishi trop dense "
@@ -102,7 +102,7 @@ FICHES_FACTION = {
         ]
     },
     "togabito": {
-        "titre":   "咎人 Togabito — Les Forgés par l'Enfer",
+        "titre":   "咎人 Togabito · Les Forgés par l'Enfer",
         "couleur": COULEURS["pourpre_infernal"],
         "web_fragment": "togabito",
         "sections": [
@@ -114,10 +114,10 @@ FICHES_FACTION = {
              "damnés par jugement, des damnés par accident, des damnés par nécessité cosmique."),
             ("La Transformation",
              "Des siècles de mort et de résurrection font quelque chose à une âme. Certains "
-             "sombrent. D'autres durcissent. D'autres encore — les plus rares — traversent. "
+             "sombrent. D'autres durcissent. Les plus rares traversent. "
              "Ils apprennent à tenir leurs Jigokusari non plus comme un fardeau mais comme une "
              "extension de leur volonté. La puissance qu'un Togabito ancien développe ne "
-             "ressemble à rien de ce que les Trois Mondes connaissent — alchimique, née de "
+             "ressemble à rien de ce que les Trois Mondes connaissent, alchimique, née de "
              "l'absence prolongée de tout espoir."),
             ("Factions internes",
              "Faction Évasion : les plus récents, les plus désespérés, ceux qui veulent sortir. "
@@ -134,7 +134,7 @@ FICHES_FACTION = {
         ]
     },
     "arrancar": {
-        "titre":   "破面 Arrancar — Les Briseurs de Masque",
+        "titre":   "破面 Arrancar · Les Briseurs de Masque",
         "couleur": COULEURS["gris_sable"],
         "web_fragment": "arrancar",
         "sections": [
@@ -165,7 +165,7 @@ FICHES_FACTION = {
         ]
     },
     "quincy": {
-        "titre":   "滅却師 Quincy — Les Survivants de Lumière",
+        "titre":   "滅却師 Quincy · Les Survivants de Lumière",
         "couleur": COULEURS["bleu_abyssal"],
         "web_fragment": "quincy",
         "sections": [
@@ -177,16 +177,16 @@ FICHES_FACTION = {
              "Reishi comme une extension de soi, mais comme un tissu vivant dont on peut lire "
              "chaque fil et anticiper chaque rupture."),
             ("Pourquoi ils détruisent",
-             "Le Reishi d'un Hollow est un poison pour un Quincy — il détruit leur âme sans "
+             "Le Reishi d'un Hollow est un poison pour un Quincy : il détruit leur âme sans "
              "rémission. Les Quincy ne détruisent pas les Hollow par jugement moral. Ils les "
              "détruisent parce qu'ils n'ont pas le luxe de les purifier. L'accusation Shinigami "
-             "— *vous détruisez l'équilibre* — est pour eux une hypocrisie douloureuse : on "
+             "(*vous détruisez l'équilibre*) est pour eux une hypocrisie douloureuse : on "
              "leur reproche de survivre."),
             ("Du Lichtreich au Wandenreich",
              "L'Empire de Lumière fut une civilisation capable de regarder le Gotei en face. "
              "Ses guerriers d'élite portaient les Schrift — lettres de puissance gravées dans "
              "l'âme par l'Empereur. Après la défaite, le génocide ne s'accomplit pas dans la "
-             "violence spectaculaire d'une bataille — il se déroula dans la discrétion "
+             "violence spectaculaire d'une bataille. Il se déroula dans la discrétion "
              "méthodique d'une extermination organisée. La cicatrice ne se referma jamais. Le "
              "Wandenreich naquit dans les ombres du Seireitei."),
             ("Ce qu'ils voient",
@@ -207,7 +207,7 @@ FICHES_FACTION = {
 
 STRATES = [
     {
-        "nom":    "Prātus — Première Strate",
+        "nom":    "Prātus · Première Strate",
         "emoji":  "🔴",
         "couleur": COULEURS["rouge_chaine"],
         "desc":   ("Le Vestibule des Damnés. Chaleur écrasante, sol de cendres, hurlements "
@@ -216,7 +216,7 @@ STRATES = [
                    "La plupart sombrent ici, dans l'oubli de ce qu'ils furent."),
     },
     {
-        "nom":    "Carnale — Deuxième Strate",
+        "nom":    "Carnale · Deuxième Strate",
         "emoji":  "🟠",
         "couleur": 0x8B2500,
         "desc":   ("Les Plaines Brûlantes. Rivières de soufre, corps consumés et régénérés "
@@ -225,7 +225,7 @@ STRATES = [
                    "n'est plus de la force — c'est l'extinction de quelque chose en eux."),
     },
     {
-        "nom":    "Sulfura — Troisième Strate",
+        "nom":    "Sulfura · Troisième Strate",
         "emoji":  "🟡",
         "couleur": 0xB8860B,
         "desc":   ("Les Geysers de Soufre. Vapeurs toxiques, visibilité nulle, terrain "
@@ -234,7 +234,7 @@ STRATES = [
                    "autres errent jusqu'à ce que l'Enfer les broie une fois de plus."),
     },
     {
-        "nom":    "Profundus — Quatrième Strate",
+        "nom":    "Profundus · Quatrième Strate",
         "emoji":  "🔵",
         "couleur": 0x1A0030,
         "desc":   ("L'Obscurité Profonde. Pression spirituelle accablante qui écrase tout "
@@ -243,7 +243,7 @@ STRATES = [
                    "que les mots ne savent pas décrire — ou ne reviennent pas."),
     },
     {
-        "nom":    "Saiōbu — Cinquième Strate",
+        "nom":    "Saiōbu · Cinquième Strate",
         "emoji":  "⚫",
         "couleur": 0x050505,
         "desc":   ("L'Abyssal. Silence total rompu par des vibrations cosmiques que nulle "
@@ -265,7 +265,7 @@ LORE_DATA = {
         "web_fragment": "prologue",
         "description": (
             "Avant que le monde soit ce qu'il est, il n'y avait pas de monde. Il y avait "
-            "autre chose — quelque chose que les rares êtres capables d'en parler appellent "
+            "autre chose, quelque chose que les rares êtres capables d'en parler appellent "
             "la **Mer Primordiale** (原初の海, Gensho no Umi). Pas un océan d'eau, mais un "
             "état : une existence indivise dans laquelle le vivant et le mort n'étaient pas "
             "distincts, dans laquelle chaque âme existait sans naître et disparaissait sans "
@@ -284,7 +284,7 @@ LORE_DATA = {
              "Utilisant sa puissance comme clé de voûte, les ancêtres créèrent Soul "
              "Society, le Monde des Vivants, Hueco Mundo. La vie et la mort furent "
              "séparées. Le cycle des âmes inaugura une ère nouvelle."),
-            ("L'Enfer — antérieur à tout",
+            ("L'Enfer · antérieur à tout",
              "L'Enfer ne fut pas créé. Il existait déjà. Le Monde des Vivants fut "
              "partiellement érigé pour lui servir de couvercle. Ce couvercle repose "
              "sur un équilibre fragile : si le Reiatsu infernal dépasse celui des "
@@ -297,14 +297,14 @@ LORE_DATA = {
         ],
     },
     "fissure": {
-        "titre":  "🩸 La Fissure — Cause et Conséquences",
+        "titre":  "🩸 La Fissure · Cause et Conséquences",
         "couleur": COULEURS["pourpre_infernal"],
         "web_fragment": "prologue",
         "description": (
             "Une anomalie spatiale qui relie l'Enfer aux Trois Mondes. Apparue sans "
             "prévenir, sans cause identifiée, sans précédent dans les archives du Gotei. "
             "La théorie des **Deux Piliers Maudits** offre l'explication la plus crédible : "
-            "deux entités — Mimihagi (Stagnation) et son pendant (Progression) — maintenaient "
+            "deux entités, Mimihagi (Stagnation) et son pendant (Progression), maintenaient "
             "involontairement un contrepoids à l'accumulation infernale. Leur disparition "
             "simultanée a rompu la balance. La Fissure a suivi."
         ),
@@ -314,10 +314,10 @@ LORE_DATA = {
              "Rinki qui débordent dans les Trois Mondes. Augmentation des Hollow "
              "anormaux dans le Monde des Vivants. Les frontières entre Strates vacillent."),
             ("Impact sur chaque faction",
-             "Shinigami : déstabilisation doctrinale, révélation du Konsō Reisai. "
-             "Togabito : relâchement des chaînes, espoir ou signal. "
-             "Arrancar : résonance physique avec leur trou identitaire. "
-             "Quincy : lecture dirigée de la contamination."),
+             "Les **Shinigami** affrontent une déstabilisation doctrinale après la révélation du Konsō Reisai. "
+             "Les **Togabito** sentent leurs chaînes se relâcher, entre espoir et signal. "
+             "Les **Arrancar** ressentent une résonance physique avec leur vide identitaire. "
+             "Les **Quincy** lisent une direction dans la contamination."),
             ("La question",
              "La progression de l'énergie infernale n'est pas aléatoire. Elle suit "
              "une logique. Elle a une direction. Quelque chose cherche quelque chose "
@@ -325,7 +325,7 @@ LORE_DATA = {
         ],
     },
     "reio": {
-        "titre":  "👁️ Le Reiō — Le Roi Mutilé",
+        "titre":  "👁️ Le Reiō · Le Roi Mutilé",
         "couleur": COULEURS["or_ancien"],
         "web_fragment": "prologue",
         "description": (
@@ -357,7 +357,7 @@ LORE_DATA = {
         ],
     },
     "division_zero": {
-        "titre":  "零 La Division Zéro — Garde Royale",
+        "titre":  "零 La Division Zéro · Garde Royale",
         "couleur": COULEURS["or_pale"],
         "web_fragment": "division-zero",
         "description": (
@@ -383,11 +383,11 @@ LORE_DATA = {
              "intervenir signifie laisser l'Enfer se déverser. Les membres "
              "actuels ne sont pas unanimes. La disparition simultanée des "
              "Deux Piliers est soit une catastrophe, soit un acte délibéré "
-             "— et la Division Zéro est la seule qui pourrait le savoir."),
+             "et la Division Zéro est la seule qui pourrait le savoir."),
         ],
     },
     "konso_reisai": {
-        "titre":  "⚰️ Le Konsō Reisai — Le Secret des Capitaines",
+        "titre":  "⚰️ Le Konsō Reisai · Le Secret des Capitaines",
         "couleur": COULEURS["rouge_chaine"],
         "web_fragment": "shinigami",
         "description": (
@@ -473,7 +473,7 @@ LORE_DATA = {
         ],
     },
     "gotei": {
-        "titre":  "🏯 Le Gotei 13 — Des Tueurs aux Gardiens",
+        "titre":  "🏯 Le Gotei 13 · Des Tueurs aux Gardiens",
         "couleur": COULEURS["blanc_seireitei"],
         "web_fragment": "shinigami",
         "description": (
@@ -563,7 +563,7 @@ LORE_DATA = {
         ],
     },
     "frontiere": {
-        "titre":  "🌀 La Frontière — 境界 Kyōkai",
+        "titre":  "🌀 La Frontière · 境界 Kyōkai",
         "couleur": COULEURS["gris_acier"],
         "web_fragment": "prologue",
         "description": (
@@ -614,7 +614,7 @@ LORE_DATA = {
         ],
     },
     "chronologie": {
-        "titre":  "📜 Chronologie — Les Sept Ères",
+        "titre":  "📜 Chronologie · Les Sept Ères",
         "couleur": COULEURS["or_ancien"],
         "web_fragment": "prologue",
         "description": (
@@ -625,7 +625,7 @@ LORE_DATA = {
             "nature de ce qui existait avant elle. Aucune n'a été réparée."
         ),
         "fields": [
-            ("Ère I — La Mer Primordiale",
+            ("Ère I · La Mer Primordiale",
              "Avant les mondes. Un état indivisé où la vie et la mort n'étaient "
              "pas distinctes. L'obscurité rongeait les âmes de l'intérieur. Un "
              "être émergea pour la combattre — celui qu'on nommerait plus tard "
@@ -633,7 +633,7 @@ LORE_DATA = {
              "arrachèrent les membres, le scellèrent dans un cristal. Il ne "
              "résista pas. De sa puissance mutilée, ils créèrent Soul Society, "
              "le Monde des Vivants, Hueco Mundo. L'Enfer, lui, existait déjà."),
-            ("Ère II — Le Chaos Originel",
+            ("Ère II · Le Chaos Originel",
              "Les premiers millions d'années. Soul Society sans loi, gouvernée "
              "par la force brute. Les Hollow dévoraient le Monde des Vivants "
              "sans régulation. Dans les Strates, les premières âmes damnées "
@@ -642,7 +642,7 @@ LORE_DATA = {
              "— Gillian, Adjuchas, Vasto Lorde. Les plus rares brisèrent "
              "leur masque et devinrent Arrancar. Las Noches commença à "
              "s'élever, couche après couche, génération après génération."),
-            ("Ère III — La Fondation du Gotei",
+            ("Ère III · La Fondation du Gotei",
              "Kōshin Jūrōmaru réunit treize guerriers redoutables et imposa "
              "un ordre à Soul Society par la force, district après district. "
              "Ce n'étaient pas des gardiens — c'étaient des tueurs qui avaient "
@@ -651,7 +651,7 @@ LORE_DATA = {
              "mystérieux. Le Konsō Reisai fut formalisé dans les premières "
              "générations — le secret des Capitaines envoyés en Enfer commença "
              "à s'accumuler. La dette naquit ici."),
-            ("Ère IV — La Guerre de Lumière (~1 000 ans avant)",
+            ("Ère IV · La Guerre de Lumière (~1 000 ans avant)",
              "Le Lichtreich — Empire de Lumière des Quincy — défia le Gotei. "
              "Leur Empereur, fils du Reiō, portait une puissance prophétique "
              "que nul ne comprenait encore. La guerre fut totale. L'Empereur "
@@ -659,7 +659,7 @@ LORE_DATA = {
              "— la Shin'ō Academy fut fondée, la brutalité céda la place à "
              "l'institution. Quelque chose de plus noble. Quelque chose de "
              "plus vulnérable."),
-            ("Ère V — Les Siècles de Silence",
+            ("Ère V · Les Siècles de Silence",
              "Le génocide des Quincy — discret, méthodique, famille après "
              "famille. Les survivants créèrent le Wandenreich dans les ombres "
              "du Seireitei, nourris du Reishi de l'ennemi. Pendant ce temps, "
@@ -667,14 +667,14 @@ LORE_DATA = {
              "Certains y ont évolué en entités d'une puissance qui dépasse "
              "tout ce que les Trois Mondes ont produit. La dette s'accumula "
              "en silence pendant des millénaires."),
-            ("Ère VI — La Grande Guerre et la Révélation",
+            ("Ère VI · La Grande Guerre et la Révélation",
              "Le Wandenreich frappa Soul Society. La guerre bouleversa tout. "
              "Les Deux Piliers Maudits — fragments du Reiō qui maintenaient "
              "involontairement l'équilibre entre l'Enfer et les Trois Mondes "
              "— disparurent. Simultanément, ou presque. Après le silence des "
              "armes, la vérité du Konsō Reisai fut révélée aux Capitaines. "
              "Ce qu'ils en firent divisa profondément le haut commandement."),
-            ("Ère VII — La Fissure (maintenant)",
+            ("Ère VII · La Fissure (maintenant)",
              "Sans les Deux Piliers, la balance s'est rompue. Les Portes de "
              "l'Enfer se sont fissurées. Le Jigoku no Rinki déborde dans les "
              "Trois Mondes. Les Jigokusari se relâchent. Les Kushanāda "
@@ -698,7 +698,7 @@ LORE_DATA = {
             ("死神 Shinigami",
              "Depuis combien de temps sert-on une institution fondée sur un "
              "mensonge ? Qu'est-ce qu'on fait quand on l'apprend ? Chaque "
-             "rang offre un angle différent — de l'élève naïf au Capitaine "
+             "rang offre un angle différent, de l'élève naïf au Capitaine "
              "portant le poids de la vérité."),
             ("咎人 Togabito",
              "Comment un être forgé par des siècles de souffrance réagit-il "
@@ -733,14 +733,14 @@ class Lore(commands.Cog):
     @app_commands.describe(sujet="Faction, zone ou concept à consulter")
     @app_commands.choices(sujet=[
         app_commands.Choice(name="La Mer Primordiale & le Péché Originel", value="origine"),
-        app_commands.Choice(name="La Fissure — Cause et Conséquences",     value="fissure"),
-        app_commands.Choice(name="Le Reiō — Le Roi Mutilé",                value="reio"),
+        app_commands.Choice(name="La Fissure · Cause et Conséquences",      value="fissure"),
+        app_commands.Choice(name="Le Reiō · Le Roi Mutilé",               value="reio"),
         app_commands.Choice(name="La Division Zéro",                       value="division_zero"),
-        app_commands.Choice(name="Le Konsō Reisai — Le Secret",            value="konso_reisai"),
-        app_commands.Choice(name="Le Gotei 13 — Des Tueurs aux Gardiens",  value="gotei"),
+        app_commands.Choice(name="Le Konsō Reisai · Le Secret",           value="konso_reisai"),
+        app_commands.Choice(name="Le Gotei 13 · Des Tueurs aux Gardiens", value="gotei"),
         app_commands.Choice(name="Les Cinq Strates de l'Enfer",            value="strates_lore"),
-        app_commands.Choice(name="La Frontière — 境界 Kyōkai",              value="frontiere"),
-        app_commands.Choice(name="Chronologie — Les Sept Ères",            value="chronologie"),
+        app_commands.Choice(name="La Frontière · 境界 Kyōkai",             value="frontiere"),
+        app_commands.Choice(name="Chronologie · Les Sept Ères",            value="chronologie"),
         app_commands.Choice(name="Tensions Inter-Factions",                value="tensions"),
         app_commands.Choice(name="Guide de Création de Personnage",        value="creation"),
         app_commands.Choice(name="Système de Combat & Points",             value="systeme"),
@@ -753,7 +753,7 @@ class Lore(commands.Cog):
     @app_commands.command(name="glossaire", description="Définition d'un terme japonais du lore.")
     @app_commands.describe(terme="Terme à définir")
     @app_commands.choices(terme=[
-        app_commands.Choice(name=f"{v[0]} — {k.replace('_', ' ').capitalize()}", value=k)
+        app_commands.Choice(name=f"{v[0]} · {k.replace('_', ' ').capitalize()}", value=k)
         for k, v in list(GLOSSAIRE.items())[:25]  # Discord limite à 25 choices
     ])
     async def glossaire(self, interaction: discord.Interaction, terme: str):
@@ -762,7 +762,7 @@ class Lore(commands.Cog):
             return
         kanji, definition = GLOSSAIRE[terme]
         embed = discord.Embed(
-            title=f"📜 {kanji} — {terme.replace('_', ' ').capitalize()}",
+            title=f"📜 {kanji} · {terme.replace('_', ' ').capitalize()}",
             description=definition,
             color=COULEURS["or_ancien"]
         )
@@ -798,7 +798,7 @@ class Lore(commands.Cog):
             description=(
                 "L'Enfer est structuré en cinq niveaux de violence croissante. "
                 "Plus une âme descend, plus la puissance requise pour y survivre est grande. "
-                "Depuis la Fissure, les frontières entre Strates vacillent — l'architecture "
+                "Depuis la Fissure, les frontières entre Strates vacillent, l'architecture "
                 "immuable de l'Enfer tremble pour la première fois."
             ),
             color=COULEURS["pourpre_infernal"]

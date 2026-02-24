@@ -57,7 +57,7 @@ async def _autocomplete_voie(interaction: discord.Interaction, current: str):
     factions = [faction] if faction else VOIES_PAR_FACTION.keys()
     for f in factions:
         for voie in VOIES_PAR_FACTION.get(f, []):
-            label = f"{voie['kanji']} {voie['nom']} — {voie['sous_titre']}"
+            label = f"{voie['kanji']} {voie['nom']} · {voie['sous_titre']}"
             if current.lower() in label.lower() or current.lower() in voie["id"]:
                 choices.append(app_commands.Choice(name=label[:100], value=voie["id"]))
     return choices[:25]
@@ -82,7 +82,7 @@ async def _autocomplete_debloquer(interaction: discord.Interaction, current: str
             ok, _ = peut_debloquer(apt["id"], debloquees, rang, faction)
             if not ok:
                 continue
-            label = f"{EMOJI_PALIER[apt['palier']]} {apt['nom']} ({apt['kanji']}) — {apt['cout']}霊力"
+            label = f"{EMOJI_PALIER[apt['palier']]} {apt['nom']} ({apt['kanji']}) · {apt['cout']}霊力"
             if current.lower() in label.lower() or current.lower() in apt["id"]:
                 choices.append(app_commands.Choice(name=label[:100], value=apt["id"]))
     return choices[:25]
@@ -182,7 +182,7 @@ class Aptitudes(commands.Cog):
         emoji_f = EMOJI_FACTION.get(faction, "")
 
         embed = discord.Embed(
-            title=f"霊力 Reiryoku — {perso.get('nom_perso', '?')}",
+            title=f"霊力 Reiryoku · {perso.get('nom_perso', '?')}",
             color=couleur,
         )
         embed.set_author(name=cible.display_name, icon_url=cible.display_avatar.url)
@@ -192,7 +192,7 @@ class Aptitudes(commands.Cog):
         barre = "█" * barre_pct + "░" * (10 - barre_pct)
         budget_txt = f"`{barre}` **{depense}** / {budget} 霊力"
         if sur_budget:
-            budget_txt += "\n⚠️ **Sur-budget** — aptitudes en excès"
+            budget_txt += "\n⚠️ **Sur-budget**, aptitudes en excès"
         embed.add_field(name="Budget Reiryoku", value=budget_txt, inline=False)
 
         # Aptitudes par Voie
@@ -208,7 +208,7 @@ class Aptitudes(commands.Cog):
             else:
                 val = "*Aucune*"
             embed.add_field(
-                name=f"{voie['kanji']} {voie['nom']} — {len(apts_voie)}/{total_voie}",
+                name=f"{voie['kanji']} {voie['nom']} · {len(apts_voie)}/{total_voie}",
                 value=val,
                 inline=True,
             )
@@ -237,7 +237,7 @@ class Aptitudes(commands.Cog):
 
         couleur = voie_data.get("couleur", COULEURS["or_ancien"])
         embed = discord.Embed(
-            title=f"{voie_data['kanji']} {voie_data['nom']} — {voie_data['sous_titre']}",
+            title=f"{voie_data['kanji']} {voie_data['nom']} · {voie_data['sous_titre']}",
             description=voie_data["description"],
             color=couleur,
         )
@@ -245,7 +245,7 @@ class Aptitudes(commands.Cog):
         for apt in voie_data["aptitudes"]:
             est_debloque = apt["id"] in debloquees
             marqueur = "✅" if est_debloque else "🔒"
-            palier_label = f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} — {NOM_PALIER[apt['palier']]}"
+            palier_label = f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} · {NOM_PALIER[apt['palier']]}"
 
             # Description abrégée (première phrase)
             desc = apt["description"]
@@ -264,7 +264,7 @@ class Aptitudes(commands.Cog):
                 rang_txt = f"\n*Rang minimum : {apt['rang_min']}*"
 
             embed.add_field(
-                name=f"{marqueur} {apt['nom']} ({apt['kanji']}) — {palier_label} · {apt['cout']}霊力",
+                name=f"{marqueur} {apt['nom']} ({apt['kanji']}) · {palier_label} · {apt['cout']}霊力",
                 value=f"{premiere_phrase}{prereqs_txt}{rang_txt}",
                 inline=False,
             )
@@ -303,7 +303,7 @@ class Aptitudes(commands.Cog):
         # Méta
         embed.add_field(
             name="Palier",
-            value=f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} — {NOM_PALIER[apt['palier']]}",
+            value=f"{EMOJI_PALIER[apt['palier']]} P{apt['palier']} · {NOM_PALIER[apt['palier']]}",
             inline=True,
         )
         embed.add_field(name="Coût", value=f"{apt['cout']} 霊力", inline=True)
@@ -369,7 +369,7 @@ class Aptitudes(commands.Cog):
         depense = reiryoku_depense(debloquees)
 
         embed = discord.Embed(
-            title=f"✅ {apt['kanji']} {apt['nom']} — Débloquée",
+            title=f"✅ {apt['kanji']} {apt['nom']} · Débloquée",
             description=apt["description"][:300],
             color=COULEURS_FACTION.get(faction, COULEURS["or_ancien"]),
         )

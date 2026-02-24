@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infernum Aeterna — Simulateur de Build</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── Variables (identiques a aptitudes.html) ─────────────────────────── */
+:root {
+  --bg-deep: #0A0A0F;
+  --bg-content: #111118;
+  --bg-card: #18181F;
+  --bg-card-hover: #1F1F28;
+  --text-main: #F5F5F5;
+  --text-muted: #A0A0B0;
+  --or-ancien: #C9A84C;
+  --blanc-seireitei: #E8E8F0;
+  --pourpre: #6B1FA8;
+  --gris-sable: #8A8A7A;
+  --bleu-abyssal: #1A3A6B;
+  --faction-color: var(--or-ancien);
+  --fc-rgb: 201,168,76;
+}
+
+/* ── Reset & Base ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Noto Serif JP', 'Georgia', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { color: var(--faction-color); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ── FX layers ────────────────────────────────────────────────────────── */
+#fx-bg-overlay {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  transition: background 1.2s ease;
+}
+#fx-particles {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.sim-header {
+  position: relative; z-index: 10;
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(10px);
+}
+.sim-header-left { display: flex; align-items: center; gap: 1.2rem; }
+.sim-header-title {
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--faction-color);
+}
+.sim-header-kanji {
+  font-size: 0.85rem; color: var(--text-muted); opacity: 0.7;
+}
+.sim-header nav { display: flex; gap: 0.8rem; }
+.sim-header nav a {
+  font-size: 0.82rem; color: var(--text-muted);
+  padding: 0.3rem 0.6rem; border-radius: 4px;
+  transition: color 0.3s, background 0.3s;
+}
+.sim-header nav a:hover {
+  color: var(--text-main); background: rgba(255,255,255,0.05);
+  text-decoration: none;
+}
+
+/* ── Section: Faction Select ──────────────────────────────────────────── */
+#factionSelect {
+  position: relative; z-index: 10;
+  min-height: calc(100vh - 60px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 2rem 1rem;
+}
+.faction-select-title {
+  font-size: 1.4rem; color: var(--or-ancien);
+  margin-bottom: 0.4rem; text-align: center;
+}
+.faction-select-sub {
+  font-size: 0.85rem; color: var(--text-muted);
+  margin-bottom: 2rem; text-align: center;
+}
+.faction-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  max-width: 700px; width: 100%;
+}
+.faction-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 2rem 1.4rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+.faction-card:hover {
+  border-color: var(--card-color, var(--or-ancien));
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(var(--card-rgb, 201,168,76), 0.15);
+}
+.faction-card .card-emblem {
+  width: 80px; height: 80px; margin: 0 auto 0.8rem;
+  opacity: 0.6; transition: opacity 0.3s;
+}
+.faction-card:hover .card-emblem { opacity: 0.9; }
+.faction-card .card-kanji {
+  font-size: 2.2rem; line-height: 1;
+  position: absolute; top: 10px; right: 14px;
+  opacity: 0.06; font-weight: 700;
+  pointer-events: none;
+}
+.faction-card .card-nom {
+  font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem;
+}
+.faction-card .card-accroche {
+  font-size: 0.78rem; color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ── Section: Build Screen ────────────────────────────────────────────── */
+#buildScreen {
+  position: relative; z-index: 10;
+  display: none;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+}
+
+/* ── Rank Bar ─────────────────────────────────────────────────────────── */
+.rank-bar {
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(17,17,24,0.9);
+  backdrop-filter: blur(8px);
+}
+.rank-chips {
+  display: flex; gap: 0.5rem;
+  overflow-x: auto; padding-bottom: 0.4rem;
+  scrollbar-width: thin;
+}
+.rank-chip {
+  white-space: nowrap;
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.rank-chip:hover {
+  border-color: var(--faction-color);
+  color: var(--text-main);
+}
+.rank-chip.active {
+  background: var(--faction-color);
+  color: var(--bg-deep);
+  border-color: var(--faction-color);
+  font-weight: 700;
+}
+.rank-chip .chip-budget {
+  opacity: 0.7; font-size: 0.72rem;
+}
+
+/* ── Reiryoku Meter ───────────────────────────────────────────────────── */
+.meter-wrap {
+  margin-top: 0.6rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.meter-bar {
+  flex: 1; height: 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 5px; overflow: hidden;
+  position: relative;
+}
+.meter-fill {
+  height: 100%; border-radius: 5px;
+  transition: width 0.4s ease, background 0.4s ease;
+  position: relative;
+}
+.meter-fill::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0; width: 12px;
+  background: inherit; filter: brightness(1.5);
+  border-radius: 0 5px 5px 0;
+  animation: meterPulse 2s ease-in-out infinite;
+}
+.meter-label {
+  font-size: 0.82rem; color: var(--text-muted);
+  white-space: nowrap; min-width: 90px; text-align: right;
+}
+
+/* ── Voie Pills ───────────────────────────────────────────────────────── */
+.voie-bar {
+  padding: 0.6rem 1.2rem;
+  display: flex; gap: 0.5rem;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  background: rgba(17,17,24,0.8);
+}
+.voie-pill {
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.voie-pill:hover {
+  border-color: var(--faction-color);
+  color: var(--text-main);
+}
+.voie-pill.active {
+  background: var(--faction-color);
+  color: var(--bg-deep);
+  border-color: var(--faction-color);
+  font-weight: 700;
+}
+
+/* ── Main Build Area ──────────────────────────────────────────────────── */
+.build-area {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  min-height: 0;
+}
+
+/* ── Tree Canvas ──────────────────────────────────────────────────────── */
+.tree-canvas {
+  position: relative;
+  padding: 1.5rem;
+  overflow: auto;
+  min-height: 450px;
+}
+.tree-svg-wrap {
+  position: relative;
+  width: 100%; min-height: 400px;
+}
+.tree-svg-wrap svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.tree-svg-wrap svg path {
+  fill: none; stroke-width: 2;
+  transition: stroke 0.3s, opacity 0.3s;
+}
+.tree-svg-wrap svg path.conn-active {
+  stroke: var(--faction-color); opacity: 0.8;
+  stroke-dasharray: none;
+  animation: flowEnergy 2s linear infinite;
+}
+.tree-svg-wrap svg path.conn-available {
+  stroke: var(--faction-color); opacity: 0.35;
+  stroke-dasharray: 6 4;
+  animation: flowEnergy 3s linear infinite;
+}
+.tree-svg-wrap svg path.conn-inactive {
+  stroke: rgba(255,255,255,0.1); opacity: 0.4;
+  stroke-dasharray: none;
+}
+
+/* ── Skill Nodes ──────────────────────────────────────────────────────── */
+.tree-node {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.2s;
+  z-index: 5;
+}
+.tree-node:hover { transform: translate(-50%, -50%) scale(1.15); z-index: 10; }
+.tree-node.selected { z-index: 12; }
+
+.node-circle {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: var(--bg-card);
+  transition: all 0.3s;
+  position: relative;
+}
+.node-circle .node-kanji {
+  font-weight: 700; line-height: 1;
+  transition: color 0.3s;
+}
+.node-circle .node-check {
+  position: absolute; top: -4px; right: -4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--faction-color);
+  color: var(--bg-deep);
+  font-size: 10px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+}
+.node-label {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 80px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s;
+}
+
+/* Node sizes by palier */
+.tree-node[data-p="1"] .node-circle { width: 48px; height: 48px; }
+.tree-node[data-p="1"] .node-kanji  { font-size: 16px; }
+.tree-node[data-p="2"] .node-circle { width: 56px; height: 56px; }
+.tree-node[data-p="2"] .node-kanji  { font-size: 18px; }
+.tree-node[data-p="3"] .node-circle { width: 66px; height: 66px; }
+.tree-node[data-p="3"] .node-kanji  { font-size: 20px; }
+
+/* Node states */
+.tree-node.node-locked .node-circle {
+  opacity: 0.35;
+  border-color: rgba(255,255,255,0.08);
+}
+.tree-node.node-locked .node-label { opacity: 0.35; }
+
+.tree-node.node-available .node-circle {
+  border-color: var(--faction-color);
+  animation: nodeAvailable 2s ease-in-out infinite;
+}
+.tree-node.node-available .node-label { color: var(--text-main); }
+
+.tree-node.node-unlocked .node-circle {
+  border-color: var(--faction-color);
+  background: rgba(var(--fc-rgb), 0.15);
+  box-shadow: 0 0 12px rgba(var(--fc-rgb), 0.25);
+}
+.tree-node.node-unlocked .node-kanji { color: var(--faction-color); }
+.tree-node.node-unlocked .node-check { display: flex; }
+.tree-node.node-unlocked .node-label { color: var(--faction-color); }
+
+.tree-node.node-blocked .node-circle {
+  border-color: #8B0000;
+  opacity: 0.5;
+}
+
+.tree-node.selected .node-circle {
+  box-shadow: 0 0 0 3px rgba(var(--fc-rgb), 0.4);
+}
+
+/* ── Detail Panel ─────────────────────────────────────────────────────── */
+.detail-panel {
+  border-left: 1px solid rgba(255,255,255,0.06);
+  background: rgba(17,17,24,0.95);
+  padding: 1.2rem;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.detail-empty {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 0.85rem;
+  text-align: center; padding: 2rem;
+}
+.detail-content { display: none; flex-direction: column; gap: 0.8rem; }
+.detail-content.visible { display: flex; }
+.detail-palier {
+  font-size: 0.72rem; color: var(--faction-color);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.detail-nom { font-size: 1.15rem; font-weight: 700; }
+.detail-kanji { font-size: 0.9rem; color: var(--text-muted); }
+.detail-desc {
+  font-size: 0.82rem; color: var(--text-muted);
+  line-height: 1.6;
+}
+.detail-cond {
+  font-size: 0.78rem; color: #C9A84C;
+  padding: 0.5rem 0.7rem;
+  background: rgba(201,168,76,0.08);
+  border-radius: 6px;
+  border-left: 3px solid rgba(201,168,76,0.3);
+}
+.detail-prereqs {
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.detail-prereqs span { color: var(--faction-color); }
+.detail-btn {
+  margin-top: auto;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--faction-color);
+  background: rgba(var(--fc-rgb), 0.1);
+  color: var(--faction-color);
+  font-size: 0.88rem; font-weight: 700;
+  transition: all 0.3s;
+}
+.detail-btn:hover:not(:disabled) {
+  background: var(--faction-color);
+  color: var(--bg-deep);
+}
+.detail-btn:disabled {
+  opacity: 0.3; cursor: not-allowed;
+}
+.detail-btn.btn-remove {
+  border-color: #8B0000; color: #CC4444;
+  background: rgba(139,0,0,0.1);
+}
+.detail-btn.btn-remove:hover:not(:disabled) {
+  background: #8B0000; color: #fff;
+}
+
+/* ── Summary Bar ──────────────────────────────────────────────────────── */
+.summary-bar {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(17,17,24,0.9);
+  padding: 0.8rem 1.2rem;
+}
+.summary-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; color: var(--text-muted); font-size: 0.82rem;
+}
+.summary-toggle:hover { color: var(--text-main); }
+.summary-toggle .arrow { transition: transform 0.3s; }
+.summary-toggle.open .arrow { transform: rotate(180deg); }
+.summary-details {
+  display: none;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.summary-details.open { display: block; }
+.summary-voies {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+  font-size: 0.78rem; color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+.summary-voies .sv-name { color: var(--faction-color); }
+.summary-actions {
+  display: flex; gap: 0.6rem; flex-wrap: wrap;
+}
+.summary-actions button {
+  padding: 0.3rem 0.7rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  transition: all 0.3s;
+}
+.summary-actions button:hover {
+  border-color: var(--faction-color);
+  color: var(--text-main);
+}
+
+/* ── Import Modal ─────────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.7);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 90%; max-width: 500px;
+}
+.modal-box h3 { margin-bottom: 0.8rem; font-size: 1rem; }
+.modal-box textarea {
+  width: 100%; height: 120px;
+  background: var(--bg-deep); color: var(--text-main);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px; padding: 0.6rem;
+  font-family: monospace; font-size: 0.8rem;
+  resize: vertical;
+}
+.modal-box .modal-actions {
+  display: flex; gap: 0.6rem; margin-top: 0.8rem; justify-content: flex-end;
+}
+.modal-box button {
+  padding: 0.4rem 1rem; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-card); color: var(--text-muted);
+  font-size: 0.82rem;
+}
+.modal-box button.primary {
+  background: var(--faction-color); color: var(--bg-deep);
+  border-color: var(--faction-color); font-weight: 700;
+}
+
+/* ── Toast ─────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  z-index: 200;
+  padding: 0.6rem 1.2rem; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--faction-color);
+  color: var(--text-main); font-size: 0.82rem;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* ── Animations ───────────────────────────────────────────────────────── */
+@keyframes nodeAvailable {
+  0%, 100% { box-shadow: 0 0 6px rgba(var(--fc-rgb), 0.2); }
+  50% { box-shadow: 0 0 14px rgba(var(--fc-rgb), 0.45); }
+}
+@keyframes unlockFlash {
+  0% { transform: translate(-50%,-50%) scale(1); filter: brightness(1); }
+  30% { transform: translate(-50%,-50%) scale(1.25); filter: brightness(1.8); }
+  100% { transform: translate(-50%,-50%) scale(1); filter: brightness(1); }
+}
+@keyframes flowEnergy {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes meterPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .faction-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+  .faction-card { padding: 1.2rem 0.8rem; }
+  .faction-card .card-emblem { width: 60px; height: 60px; }
+  .build-area { grid-template-columns: 1fr; }
+  .detail-panel {
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    max-height: 300px;
+  }
+  .tree-node[data-p="1"] .node-circle { width: 42px; height: 42px; }
+  .tree-node[data-p="1"] .node-kanji  { font-size: 14px; }
+  .tree-node[data-p="2"] .node-circle { width: 50px; height: 50px; }
+  .tree-node[data-p="2"] .node-kanji  { font-size: 16px; }
+  .tree-node[data-p="3"] .node-circle { width: 58px; height: 58px; }
+  .tree-node[data-p="3"] .node-kanji  { font-size: 18px; }
+}
+@media (max-width: 480px) {
+  .faction-grid { grid-template-columns: 1fr; }
+  .sim-header { padding: 0.6rem 0.8rem; }
+  .sim-header nav a { font-size: 0.75rem; padding: 0.2rem 0.4rem; }
+  .tree-canvas { padding: 0.8rem; }
+  .node-label { font-size: 0.6rem; max-width: 65px; }
+}
+</style>
+</head>
+<body>
+
+<!-- FX layers (populated by effects.js) -->
+
+<!-- Header -->
+<header class="sim-header">
+  <div class="sim-header-left">
+    <div>
+      <div class="sim-header-title" id="headerTitle">\u6A21\u64EC\u5668 \u2014 Simulateur de Build</div>
+      <div class="sim-header-kanji" id="headerSub">Infernum Aeterna</div>
+    </div>
+  </div>
+  <nav>
+    <a href="aptitudes.html">\u2190 Aptitudes</a>
+    <a href="chronologie.html">\u2190 Chronologie</a>
+    <a href="index.html">\u2190 Lore</a>
+    <a href="#" id="btnChangeFaction" style="display:none;">Changer de faction</a>
+  </nav>
+</header>
+
+<!-- Section: Faction Select -->
+<section id="factionSelect">
+  <div class="faction-select-title">\u9078\u629E \u2014 Choisissez votre Faction</div>
+  <div class="faction-select-sub">S\u00E9lectionnez une faction pour commencer \u00E0 construire votre arbre d'aptitudes.</div>
+  <div class="faction-grid" id="factionGrid"></div>
+</section>
+
+<!-- Section: Build Screen -->
+<section id="buildScreen">
+  <!-- Rank Bar -->
+  <div class="rank-bar">
+    <div class="rank-chips" id="rankChips"></div>
+    <div class="meter-wrap">
+      <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="meter-label" id="meterLabel">0 / 0 \u970A\u529B</div>
+    </div>
+  </div>
+  <!-- Voie Pills -->
+  <div class="voie-bar" id="voieBar"></div>
+  <!-- Main Area -->
+  <div class="build-area">
+    <div class="tree-canvas" id="treeCanvas"></div>
+    <div class="detail-panel">
+      <div class="detail-empty" id="detailEmpty">
+        <div>Cliquez sur un n\u0153ud<br>pour voir ses d\u00E9tails</div>
+      </div>
+      <div class="detail-content" id="detailContent">
+        <div class="detail-palier" id="detPalier"></div>
+        <div class="detail-nom" id="detNom"></div>
+        <div class="detail-kanji" id="detKanji"></div>
+        <div class="detail-desc" id="detDesc"></div>
+        <div class="detail-prereqs" id="detPrereqs"></div>
+        <div class="detail-cond" id="detCond" style="display:none"></div>
+        <button class="detail-btn" id="detBtn" disabled></button>
+      </div>
+    </div>
+  </div>
+  <!-- Summary Bar -->
+  <div class="summary-bar">
+    <div class="summary-toggle" id="summaryToggle">
+      <span>R\u00E9sum\u00E9 du build</span>
+      <span class="arrow">\u25BC</span>
+    </div>
+    <div class="summary-details" id="summaryDetails">
+      <div class="summary-voies" id="summaryVoies"></div>
+      <div class="summary-actions">
+        <button id="btnCopyLink">\uD83D\uDD17 Copier le lien</button>
+        <button id="btnExportJSON">\uD83D\uDCE4 Exporter JSON</button>
+        <button id="btnImportJSON">\uD83D\uDCE5 Importer JSON</button>
+        <button id="btnReset">\u267B\uFE0F R\u00E9initialiser</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal-box">
+    <h3>\uD83D\uDCE5 Importer un Build</h3>
+    <textarea id="importTextarea" placeholder='Collez votre JSON ici...'></textarea>
+    <div class="modal-actions">
+      <button id="importCancel">Annuler</button>
+      <button id="importConfirm" class="primary">Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts -->
+<script src="effects.js"></script>
+<script src="simulateur-data.js"></script>
+<script src="simulateur-app.js"></script>
+</body>
+</html>

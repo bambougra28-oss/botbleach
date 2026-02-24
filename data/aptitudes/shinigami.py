@@ -1,6 +1,6 @@
 """
 INFERNUM AETERNA — Aptitudes Shinigami
-Les Quatre Disciplines : Zanjutsu, Kidō, Hohō, Hakuda
+Les Cinq Disciplines : Zanjutsu, Kidō, Hohō, Hakuda, Shunkō
 """
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -644,25 +644,6 @@ HAKUDA = {
         },
         {
             "id": "shin_hak_p3b",
-            "nom": "Shunkō",
-            "kanji": "瞬閧",
-            "palier": 3,
-            "cout": 3,
-            "prereqs": ["shin_hak_p2a", "shin_hak_p2c", "shin_kid_p2a"],
-            "rang_min": "taicho",
-            "description": (
-                "La Clameur Éclair. L'union interdite du Hakuda et du Kidō — le Reishi "
-                "concentré par l'Eishōhaki est redirigé à travers les membres au lieu "
-                "d'être projeté en sort. Le résultat est une aura de puissance brute "
-                "qui enveloppe le corps du combattant, annihilant tout vêtement sur le "
-                "dos et les épaules. Chaque frappe porte la force combinée du poing et "
-                "du Kidō. Technique légendaire que seuls les plus grands maîtres du "
-                "double art ont su manifester."
-            ),
-            "condition_rp": "Arc RP démontrant la fusion du Hakuda et du Kidō en combat.",
-        },
-        {
-            "id": "shin_hak_p3c",
             "nom": "Oni Dekopin",
             "kanji": "鬼デコピン",
             "palier": 3,
@@ -683,7 +664,159 @@ HAKUDA = {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  VOIE 5 — SHUNKŌ (瞬閧) La Clameur Éclair
+# ══════════════════════════════════════════════════════════════════════════════
+
+SHUNKO = {
+    "id": "shin_shunko",
+    "nom": "Shunkō",
+    "kanji": "瞬閧",
+    "sous_titre": "La Clameur Éclair",
+    "faction": "shinigami",
+    "couleur": 0xE066FF,
+    "description": (
+        "L'union interdite du Hakuda et du Kidō. Le Reishi concentré par l'Eishōhaki "
+        "est redirigé à travers les membres au lieu d'être projeté en sort — une fusion "
+        "que seule une poignée de combattants dans l'histoire a su manifester. Le Shunkō "
+        "est une voie qui exige la maîtrise simultanée du poing et de l'incantation, un "
+        "chemin entre deux disciplines que tout sépare."
+    ),
+    "aptitudes": [
+        # ── P1 — Éveil ──────────────────────────────────────────────────────
+        {
+            "id": "shin_shun_p1a",
+            "nom": "Shunkō",
+            "kanji": "瞬閧",
+            "palier": 1,
+            "cout": 1,
+            "prereqs": ["shin_hak_p2a", "shin_kid_p2a"],
+            "rang_min": "fukutaicho",
+            "description": (
+                "L'union interdite du Hakuda et du Kidō. Le Reishi concentré par "
+                "l'Eishōhaki est redirigé à travers les membres. Une aura de puissance "
+                "brute enveloppe le corps, annihilant tout vêtement sur le dos et les "
+                "épaules. Technique instable — l'énergie se dissipe après quelques "
+                "échanges et le contrecoup physique est sévère. L'élément se révèle "
+                "lors de la première activation : Foudre (雷), Vent (風), Flamme (炎) "
+                "ou Glace (氷), fixé définitivement."
+            ),
+            "condition_rp": "Manifestation spontanée ou provoquée lors d'un combat alliant Hakuda et Kidō.",
+        },
+        {
+            "id": "shin_shun_p1b",
+            "nom": "Hanki",
+            "kanji": "反鬼",
+            "palier": 1,
+            "cout": 1,
+            "prereqs": ["shin_hak_p1a", "shin_kid_p2a"],
+            "rang_min": "fukutaicho",
+            "description": (
+                "Le Revers Démoniaque. Technique née de la compréhension intime du flux "
+                "de Kidō à travers le corps. En produisant une énergie exactement inverse "
+                "à un sort adverse au moment de l'impact physique, le combattant le "
+                "neutralise intégralement. Requiert un timing parfait et une lecture "
+                "instinctive du Reishi ennemi. Chaque sort contré est une équation "
+                "résolue en un battement de cœur."
+            ),
+            "condition_rp": "Neutralisation d'un sort adverse par instinct martial en combat.",
+        },
+        {
+            "id": "shin_shun_p1c",
+            "nom": "Reishi Junkan",
+            "kanji": "霊子循環",
+            "palier": 1,
+            "cout": 1,
+            "prereqs": ["shin_kid_p1a", "shin_kid_p1c"],
+            "rang_min": None,
+            "description": (
+                "La Circulation Spirituelle. Le fondement invisible de toute maîtrise du "
+                "Shunkō. Le pratiquant apprend à faire circuler le Reishi à travers les "
+                "méridiens de son corps plutôt que de le projeter vers l'extérieur. Cette "
+                "circulation intérieure révèle l'affinité élémentaire naturelle du "
+                "combattant et pose les bases de la fusion Hakuda-Kidō. Sans cette "
+                "compréhension, le Shunkō reste une explosion incontrôlée."
+            ),
+            "condition_rp": None,
+        },
+        # ── P2 — Maîtrise ──────────────────────────────────────────────────
+        {
+            "id": "shin_shun_p2a",
+            "nom": "Shunkō Seigyo",
+            "kanji": "瞬閧・制御",
+            "palier": 2,
+            "cout": 2,
+            "prereqs": ["shin_shun_p1a", "shin_shun_p1c"],
+            "rang_min": None,
+            "description": (
+                "La Clameur Domptée. L'aura élémentaire se stabilise sans fluctuation. "
+                "Le combattant maintient la fusion Hakuda-Kidō sur de longues séquences "
+                "sans perte de contrôle. Des effets élémentaires secondaires se manifestent : "
+                "arcs parasites pour la Foudre, turbulences coupantes pour le Vent, "
+                "irradiation thermique pour la Flamme, givre spontané pour la Glace."
+            ),
+            "condition_rp": "Maintien du Shunkō sur au moins 3 échanges consécutifs en combat.",
+        },
+        {
+            "id": "shin_shun_p2b",
+            "nom": "Shunkō Senkei",
+            "kanji": "瞬閧・戦形",
+            "palier": 2,
+            "cout": 2,
+            "prereqs": ["shin_shun_p1a", "shin_shun_p1b"],
+            "rang_min": None,
+            "description": (
+                "La Forme de Guerre. La concentration de l'aura Shunkō en une forme de "
+                "combat précise. L'énergie élémentaire cesse d'être une aura diffuse pour "
+                "devenir une arme : lames d'air, griffes de foudre, poings de flamme ou "
+                "serres de glace. Cette forme naît de la fusion entre la maîtrise offensive "
+                "du Shunkō et la compréhension défensive du Hanki — il faut savoir projeter "
+                "ET contenir l'énergie pour la sculpter."
+            ),
+            "condition_rp": "Utilisation offensive de la forme élémentaire concentrée en combat réel.",
+        },
+        # ── P3 — Transcendance ──────────────────────────────────────────────
+        {
+            "id": "shin_shun_p3a",
+            "nom": "Shunkō Kanzen",
+            "kanji": "瞬閧・完全",
+            "palier": 3,
+            "cout": 3,
+            "prereqs": ["shin_shun_p2a", "shin_shun_p2b"],
+            "rang_min": "taicho",
+            "description": (
+                "La Clameur Parfaite. Le Shunkō ne se contente plus d'envelopper le corps "
+                "— il se projette à distance, transformant l'environnement sur une trentaine "
+                "de mètres. Le combattant et son élément ne font plus qu'un : la Foudre "
+                "frappe là où il regarde, le Vent tranche là où il pense, la Flamme dévore "
+                "ce qu'il touche, la Glace fige ce qu'il effleure. Technique ultime propre "
+                "à chaque utilisateur, fruit d'une vie de fusion entre le poing et le sort."
+            ),
+            "condition_rp": "Maîtrise absolue démontrée sur 3 combats en Shunkō.",
+        },
+        {
+            "id": "shin_shun_p3b",
+            "nom": "Mukū Shunkō",
+            "kanji": "無空瞬閧",
+            "palier": 3,
+            "cout": 3,
+            "prereqs": ["shin_shun_p3a"],
+            "rang_min": "taicho",
+            "description": (
+                "La Clameur du Vide. Au-delà de l'élément. Le Shunkō transcende l'affinité "
+                "élémentaire pour devenir pure énergie, invisible et absolue. L'aura disparaît "
+                "aux yeux de l'observateur — aucune flamme, aucun arc, aucune brise — mais "
+                "la puissance est intacte, amplifiée par l'absence de forme. Le combattant "
+                "a résolu l'ultime contradiction du Shunkō : ne plus avoir besoin de "
+                "manifester la puissance pour l'exercer. Seuls ceux qui ont maîtrisé "
+                "parfaitement leur élément peuvent choisir de l'abandonner."
+            ),
+            "condition_rp": "Arc RP de dépassement intérieur — transcendance de l'affinité élémentaire.",
+        },
+    ],
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  EXPORT
 # ══════════════════════════════════════════════════════════════════════════════
 
-VOIES_SHINIGAMI = [ZANJUTSU, KIDO, HOHO, HAKUDA]
+VOIES_SHINIGAMI = [ZANJUTSU, KIDO, HOHO, HAKUDA, SHUNKO]

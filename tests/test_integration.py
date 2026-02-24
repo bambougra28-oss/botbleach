@@ -437,16 +437,18 @@ def test_aptitudes_constants():
 
 
 def test_aptitudes_data_completeness():
-    """Vérifie la complétude des données d'aptitudes (132 aptitudes, 16 Voies)."""
+    """Vérifie la complétude des données d'aptitudes (139 aptitudes, 17 Voies)."""
     from data.aptitudes import VOIES_PAR_FACTION, APTITUDES_INDEX, VOIES_INDEX
     # 4 factions
     assert set(VOIES_PAR_FACTION.keys()) == {"shinigami", "togabito", "arrancar", "quincy"}
-    # 4 Voies par faction = 16 Voies
+    # 4 Voies par faction sauf shinigami (5 avec Shunkō) = 17 Voies
+    voies_attendues = {"shinigami": 5, "togabito": 4, "arrancar": 4, "quincy": 4}
     for faction, voies in VOIES_PAR_FACTION.items():
-        assert len(voies) == 4, f"{faction} a {len(voies)} Voies (attendu 4)"
-    assert len(VOIES_INDEX) == 16, f"{len(VOIES_INDEX)} Voies (attendu 16)"
-    # 7-9 aptitudes par Voie = 132 aptitudes
-    assert len(APTITUDES_INDEX) == 133, f"{len(APTITUDES_INDEX)} aptitudes (attendu 133)"
+        attendu = voies_attendues[faction]
+        assert len(voies) == attendu, f"{faction} a {len(voies)} Voies (attendu {attendu})"
+    assert len(VOIES_INDEX) == 17, f"{len(VOIES_INDEX)} Voies (attendu 17)"
+    # 139 aptitudes (ancien 133 - 1 Shunkō Hakuda + 7 Voie Shunkō)
+    assert len(APTITUDES_INDEX) == 139, f"{len(APTITUDES_INDEX)} aptitudes (attendu 139)"
 
 
 def test_aptitudes_structure():
@@ -480,8 +482,8 @@ def test_aptitudes_voie_structure():
 def test_aptitudes_prereqs_valides():
     """Vérifie que tous les prérequis référencent des aptitudes existantes et sont de la même faction."""
     from data.aptitudes import APTITUDES_INDEX, APTITUDE_VOIE
-    # Liste des aptitudes cross-voie autorisées (Shunkō nécessite Eishōhaki du Kidō)
-    CROSS_VOIE_AUTORISEES = {"shin_hak_p3b"}
+    # Aptitudes cross-voie autorisées (Voie Shunkō : prereqs dans Hakuda et Kidō)
+    CROSS_VOIE_AUTORISEES = {"shin_shun_p1a", "shin_shun_p1b", "shin_shun_p1c"}
     for apt_id, apt in APTITUDES_INDEX.items():
         for prereq_id in apt.get("prereqs", []):
             assert prereq_id in APTITUDES_INDEX, (

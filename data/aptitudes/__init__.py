@@ -42,6 +42,9 @@ MIGRATION_MAP = {
     "shin_kid_p3":  "shin_kid_p3a",
     "shin_hoh_p3":  "shin_hoh_p3a",
     "shin_hak_p3":  "shin_hak_p3a",
+    # Shinigami — Shunkō extrait de Hakuda vers sa propre Voie
+    "shin_hak_p3b": "shin_shun_p1a",  # Shunkō (ancien P3 Hakuda → P1 Voie Shunkō)
+    "shin_hak_p3c": "shin_hak_p3b",   # Oni Dekopin (renuméroté)
     # Togabito — anciens IDs P3 simples
     "toga_jig_p3":  "toga_jig_p3a",
     "toga_gok_p3":  "toga_gok_p3a",

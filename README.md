@@ -102,16 +102,58 @@ Le bot expose une cinquantaine de commandes slash, réparties par domaine.
 
 ## Système de progression
 
-Quatre factions, chacune avec sa propre hiérarchie de rangs et ses propres seuils de points.
+Quatre factions, chacune avec sa propre hiérarchie de rangs. Le staff attribue des points de progression en récompense du RP actif (scènes, combats, arcs narratifs, missions, journal personnel). Quand les points franchissent un seuil de rang, la montée est automatique : le bot attribue les nouveaux rôles Discord et publie une narration épique dans le Journal de l'Enfer.
 
-| Faction | Rangs | Points |
-|---|---|---|
-| Shinigami | 7 (Gakusei à Sōtaichō) | 500 à 10 000 |
-| Togabito | 5 (Zainin à Gokuō) | 500 à 10 000 |
-| Arrancar | 9 (Horō à Rey) | 500 à 10 000 |
-| Quincy | 6 (Minarai à Seitei) | 500 à 10 000 |
+Chaque rang débloque un budget de Reiryoku (霊力) à investir dans les aptitudes, et une Puissance Spirituelle (PS) calculée par la formule PS = Points² ÷ 1 000.
 
-La montée en rang est détectée automatiquement quand les points franchissent un seuil. Le staff est notifié, le joueur reçoit ses nouveaux rôles, et une narration épique est publiée dans le journal de l'Enfer.
+### Shinigami
+
+| Rang | Points | 霊力 | PS |
+|---|---|---|---|
+| Gakusei (Étudiant) | 500 | 3 | 250 |
+| Shinigami | 1 200 | 6 | 1 440 |
+| Yonseki (4e Siège) | 2 500 | 10 | 6 250 |
+| Sanseki (3e Siège) | 4 000 | 14 | 16 000 |
+| Fukutaichō | 6 500 | 18 | 42 250 |
+| Taichō | 8 500 | 22 | 72 250 |
+| Sōtaichō | 10 000 | 26 | 100 000 |
+
+### Togabito
+
+| Rang | Points | 霊力 | PS |
+|---|---|---|---|
+| Zainin | 500 | 3 | 250 |
+| Togabito | 2 000 | 8 | 4 000 |
+| Tan-Togabito | 4 500 | 14 | 20 250 |
+| Kō-Togabito | 7 500 | 20 | 56 250 |
+| Gokuō | 10 000 | 26 | 100 000 |
+
+### Arrancar
+
+| Rang | Points | 霊力 | PS |
+|---|---|---|---|
+| Horō (Hollow) | 500 | 3 | 250 |
+| Gillian | 1 000 | 5 | 1 000 |
+| Adjuchas | 2 000 | 8 | 4 000 |
+| Vasto Lorde | 3 500 | 11 | 12 250 |
+| Números | 5 000 | 14 | 25 000 |
+| Fracción | 6 500 | 17 | 42 250 |
+| Privaron Espada | 8 000 | 20 | 64 000 |
+| Espada | 9 000 | 23 | 81 000 |
+| Rey | 10 000 | 26 | 100 000 |
+
+Les rangs Horō à Vasto Lorde sont des Hollow qui n'ont pas encore brisé leur masque. Ils n'ont pas accès à la Voie Resurrección, réservée aux véritables Arrancar (à partir de Números).
+
+### Quincy
+
+| Rang | Points | 霊力 | PS |
+|---|---|---|---|
+| Minarai (Apprenti) | 500 | 3 | 250 |
+| Quincy | 1 500 | 7 | 2 250 |
+| Jagdarmee | 3 000 | 12 | 9 000 |
+| Sternritter | 6 000 | 18 | 36 000 |
+| Schutzstaffel | 8 500 | 22 | 72 250 |
+| Seitei | 10 000 | 26 | 100 000 |
 
 ## Pages web
 

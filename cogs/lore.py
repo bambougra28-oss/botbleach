@@ -419,45 +419,57 @@ LORE_DATA = {
         ],
     },
     "systeme": {
-        "titre":  "⚔️ Système de Combat & Points",
+        "titre":  "⚔️ Système de Progression",
         "couleur": COULEURS["gris_acier"],
         "web_fragment": "",
         "description": (
-            "La progression d'un personnage dans Infernum Aeterna reflète son "
-            "parcours narratif. Les points ne récompensent pas seulement les "
+            "La progression dans Infernum Aeterna reflète le parcours narratif "
+            "de chaque personnage. Les points ne récompensent pas seulement les "
             "victoires en combat : chaque scène écrite, chaque arc traversé, "
-            "chaque contribution au lore fait avancer le personnage."
+            "chaque contribution à l'histoire fait grandir le personnage."
         ),
         "fields": [
-            ("Gagner des points",
-             "Le staff attribue les points via `/points-ajouter` en récompense "
-             "du RP actif : scènes, arcs narratifs, victoires en combat, "
-             "événements serveur. Quand un seuil de rang est franchi, la montée "
-             "est automatique et déclenche une narration épique dans "
-             "le journal de l'Enfer."),
+            ("Comment progresser",
+             "Le staff attribue des **points de progression** en récompense du RP "
+             "actif. Les sources principales sont les scènes RP, les combats, "
+             "la participation aux arcs narratifs, les missions et le journal "
+             "personnel. Quand les points franchissent un seuil de rang, la montée "
+             "est automatique : nouveaux rôles, narration épique dans le Journal "
+             "de l'Enfer, et budget de Reiryoku augmenté."),
+            ("Rangs et puissance par faction",
+             "**Shinigami** : Gakusei (500 pts, 250 PS) → Shinigami (1 200, 1 440) → "
+             "Yonseki (2 500, 6 250) → Sanseki (4 000, 16 000) → "
+             "Fukutaichō (6 500, 42 250) → Taichō (8 500, 72 250) → Sōtaichō (10 000, 100 000)\n\n"
+             "**Togabito** : Zainin (500, 250) → Togabito (2 000, 4 000) → "
+             "Tan-Togabito (4 500, 20 250) → Kō-Togabito (7 500, 56 250) → Gokuō (10 000, 100 000)\n\n"
+             "**Arrancar** : Horō (500, 250) → Gillian (1 000, 1 000) → Adjuchas (2 000, 4 000) → "
+             "Vasto Lorde (3 500, 12 250) → Números (5 000, 25 000) → Fracción (6 500, 42 250) → "
+             "Privaron Espada (8 000, 64 000) → Espada (9 000, 81 000) → Rey (10 000, 100 000)\n\n"
+             "**Quincy** : Minarai (500, 250) → Quincy (1 500, 2 250) → "
+             "Jagdarmee (3 000, 9 000) → Sternritter (6 000, 36 000) → "
+             "Schutzstaffel (8 500, 72 250) → Seitei (10 000, 100 000)"),
             ("Aptitudes et Reiryoku (霊力)",
-             "Chaque rang accorde un budget de **Reiryoku** à répartir librement "
-             "dans les quatre **Voies** de votre faction (environ 20 aptitudes chacune). "
-             "Trois paliers d'aptitudes existent : **Éveil** (1 霊力), **Maîtrise** "
-             "(2 霊力) et **Transcendance** (3 霊力). Le dernier palier est réservé aux "
-             "rangs les plus élevés et exige une condition RP validée par le staff."),
-            ("Puissance Spirituelle",
-             "Chaque personnage possède une **Puissance Spirituelle** (PS), calculée "
-             "à partir de ses points : **PS = Points² ÷ 1 000** (minimum 1). "
-             "L'échelle est quadratique, ce qui signifie que l'écart de puissance "
-             "entre un novice et un vétéran est colossal. Un étudiant à 500 pts "
-             "possède 250 PS, un Capitaine à 8 500 pts en a 72 250, et un "
-             "Commandant à 10 000 pts culmine à 100 000.\n\n"
-             "En combat, cet écart détermine un **palier** qui guide la narration :\n"
-             "**均衡 Équilibre** (écart < 2 000) : toutes les aptitudes fonctionnent\n"
-             "**優勢 Ascendant** (2 001 à 8 000) : les techniques de base faiblissent\n"
-             "**制圧 Domination** (8 001 à 25 000) : seules les Maîtrises et au-delà portent\n"
-             "**圧倒 Écrasement** (25 001 à 55 000) : seule la Transcendance a encore un impact\n"
-             "**深淵 Abîme** (55 001+) : aucune technique ne peut combler le gouffre"),
+             "Chaque rang accorde un budget de **Reiryoku** (de 3 à 26 points) "
+             "à répartir librement entre les quatre **Voies** de la faction. "
+             "Trois paliers d'aptitudes : **Éveil** (1 霊力), **Maîtrise** (2 霊力) "
+             "et **Transcendance** (3 霊力). Le dernier palier est réservé aux rangs "
+             "les plus élevés et exige une condition RP validée par le staff."),
+            ("Puissance Spirituelle (PS)",
+             "Calculée par la formule **PS = Points² ÷ 1 000** (minimum 1). "
+             "L'échelle quadratique crée des écarts colossaux : un étudiant "
+             "(500 pts) possède 250 PS, un Capitaine (8 500 pts) en a 72 250, "
+             "un Commandant (10 000 pts) culmine à 100 000.\n\n"
+             "En combat, l'écart de PS détermine un **palier narratif** :\n"
+             "均衡 **Équilibre** (< 2 000) : toutes les aptitudes fonctionnent\n"
+             "優勢 **Ascendant** (2 001 à 8 000) : les techniques de base faiblissent\n"
+             "制圧 **Domination** (8 001 à 25 000) : seules Maîtrises et au-delà portent\n"
+             "圧倒 **Écrasement** (25 001 à 55 000) : seule la Transcendance compte\n"
+             "深淵 **Abîme** (55 001+) : aucune technique ne comble le gouffre"),
             ("Mort narrative",
-             "La mort d'un personnage est possible avec l'accord des joueurs concernés "
-             "et la validation du staff. Le personnage peut renaître dans un nouveau "
-             "contexte ou repartir de zéro en conservant ses acquis narratifs."),
+             "La mort d'un personnage est possible avec l'accord des joueurs "
+             "concernés et la validation du staff. Le personnage peut renaître "
+             "dans un nouveau contexte ou repartir de zéro en conservant ses "
+             "acquis narratifs."),
         ],
     },
     "gotei": {

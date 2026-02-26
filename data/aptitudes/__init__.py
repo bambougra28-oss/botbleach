@@ -140,7 +140,8 @@ def aptitudes_par_voie(aptitudes_debloquees: list[str], voie_id: str) -> list[di
     return [apt for apt in voie["aptitudes"] if apt["id"] in aptitudes_debloquees]
 
 
-def peut_debloquer(apt_id: str, aptitudes_debloquees: list[str], rang_cle: str, faction: str) -> tuple[bool, str]:
+def peut_debloquer(apt_id: str, aptitudes_debloquees: list[str], rang_cle: str, faction: str,
+                   reiryoku_bonus: int = 0) -> tuple[bool, str]:
     """
     Vérifie si une aptitude peut être débloquée.
     Retourne (True, "") ou (False, "raison").
@@ -153,15 +154,19 @@ def peut_debloquer(apt_id: str, aptitudes_debloquees: list[str], rang_cle: str, 
     if apt_id in aptitudes_debloquees:
         return False, "Cette aptitude est déjà débloquée."
 
-    # Vérifier que l'aptitude appartient à la faction du joueur
+    # Vérifier accès restreint (voies spéciales : Shunkō, Kenpachi…)
     voie = APTITUDE_VOIE.get(apt_id)
+    if voie and voie.get("acces_restreint"):
+        return False, f"Voie à accès restreint : {voie['acces_restreint']}"
+
+    # Vérifier que l'aptitude appartient à la faction du joueur
     if not voie or voie["faction"] != faction:
         return False, "Cette aptitude n'appartient pas à votre faction."
 
-    # Vérifier le budget
+    # Vérifier le budget (inclut le bonus reiryoku)
     cout = apt["cout"]
     depense = reiryoku_depense(aptitudes_debloquees)
-    budget = budget_reiryoku(rang_cle)
+    budget = budget_reiryoku(rang_cle, reiryoku_bonus)
     if depense + cout > budget:
         return False, f"Budget insuffisant ({depense + cout} > {budget} 霊力)."
 

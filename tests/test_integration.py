@@ -426,8 +426,8 @@ def test_aptitudes_constants():
     from data.aptitudes.constants import REIRYOKU_PAR_RANG, RANGS_P3, COUT_PALIER
     # Budget Reiryoku existe pour toutes les factions
     assert len(REIRYOKU_PAR_RANG) >= 25, f"Trop peu de rangs dans REIRYOKU_PAR_RANG : {len(REIRYOKU_PAR_RANG)}"
-    # Budget max = 26 (rangs apex : Sōtaichō, Gokuō, Rey, Seitei)
-    assert max(REIRYOKU_PAR_RANG.values()) == 26
+    # Budget max = 45 (rangs apex : Sōtaichō, Gokuō, Rey, Seitei)
+    assert max(REIRYOKU_PAR_RANG.values()) == 45
     # Budget min = 3
     assert min(REIRYOKU_PAR_RANG.values()) == 3
     # P3 restrictions pour les 4 factions
@@ -442,13 +442,13 @@ def test_aptitudes_data_completeness():
     # 4 factions
     assert set(VOIES_PAR_FACTION.keys()) == {"shinigami", "togabito", "arrancar", "quincy"}
     # 4 Voies par faction sauf shinigami (5 avec Shunkō) = 17 Voies
-    voies_attendues = {"shinigami": 5, "togabito": 4, "arrancar": 4, "quincy": 4}
+    voies_attendues = {"shinigami": 6, "togabito": 4, "arrancar": 4, "quincy": 4}
     for faction, voies in VOIES_PAR_FACTION.items():
         attendu = voies_attendues[faction]
         assert len(voies) == attendu, f"{faction} a {len(voies)} Voies (attendu {attendu})"
-    assert len(VOIES_INDEX) == 17, f"{len(VOIES_INDEX)} Voies (attendu 17)"
-    # 139 aptitudes (ancien 133 - 1 Shunkō Hakuda + 7 Voie Shunkō)
-    assert len(APTITUDES_INDEX) == 139, f"{len(APTITUDES_INDEX)} aptitudes (attendu 139)"
+    assert len(VOIES_INDEX) == 18, f"{len(VOIES_INDEX)} Voies (attendu 18)"
+    # 142 aptitudes (139 + 3 Voie Kenpachi)
+    assert len(APTITUDES_INDEX) == 142, f"{len(APTITUDES_INDEX)} aptitudes (attendu 142)"
 
 
 def test_aptitudes_structure():
@@ -470,20 +470,24 @@ def test_aptitudes_voie_structure():
     for voie_id, voie in VOIES_INDEX.items():
         manquants = champs_requis - set(voie.keys())
         assert not manquants, f"Voie {voie_id} manque : {manquants}"
-        # 7-9 aptitudes par Voie : 3 P1 + 2-4 P2 + 2-3 P3
         apts = voie["aptitudes"]
-        assert 7 <= len(apts) <= 10, f"Voie {voie_id} a {len(apts)} aptitudes (attendu 7-10)"
-        paliers = [a["palier"] for a in apts]
-        assert paliers.count(1) == 3, f"Voie {voie_id} : {paliers.count(1)} P1 (attendu 3)"
-        assert 2 <= paliers.count(2) <= 4, f"Voie {voie_id} : {paliers.count(2)} P2 (attendu 2-4)"
-        assert 2 <= paliers.count(3) <= 3, f"Voie {voie_id} : {paliers.count(3)} P3 (attendu 2-3)"
+        # Voies à accès restreint (Kenpachi) : structure minimale 1 P1 + 1 P2 + 1 P3
+        if voie.get("acces_restreint") and len(apts) < 7:
+            assert len(apts) >= 3, f"Voie restreinte {voie_id} a {len(apts)} aptitudes (min 3)"
+        else:
+            # Voies standards : 7-10 aptitudes (3 P1 + 2-4 P2 + 2-3 P3)
+            assert 7 <= len(apts) <= 10, f"Voie {voie_id} a {len(apts)} aptitudes (attendu 7-10)"
+            paliers = [a["palier"] for a in apts]
+            assert paliers.count(1) == 3, f"Voie {voie_id} : {paliers.count(1)} P1 (attendu 3)"
+            assert 2 <= paliers.count(2) <= 4, f"Voie {voie_id} : {paliers.count(2)} P2 (attendu 2-4)"
+            assert 2 <= paliers.count(3) <= 3, f"Voie {voie_id} : {paliers.count(3)} P3 (attendu 2-3)"
 
 
 def test_aptitudes_prereqs_valides():
     """Vérifie que tous les prérequis référencent des aptitudes existantes et sont de la même faction."""
     from data.aptitudes import APTITUDES_INDEX, APTITUDE_VOIE
-    # Aptitudes cross-voie autorisées (Voie Shunkō : prereqs dans Hakuda et Kidō)
-    CROSS_VOIE_AUTORISEES = {"shin_shun_p1a", "shin_shun_p1b", "shin_shun_p1c"}
+    # Aptitudes cross-voie autorisées (Shunkō : prereqs Hakuda/Kidō, Kenpachi : prereqs Zanjutsu)
+    CROSS_VOIE_AUTORISEES = {"shin_shun_p1a", "shin_shun_p1b", "shin_shun_p1c", "shin_ken_p1a"}
     for apt_id, apt in APTITUDES_INDEX.items():
         for prereq_id in apt.get("prereqs", []):
             assert prereq_id in APTITUDES_INDEX, (
@@ -555,10 +559,10 @@ def test_aptitudes_peut_retirer():
 def test_aptitudes_budget_calcul():
     """Teste les calculs de budget."""
     from data.aptitudes import budget_reiryoku, reiryoku_depense, est_sur_budget
-    # Budget d'un capitaine
-    assert budget_reiryoku("taicho") == 22
+    # Budget d'un capitaine (Taichō = 35 depuis mise à jour budgets hauts gradés)
+    assert budget_reiryoku("taicho") == 35
     # Budget avec bonus
-    assert budget_reiryoku("taicho", 2) == 24
+    assert budget_reiryoku("taicho", 2) == 37
     # Dépense
     assert reiryoku_depense(["shin_zan_p1a", "shin_zan_p1b", "shin_zan_p2a"]) == 4  # 1+1+2
     # Sur-budget
@@ -670,6 +674,61 @@ def test_pnj_catalogue_ps():
         assert "ps" in data, f"PNJ '{cle}' n'a pas de champ 'ps'"
         assert isinstance(data["ps"], int), f"PNJ '{cle}' ps n'est pas un int"
         assert data["ps"] > 0, f"PNJ '{cle}' ps doit être > 0"
+
+
+def test_menus_cog_exists():
+    """Vérifie que cogs/menus.py existe et s'importe."""
+    assert os.path.exists("cogs/menus.py"), "cogs/menus.py manquant"
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.menus")
+    assert hasattr(mod, "ContextMenus"), "Classe ContextMenus absente"
+    assert hasattr(mod, "setup"), "Fonction setup() absente"
+
+
+def test_main_charge_menus():
+    """Vérifie que main.py charge le cog menus."""
+    with open("main.py", encoding="utf-8") as f:
+        contenu = f.read()
+    assert "cogs.menus" in contenu, "main.py ne charge pas cogs.menus"
+
+
+def test_pnj_webhook_helper():
+    """Vérifie que PNJ a la méthode webhook et le cache."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.pnj")
+    assert hasattr(mod, "WEBHOOK_NAME"), "WEBHOOK_NAME absent de pnj.py"
+    assert mod.WEBHOOK_NAME == "Infernum PNJ"
+
+
+def test_pnj_catalogue_avatar_url():
+    """Vérifie que chaque PNJ a un champ avatar_url."""
+    _mock_discord()
+    import importlib
+    mod = importlib.import_module("cogs.pnj")
+    for cle, data in mod.PNJ_CATALOGUE.items():
+        assert "avatar_url" in data, f"PNJ '{cle}' n'a pas de champ 'avatar_url'"
+
+
+def test_carte_module_exists():
+    """Vérifie que utils/carte.py existe et contient generer_carte."""
+    assert os.path.exists("utils/carte.py"), "utils/carte.py manquant"
+    # Importer le module (Pillow peut être absent en CI, on vérifie juste la syntaxe)
+    import importlib
+    mod = importlib.import_module("utils.carte")
+    assert hasattr(mod, "generer_carte"), "generer_carte absent de utils/carte.py"
+    assert hasattr(mod, "CARD_W"), "CARD_W absent"
+    assert hasattr(mod, "CARD_H"), "CARD_H absent"
+    assert mod.CARD_W == 960
+    assert mod.CARD_H == 600
+
+
+def test_requirements_pillow():
+    """Vérifie que Pillow est dans requirements.txt."""
+    with open("requirements.txt", encoding="utf-8") as f:
+        contenu = f.read()
+    assert "Pillow" in contenu, "Pillow absent de requirements.txt"
 
 
 def test_aptitudes_zero_personnage_canon():

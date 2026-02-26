@@ -1,6 +1,6 @@
 """
 INFERNUM AETERNA — Aptitudes Shinigami
-Les Cinq Disciplines : Zanjutsu, Kidō, Hohō, Hakuda, Shunkō
+Les Six Disciplines : Zanjutsu, Kidō, Hohō, Hakuda, Shunkō, Kenpachi
 """
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -674,6 +674,11 @@ SHUNKO = {
     "sous_titre": "La Clameur Éclair",
     "faction": "shinigami",
     "couleur": 0xE066FF,
+    "acces_restreint": (
+        "Réservé au Commandant de l'Onmitsukidō (Capitaine de la 2e Division). "
+        "Transmissible par apprentissage RP auprès d'un maître du Shunkō, "
+        "sous validation du staff."
+    ),
     "description": (
         "L'union interdite du Hakuda et du Kidō. Le Reishi concentré par l'Eishōhaki "
         "est redirigé à travers les membres au lieu d'être projeté en sort — une fusion "
@@ -690,7 +695,7 @@ SHUNKO = {
             "palier": 1,
             "cout": 1,
             "prereqs": ["shin_hak_p2a", "shin_kid_p2a"],
-            "rang_min": "fukutaicho",
+            "rang_min": None,
             "description": (
                 "L'union interdite du Hakuda et du Kidō. Le Reishi concentré par "
                 "l'Eishōhaki est redirigé à travers les membres. Une aura de puissance "
@@ -709,7 +714,7 @@ SHUNKO = {
             "palier": 1,
             "cout": 1,
             "prereqs": ["shin_hak_p1a", "shin_kid_p2a"],
-            "rang_min": "fukutaicho",
+            "rang_min": None,
             "description": (
                 "Le Revers Démoniaque. Technique née de la compréhension intime du flux "
                 "de Kidō à travers le corps. En produisant une énergie exactement inverse "
@@ -816,7 +821,98 @@ SHUNKO = {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  VOIE 6 — KENPACHI (剣八) La Voie du Démon de Guerre
+# ══════════════════════════════════════════════════════════════════════════════
+
+KENPACHI = {
+    "id": "shin_kenpachi",
+    "nom": "Kenpachi",
+    "kanji": "剣八",
+    "sous_titre": "La Voie du Démon de Guerre",
+    "faction": "shinigami",
+    "couleur": 0xDC143C,
+    "acces_restreint": (
+        "Le titre de Kenpachi est unique — un seul Shinigami le porte à chaque "
+        "génération. Attribué par le staff après validation RP. Le prétendant "
+        "doit avoir vaincu le porteur précédent ou être désigné en l'absence "
+        "de successeur."
+    ),
+    "description": (
+        "Il n'y a pas de forme. Pas de style. Pas de nom pour ce qui se passe "
+        "quand un guerrier cesse de retenir sa force et laisse l'instinct guider "
+        "chaque frappe. Le Kenpachi est celui qui a choisi la voie la plus simple "
+        "et la plus brutale — celle où la technique s'efface devant la puissance "
+        "pure, où le contrôle est un luxe abandonné au profit de la destruction. "
+        "Ce n'est pas une discipline. C'est un renoncement."
+    ),
+    "aptitudes": [
+        # ── P1 — Éveil ──────────────────────────────────────────────────────
+        {
+            "id": "shin_ken_p1a",
+            "nom": "Muishiki no Kaihō",
+            "kanji": "無意識の解放",
+            "palier": 1,
+            "cout": 1,
+            "prereqs": ["shin_zan_p1a", "shin_zan_p1b", "shin_zan_p1c"],
+            "rang_min": None,
+            "description": (
+                "La Libération de l'Inconscient. Les fondamentaux du sabre — Jinzen, "
+                "Kendō, Maai — sont acquis, intégrés, puis oubliés. Le combattant cesse "
+                "de retenir sa force et laisse le Reishi déborder sans filtre. L'air "
+                "autour de lui devient suffocant, le sol craque sous la pression spirituelle "
+                "brute. Ce n'est pas une technique apprise — c'est un verrou qui saute, "
+                "une digue qui cède. La puissance qui s'en échappe est écrasante, "
+                "indiscriminée, et terrifiante pour les alliés autant que pour les ennemis."
+            ),
+            "condition_rp": "Scène RP où le combattant libère sa force brute pour la première fois.",
+        },
+        # ── P2 — Maîtrise ──────────────────────────────────────────────────
+        {
+            "id": "shin_ken_p2a",
+            "nom": "Satsujin Honnō",
+            "kanji": "殺人本能",
+            "palier": 2,
+            "cout": 2,
+            "prereqs": ["shin_ken_p1a"],
+            "rang_min": None,
+            "description": (
+                "L'Instinct Meurtrier. Le corps réagit avant l'esprit — chaque ouverture "
+                "est exploitée sans réflexion, chaque hésitation de l'adversaire se paie "
+                "en sang. La précision technique recule devant la violence pure, mais ce "
+                "qui est perdu en élégance est compensé par une brutalité instinctive que "
+                "nulle garde ne peut anticiper. Le Kenpachi ne lit pas le combat — il le "
+                "dévore. Ses frappes ne suivent aucun schéma, aucun rythme identifiable. "
+                "Ceux qui cherchent un pattern dans sa lame ne trouvent que leur propre fin."
+            ),
+            "condition_rp": None,
+        },
+        # ── P3 — Transcendance ──────────────────────────────────────────────
+        {
+            "id": "shin_ken_p3a",
+            "nom": "Oni no Kyōki",
+            "kanji": "鬼の狂気",
+            "palier": 3,
+            "cout": 3,
+            "prereqs": ["shin_ken_p2a"],
+            "rang_min": "taicho",
+            "description": (
+                "La Folie du Démon. Toute retenue est abandonnée. Le Kenpachi libère "
+                "l'intégralité de sa puissance dans un état qui tient autant de l'extase "
+                "que de la démence — le sourire s'élargit à chaque blessure reçue, la "
+                "force augmente à chaque coup porté, et la frontière entre victoire et "
+                "autodestruction disparaît. Chaque niveau de libération rapproche du point "
+                "de rupture : la puissance devient écrasante mais le contrôle s'effrite, "
+                "la conscience s'amenuise, et le démon de guerre menace de consumer celui "
+                "qui l'a invoqué. Peu de Kenpachi ont atteint ce stade. Encore moins en "
+                "sont revenus intacts."
+            ),
+            "condition_rp": "Arc RP de combat acharné où le Kenpachi frôle ses propres limites.",
+        },
+    ],
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  EXPORT
 # ══════════════════════════════════════════════════════════════════════════════
 
-VOIES_SHINIGAMI = [ZANJUTSU, KIDO, HOHO, HAKUDA, SHUNKO]
+VOIES_SHINIGAMI = [ZANJUTSU, KIDO, HOHO, HAKUDA, SHUNKO, KENPACHI]

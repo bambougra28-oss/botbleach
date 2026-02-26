@@ -115,6 +115,7 @@ shinigami: {
   ]},
   // ── Shunk\u014D ──
   {id:"shin_shunko",nom:"Shunk\u014D",kanji:"\u77AC\u95A7",sousTitre:"La Clameur \u00C9clair",
+   accesRestreint:"R\u00E9serv\u00E9 au Commandant de l'Onmitsukid\u014D (Capitaine de la 2e Division). Transmissible par apprentissage RP aupr\u00E8s d'un ma\u00EEtre du Shunk\u014D, sous validation du staff.",
    desc:"L'union interdite du Hakuda et du Kid\u014D. Le Reishi concentr\u00E9 par l'Eish\u014Dhaki est redirig\u00E9 \u00E0 travers les membres.",
    apt:[
     {id:"shin_shun_p1a",nom:"Shunk\u014D",kanji:"\u77AC\u95A7",p:1,c:1,desc:"L'union interdite du Hakuda et du Kid\u014D. Une aura de puissance brute enveloppe le corps. Technique instable \u2014 l'\u00E9l\u00E9ment se r\u00E9v\u00E8le lors de la premi\u00E8re activation : Foudre, Vent, Flamme ou Glace.",prereqIds:["shin_hak_p2a","shin_kid_p2a"],cond:"Manifestation spontan\u00E9e lors d'un combat alliant Hakuda et Kid\u014D.",rangMin:"fukutaicho"},
@@ -124,6 +125,15 @@ shinigami: {
     {id:"shin_shun_p2b",nom:"Shunk\u014D Senkei",kanji:"\u77AC\u95A7\u30FB\u6226\u5F62",p:2,c:2,desc:"La Forme de Guerre. L'\u00E9nergie \u00E9l\u00E9mentaire se concentre en une forme de combat pr\u00E9cise : lames d'air, griffes de foudre, poings de flamme.",prereqIds:["shin_shun_p1a","shin_shun_p1b"],cond:"Utilisation offensive de la forme \u00E9l\u00E9mentaire en combat r\u00E9el.",rangMin:null},
     {id:"shin_shun_p3a",nom:"Shunk\u014D Kanzen",kanji:"\u77AC\u95A7\u30FB\u5B8C\u5168",p:3,c:3,desc:"La Clameur Parfaite. Le Shunk\u014D se projette \u00E0 distance, transformant l'environnement sur une trentaine de m\u00E8tres.",prereqIds:["shin_shun_p2a","shin_shun_p2b"],cond:"Ma\u00EEtrise absolue d\u00E9montr\u00E9e sur 3 combats en Shunk\u014D.",rangMin:"taicho"},
     {id:"shin_shun_p3b",nom:"Muk\u016B Shunk\u014D",kanji:"\u7121\u7A7A\u77AC\u95A7",p:3,c:3,desc:"La Clameur du Vide. Au-del\u00E0 de l'\u00E9l\u00E9ment. Le Shunk\u014D transcende l'affinit\u00E9 \u00E9l\u00E9mentaire pour devenir pure \u00E9nergie, invisible et absolue.",prereqIds:["shin_shun_p3a"],cond:"Arc RP de d\u00E9passement int\u00E9rieur \u2014 transcendance de l'affinit\u00E9 \u00E9l\u00E9mentaire.",rangMin:"taicho"}
+  ]},
+  // ── Kenpachi ──
+  {id:"shin_kenpachi",nom:"Kenpachi",kanji:"\u5263\u516B",sousTitre:"La Voie du D\u00E9mon de Guerre",
+   accesRestreint:"Le titre de Kenpachi est unique \u2014 un seul Shinigami le porte \u00E0 chaque g\u00E9n\u00E9ration. Attribu\u00E9 par le staff apr\u00E8s validation RP. Le pr\u00E9tendant doit avoir vaincu le porteur pr\u00E9c\u00E9dent ou \u00EAtre d\u00E9sign\u00E9 en l'absence de successeur.",
+   desc:"Il n'y a pas de forme. Pas de style. Pas de nom pour ce qui se passe quand un guerrier cesse de retenir sa force et laisse l'instinct guider chaque frappe. Le Kenpachi est celui qui a choisi la voie la plus simple et la plus brutale \u2014 celle o\u00F9 la technique s'efface devant la puissance pure.",
+   apt:[
+    {id:"shin_ken_p1a",nom:"Muishiki no Kaih\u014D",kanji:"\u7121\u610F\u8B58\u306E\u89E3\u653E",p:1,c:1,desc:"La Lib\u00E9ration de l'Inconscient. Les fondamentaux du sabre \u2014 Jinzen, Kend\u014D, Maai \u2014 sont acquis, int\u00E9gr\u00E9s, puis oubli\u00E9s. Le combattant cesse de retenir sa force et laisse le Reishi d\u00E9border sans filtre. L'air autour de lui devient suffocant, le sol craque sous la pression spirituelle brute.",prereqIds:["shin_zan_p1a","shin_zan_p1b","shin_zan_p1c"],cond:"Sc\u00E8ne RP o\u00F9 le combattant lib\u00E8re sa force brute pour la premi\u00E8re fois.",rangMin:null},
+    {id:"shin_ken_p2a",nom:"Satsujin Honn\u014D",kanji:"\u6BBA\u4EBA\u672C\u80FD",p:2,c:2,desc:"L'Instinct Meurtrier. Le corps r\u00E9agit avant l'esprit \u2014 chaque ouverture est exploit\u00E9e sans r\u00E9flexion, chaque h\u00E9sitation de l'adversaire se paie en sang. La pr\u00E9cision technique recule devant la violence pure.",prereqIds:["shin_ken_p1a"],cond:null,rangMin:null},
+    {id:"shin_ken_p3a",nom:"Oni no Ky\u014Dki",kanji:"\u9B3C\u306E\u72C2\u6C17",p:3,c:3,desc:"La Folie du D\u00E9mon. Toute retenue est abandonn\u00E9e. Le Kenpachi lib\u00E8re l'int\u00E9gralit\u00E9 de sa puissance dans un \u00E9tat qui tient autant de l'extase que de la d\u00E9mence \u2014 le sourire s'\u00E9largit \u00E0 chaque blessure re\u00E7ue, la force augmente \u00E0 chaque coup port\u00E9.",prereqIds:["shin_ken_p2a"],cond:"Arc RP de combat acharn\u00E9 o\u00F9 le Kenpachi fr\u00F4le ses propres limites.",rangMin:"taicho"}
   ]}
 ]},
 

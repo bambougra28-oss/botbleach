@@ -91,6 +91,12 @@
 
     if (S.unlocked[aptId]) return {ok: false, msg: "D\u00E9j\u00E0 d\u00E9bloqu\u00E9e."};
 
+    // Acc\u00E8s restreint (voies sp\u00E9ciales : Shunk\u014D, Kenpachi)
+    var voieCheck = findAptVoie(aptId);
+    if (voieCheck && voieCheck.accesRestreint) {
+      return {ok: false, msg: "Voie \u00E0 acc\u00E8s restreint : " + voieCheck.accesRestreint};
+    }
+
     // Budget
     var cost = apt.c;
     if (spent() + cost > budget()) {
